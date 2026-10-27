@@ -16,7 +16,7 @@
     $('signupForm').querySelector('button').disabled = true;
     return;
   }
-  const client = window.supabase.createClient(config.url, config.publishableKey, { auth: { storageKey: 'zt-admin-auth' } });
+  const client = window.supabase.createClient(config.url, config.publishableKey, { auth: { storageKey: 'zt-player-auth' } });
   let rows = [];
   $('signupForm').addEventListener('submit', async event => {
     event.preventDefault();
@@ -26,7 +26,11 @@
     if (password.length < 8) { message('กรุณาตั้งรหัสผ่านอย่างน้อย 8 ตัวอักษร'); return; }
     const button = event.submitter; button.disabled = true;
     try {
-      const { data, error } = await client.auth.signUp({ email, password });
+      const current = await client.auth.getSession();
+      if (current.error) throw current.error;
+      const { data, error } = current.data.session?.user.is_anonymous
+        ? await client.auth.updateUser({ email, password })
+        : await client.auth.signUp({ email, password });
       if (error) throw error;
       $('signupPassword').value = ''; $('confirmPassword').value = '';
       // Keep registration separate from the administrator session.
@@ -35,7 +39,7 @@
         if (logout.error) throw logout.error;
       }
       showSignup(false); $('email').value = email;
-      message('ส่งคำขอสมัครแล้ว หากได้รับอีเมลยืนยัน กรุณากดยืนยันก่อนเข้าสู่ระบบ บัญชีต้องได้รับสิทธิ์ผู้ดูแลก่อนดูสถิติรวม');
+      message('ส่งคำขอสมัครแล้ว หากได้รับอีเมลยืนยัน กรุณากดยืนยันก่อนเข้าสู่ระบบ คะแนนและโปรไฟล์จะอยู่ในบัญชีผู้เล่นเดิมเมื่อยืนยันอีเมลสำเร็จ');
     } catch (error) { message(error.message); }
     finally { button.disabled = false; }
   });
@@ -69,12 +73,12 @@
     try {
       const session = await client.auth.getSession();
       if (session.error) throw session.error;
-      const loggedIn = !!session.data.session;
+      const loggedIn = !!session.data.session && !session.data.session.user.is_anonymous;
       $('login').hidden = loggedIn; $('dashboard').hidden = !loggedIn;
       if (!loggedIn) { rows = []; render(); return; }
       const admin = await client.from('score_admins').select('user_id').eq('user_id', session.data.session.user.id);
       if (admin.error) throw admin.error;
-      if (!admin.data.length) throw new Error('บัญชีนี้ไม่มีสิทธิ์ดูสถิติผู้เล่น');
+      if (!admin.data.length) { $('dashboard').hidden = true; message('เข้าสู่ระบบแล้ว ดูคะแนนของคุณได้บนบอร์ดด้านบน'); return; }
       if ($('from').value && $('to').value && $('from').value > $('to').value) throw new Error('วันที่เริ่มต้องไม่เกินวันที่สิ้นสุด');
       const collected = [];
       for (let offset = 0; ; offset += 500) {
