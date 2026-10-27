@@ -8,7 +8,8 @@
 <body>
 <main>
   <header><div><p class="eyebrow">ZERO TRUST SIMULATOR</p><h1>คะแนนและสถิติผู้เล่น</h1><p>สถานการณ์น้องไก่ · คำตอบปลอดภัยข้อละ 1 คะแนน</p></div><a href="index.html">กลับเข้าเกม ↗</a></header>
-  <section id="login"><h2>เข้าสู่ระบบผู้ดูแล</h2><p>ใช้บัญชีที่ได้รับสิทธิ์ใน Supabase เพื่อดูผลผู้เล่น</p><form id="loginForm"><label>อีเมล<input id="email" type="email" autocomplete="username" required></label><label>รหัสผ่าน<input id="password" type="password" autocomplete="current-password" required></label><button>เข้าสู่ระบบ</button></form></section>
+  <section id="login"><h2>เข้าสู่ระบบผู้ดูแล</h2><p>ใช้บัญชีที่ได้รับสิทธิ์ใน Supabase เพื่อดูผลผู้เล่น</p><form id="loginForm"><label>อีเมล<input id="email" type="email" autocomplete="username" required></label><label>รหัสผ่าน<input id="password" type="password" autocomplete="current-password" required></label><button>เข้าสู่ระบบ</button></form><p>ยังไม่มีบัญชี? <button id="showSignup" type="button">สมัครบัญชี</button></p></section>
+  <section id="signup" hidden><h2>สมัครบัญชี</h2><p>ใช้อีเมลเป็นชื่อเข้าสู่ระบบ หลังสมัครต้องได้รับสิทธิ์ผู้ดูแลก่อนดูสถิติรวม</p><form id="signupForm"><label>อีเมล<input id="signupEmail" type="email" autocomplete="email" maxlength="254" required></label><label>รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)<input id="signupPassword" type="password" autocomplete="new-password" minlength="8" required></label><label>ยืนยันรหัสผ่าน<input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required></label><button>สร้างบัญชี</button></form><p><button id="showLogin" type="button">กลับไปเข้าสู่ระบบ</button></p></section>
   <p id="message" role="status" aria-live="polite"></p>
   <div id="dashboard" hidden>
     <div class="toolbar"><label>ตั้งแต่<input id="from" type="date"></label><label>ถึง<input id="to" type="date"></label><button id="refresh">โหลดข้อมูล</button><button id="export">ดาวน์โหลด CSV</button><button id="logout">ออกจากระบบ</button></div>
@@ -18,7 +19,7 @@
   </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-config.js"></script><script src="js/statistics.js"></script>
+<script src="js/supabase-config.js"></script><script src="js/statistics.js?v=signup1"></script>
 <script>
 if (new URLSearchParams(location.search).has('embed')) {
   document.querySelector('header a').hidden = true;
