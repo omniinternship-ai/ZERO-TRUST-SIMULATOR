@@ -19,4 +19,12 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script><script src="js/statistics.js"></script>
+<script>
+if (new URLSearchParams(location.search).has('embed')) {
+  document.querySelector('header a').hidden = true;
+  const style = document.createElement('style');
+  style.textContent = 'main{padding:18px 12px}header{margin-bottom:18px}header h1{font-size:24px}.eyebrow{letter-spacing:1px}section{padding:14px}.cards{gap:8px}article{padding:12px}article strong{font-size:28px}form{display:grid}input{width:100%;min-width:0}.toolbar{align-items:stretch}.toolbar label{flex:1;min-width:115px}';
+  document.head.append(style);
+}
+</script>
 </body></html>
