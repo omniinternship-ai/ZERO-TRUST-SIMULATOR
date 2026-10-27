@@ -1584,6 +1584,9 @@
         text: selectedChoice.userText,
         isSafe: selectedChoice.isSafe
       });
+      if (this.choicesHistory.length === KAI_CHAT_STAGES.length) {
+        window.recordGameResult?.(this.choicesHistory);
+      }
 
       const token = ++this.activeToken;
       this.isPlaying = true;
