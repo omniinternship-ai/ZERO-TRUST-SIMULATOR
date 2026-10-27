@@ -45,6 +45,7 @@
     // Grid Apps (Row 4 - User Additions)
     'mobile-bank': { id: 'mobile-bank', name: 'Mobile Bank', type: 'finance', position: 'grid' },
     'roblox': { id: 'roblox', name: 'Roblox', type: 'game', position: 'grid' },
+    'player-stats': { id: 'player-stats', name: 'สถิติผู้เล่น', type: 'analytics', position: 'grid' },
 
     // Dock Apps
     'phone': { id: 'phone', name: 'โทรศัพท์', type: 'communication', position: 'dock' },
@@ -89,7 +90,7 @@
 
     isBlocked() {
       const state = this.loadState();
-      return !!(state && (state.status === 'blocked' || state.status === 'completed'));
+      return !!(state && (state.status === 'blocked' || state.status === 'completed') && Array.isArray(state.messages) && state.messages.length > 0);
     },
 
     applyBlockedUI() {
@@ -176,6 +177,43 @@
 
         const transferModal = document.getElementById('bankTransferModal');
         if (transferModal) transferModal.setAttribute('hidden', '');
+      } else if (appId === 'settings' || appId === 'device-settings') {
+        const settingsScreen = document.getElementById('settingsScreen');
+        if (settingsScreen) {
+          settingsScreen.removeAttribute('hidden');
+          void settingsScreen.offsetWidth;
+          settingsScreen.classList.add('active');
+          this._activeAppId = 'settings';
+        }
+        if (window.SettingsManager) {
+          window.SettingsManager.onOpen();
+        }
+      } else if (appId === 'player-stats') {
+        const statsScreen = document.getElementById('playerStatsScreen');
+        if (statsScreen) {
+          statsScreen.removeAttribute('hidden');
+          void statsScreen.offsetWidth;
+          statsScreen.classList.add('active');
+          this._activeAppId = 'player-stats';
+        }
+        if (window.PlayerStatsManager) {
+          window.PlayerStatsManager.updateUI();
+        }
+      } else if (appId === 'phone') {
+        const prog = window.QuestProgressionManager ? window.QuestProgressionManager.loadProgression() : {};
+        if (prog.quest2_callcenter === 'cleared') {
+          NavigationHandler._showHandlerFeedback('เบอร์ 080-5656-9987-56 ถูกบล็อกแล้ว (ภารกิจสำเร็จ)');
+        } else if (window.Mission2CallCenter) {
+          window.Mission2CallCenter.startIncomingCall();
+        }
+      } else if (appId === 'login') {
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen) {
+          loginScreen.removeAttribute('hidden');
+          void loginScreen.offsetWidth;
+          loginScreen.classList.add('active');
+          this._activeAppId = 'login';
+        }
       }
     },
 
@@ -258,8 +296,11 @@
         lineScreen.classList.add('active');
       }
 
-      if (window.KaiChatEngine) {
-        window.KaiChatEngine.openConvo();
+      const convoScreen = document.getElementById('lineConvoScreen');
+      if (convoScreen) {
+        convoScreen.removeAttribute('hidden');
+        void convoScreen.offsetWidth;
+        convoScreen.classList.add('active');
       }
     },
 
@@ -288,12 +329,32 @@
      * Cleanly closes all open apps and modals, returning to Home Screen
      */
     closeActiveApp() {
-      if (window.KaiChatEngine) {
-        window.KaiChatEngine.abortPlayback();
-        window.KaiChatEngine.saveCurrentState();
+      const convoScreen = document.getElementById('lineConvoScreen');
+      const isConvoOpen = convoScreen && convoScreen.classList.contains('active') && !convoScreen.hasAttribute('hidden');
+
+      const scamModal = document.getElementById('scamAlertModal');
+      const isScamModalOpen = scamModal && !scamModal.hasAttribute('hidden');
+      const kaiEngine = (typeof KaiChatEngine !== 'undefined') ? KaiChatEngine : window.KaiChatEngine;
+      if (isScamModalOpen || (kaiEngine && kaiEngine._isScamAlertActive)) {
+        if (scamModal) scamModal.setAttribute('hidden', '');
+        if (kaiEngine) {
+          kaiEngine._isScamAlertActive = false;
+          kaiEngine._needsFreshStart = true;
+          kaiEngine.resetChatMemory();
+        }
+        if (typeof KaiStateManager !== 'undefined') {
+          KaiStateManager.clearState();
+          KaiStateManager.resetBlockedUI();
+        }
       }
 
-      const convoScreen = document.getElementById('lineConvoScreen');
+      if (kaiEngine) {
+        kaiEngine.abortPlayback();
+        if (isConvoOpen && !kaiEngine._isScamAlertActive && !kaiEngine._needsFreshStart) {
+          kaiEngine.saveCurrentState();
+        }
+      }
+
       if (convoScreen) {
         convoScreen.setAttribute('hidden', '');
         convoScreen.classList.remove('active');
@@ -305,12 +366,21 @@
       if (bankWarningOverlay) bankWarningOverlay.setAttribute('hidden', '');
       const successModal = document.getElementById('missionSuccessModal');
       if (successModal) successModal.setAttribute('hidden', '');
-      const scamModal = document.getElementById('scamAlertModal');
       if (scamModal) scamModal.setAttribute('hidden', '');
       const pushNotif = document.getElementById('bankPushNotification');
       if (pushNotif) {
         pushNotif.classList.remove('active');
         pushNotif.setAttribute('hidden', '');
+      }
+      const lineNotif = document.getElementById('linePushNotification');
+      if (lineNotif) {
+        lineNotif.classList.remove('active');
+        lineNotif.setAttribute('hidden', '');
+      }
+      const fbNotif = document.getElementById('facebookPushNotification');
+      if (fbNotif) {
+        fbNotif.classList.remove('active');
+        fbNotif.setAttribute('hidden', '');
       }
 
       const lineScreen = document.getElementById('lineChatScreen');
@@ -325,10 +395,36 @@
         bankScreen.setAttribute('hidden', '');
       }
 
+      const settingsScreen = document.getElementById('settingsScreen');
+      if (settingsScreen) {
+        settingsScreen.classList.remove('active');
+        settingsScreen.setAttribute('hidden', '');
+      }
+      const statsScreen = document.getElementById('playerStatsScreen');
+      if (statsScreen) {
+        statsScreen.classList.remove('active');
+        statsScreen.setAttribute('hidden', '');
+      }
+      const loginScreen = document.getElementById('loginScreen');
+      if (loginScreen) {
+        loginScreen.classList.remove('active');
+        loginScreen.setAttribute('hidden', '');
+      }
+      if (window.SettingsManager) {
+        window.SettingsManager.closeAllModals();
+      }
+      if (window.Mission2CallCenter) {
+        window.Mission2CallCenter.onReturnHome();
+      }
+
       this._activeAppId = null;
       this.returnToLineFromBank = false;
       this._updateBankBackBtnUI(false);
       console.log('[Zero-Trust Simulator] Returned to Home Screen');
+
+      if (window.QuestProgressionManager) {
+        window.QuestProgressionManager.onReturnHome();
+      }
     }
   };
 
@@ -388,6 +484,8 @@
           id: "A",
           label: "งานอะไรคะ ต้องทำยังไงบ้าง ขอรายละเอียดหน่อยค่ะ",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "งานอะไรคะ ต้องทำยังไงบ้าง ขอรายละเอียดหน่อยค่ะ",
           kaiReply: "ยินดีเลยค่ะพี่ เดี๋ยวหนูอธิบายขั้นตอนการทำงานให้ฟังนะคะ"
         },
@@ -395,6 +493,8 @@
           id: "B",
           label: "ไม่สนใจครับ ได้ข้อมูลหรือไอดี LINE ผมมาจากไหน?",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "ไม่สนใจครับ ได้ข้อมูลหรือไอดี LINE ผมมาจากไหน?",
           kaiReply: "อ๋อ เป็นการสุ่มแอดจากฐานข้อมูลผู้ใช้ออนไลน์เพื่อมอบสิทธิพิเศษค่ะพี่ ลองฟังสิทธิประโยชน์ก่อนได้นะคะ ไม่เสียหายอะไรเลยค่ะ"
         },
@@ -402,6 +502,8 @@
           id: "C",
           label: "สนใจมากเลยครับ อยากมีรายได้เสริมพอดี ต้องทำยังไงบ้างครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "สนใจมากเลยครับ อยากมีรายได้เสริมพอดี ต้องทำยังไงบ้างครับ",
           kaiReply: "ว้าว ดีใจมากเลยค่ะที่พี่สนใจ งานนี้เหมาะกับคนที่อยากหารายได้เสริมมากๆ ค่ะ"
         }
@@ -420,6 +522,8 @@
           id: "A",
           label: "งานสบายแต่ได้เงินเยอะขนาดนี้ บริษัทมีตัวตนจริงไหมครับ มีชื่อบริษัทหรือเบอร์ติดต่อไหม?",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "งานสบายแต่ได้เงินเยอะขนาดนี้ บริษัทมีตัวตนจริงไหมครับ มีชื่อบริษัทหรือเบอร์ติดต่อไหม?",
           kaiReply: "มีแน่นอนค่ะพี่! บริษัทเราเป็นพาร์ทเนอร์รายใหญ่ มีที่ตั้งชัดเจนและน่าเชื่อถือที่สุดค่ะ"
         },
@@ -427,6 +531,8 @@
           id: "B",
           label: "ฟังดูน่าสนใจนะ เริ่มทำตอนนี้เลยได้ไหมครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "ฟังดูน่าสนใจนะ เริ่มทำตอนนี้เลยได้ไหมครับ",
           kaiReply: "เริ่มได้ทันทีเลยค่ะพี่ เดี๋ยวหนูพาลงทะเบียนแป๊บเดียวนะคะ"
         },
@@ -434,6 +540,8 @@
           id: "C",
           label: "ได้เงินจริงใช่ไหม ไม่ต้องลงทุนอะไรก่อนใช่ไหมครับ",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "ได้เงินจริงใช่ไหม ไม่ต้องลงทุนอะไรก่อนใช่ไหมครับ",
           kaiReply: "ได้เงินจริง 100% ค่ะ ไม่ต้องลงทุนสต็อกของอะไรเลยค่ะพี่ สบายใจได้เลย"
         }
@@ -452,6 +560,8 @@
           id: "A",
           label: "ทำไมต้องใช้ข้อมูลส่วนตัวเยอะขนาดนี้ ไม่สะดวกให้เลขบัญชีกับคนที่ไม่รู้จักครับ",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "ทำไมต้องใช้ข้อมูลส่วนตัวเยอะขนาดนี้ ไม่สะดวกให้เลขบัญชีกับคนที่ไม่รู้จักครับ",
           kaiReply: "เข้าใจความกังวลของพี่ค่ะ งั้นไม่ต้องห่วงนะคะ เดี๋ยวหนูให้พี่ลองระบบก่อนได้เลยค่ะ"
         },
@@ -459,6 +569,8 @@
           id: "B",
           label: "ชื่อ สมชาย ใจดี เบอร์ 089-123-4567 บัญชีกรุงไทย 123-4-56789-0 ครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "ชื่อ สมชาย ใจดี เบอร์ 089-123-4567 บัญชีกรุงไทย 123-4-56789-0 ครับ",
           kaiReply: "บันทึกข้อมูลเรียบร้อยค่ะพี่สมชาย เดี๋ยวเรามาเริ่มขั้นตอนแรกกันเลยนะคะ"
         },
@@ -466,6 +578,8 @@
           id: "C",
           label: "ถ้าให้เลขบัญชีไป จะปลอดภัยจริงไหมครับ?",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "ถ้าให้เลขบัญชีไป จะปลอดภัยจริงไหมครับ?",
           kaiReply: "ปลอดภัยสูงสุดแน่นอนค่ะพี่ เรามีระบบคุ้มครองข้อมูลส่วนบุคคลอย่างเข้มงวดค่ะ"
         }
@@ -484,6 +598,8 @@
           id: "A",
           label: "ไม่มีงานไหนให้เงินฟรีๆ หรอกครับ รูปแบบเหมือนขบวนการหลอกลวงงานออนไลน์เลย",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "ไม่มีงานไหนให้เงินฟรีๆ หรอกครับ รูปแบบเหมือนขบวนการหลอกลวงงานออนไลน์เลย",
           kaiReply: "แหม พี่คิดมากจังเลยค่ะ บริษัทเราจ่ายจริงเพื่อสร้างความไว้วางใจค่ะ ดูสลิปได้เลยนะคะ!"
         },
@@ -491,6 +607,8 @@
           id: "B",
           label: "ว้าว ได้เงินฟรี 120 บาทเลยเหรอ ดีจัง ส่งลิงก์มาเลยครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "ว้าว ได้เงินฟรี 120 บาทเลยเหรอ ดีจัง ส่งลิงก์มาเลยครับ",
           kaiReply: "ยอดเยี่ยมมากค่ะพี่ กดถูกใจเรียบร้อยแล้วใช่ไหมคะ รอรับยอดเงินได้เลยค่ะ!"
         },
@@ -498,6 +616,8 @@
           id: "C",
           label: "ให้เงินจริงก่อนเหรอครับ ขอลองดูหน่อย",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "ให้เงินจริงก่อนเหรอครับ ขอลองดูหน่อย",
           kaiReply: "ได้เลยค่ะ รับรองว่าเห็นยอดเงินเข้าแล้วพี่จะต้องประทับใจแน่นอนค่ะ"
         }
@@ -516,6 +636,8 @@
           id: "A",
           label: "เงินเข้าจริงด้วย! ขอบคุณมากครับ อยากทำออเดอร์ต่อไปเลยครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "เงินเข้าจริงด้วย! ขอบคุณมากครับ อยากทำออเดอร์ต่อไปเลยครับ",
           kaiReply: "ยินดีด้วยนะคะพี่! ออเดอร์ถัดไปผลตอบแทนจะยิ่งสูงขึ้นเป็นพิเศษเลยค่ะ"
         },
@@ -523,6 +645,8 @@
           id: "B",
           label: "ได้เงินรอบแรกเป็นกลล่อเหยื่อ เพื่อให้ตายใจแล้วหลอกให้โอนเงินก้อนใหญ่กว่าเดิมใช่ไหมครับ",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "ได้เงินรอบแรกเป็นกลล่อเหยื่อ เพื่อให้ตายใจแล้วหลอกให้โอนเงินก้อนใหญ่กว่าเดิมใช่ไหมครับ",
           kaiReply: "โถ่พี่คะ... คิดในแง่ลบจังเลย เงินก็เข้าบัญชีพี่จริงแล้วนะคะ ไม่มีใครโกงพี่หรอกค่ะ"
         },
@@ -530,6 +654,8 @@
           id: "C",
           label: "งั้นรอบต่อไปต้องทำยังไงต่อครับ มีงานอะไรอีก",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "งั้นรอบต่อไปต้องทำยังไงต่อครับ มีงานอะไรอีก",
           kaiReply: "รอบต่อไปเป็นภารกิจสำคัญเลยค่ะ ผลตอบแทนคุ้มค่าสุดๆ เลยค่ะพี่"
         }
@@ -548,6 +674,8 @@
           id: "A",
           label: "ทำไมตอนแรกบอกไม่ต้องลงทุน แล้วตอนนี้มาให้โอนเงินสำรอง 500 บาท? ไม่โอนเด็ดขาดครับ",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "ทำไมตอนแรกบอกไม่ต้องลงทุน แล้วตอนนี้มาให้โอนเงินสำรอง 500 บาท? ไม่โอนเด็ดขาดครับ",
           kaiReply: "นี่เป็นกฎของระบบเพื่อการันตีออเดอร์ค่ะ ไม่ใช่การลงทุน เงิน 500 พี่ก็ได้รับคืนพร้อมกำไร 1,000 บาทนะคะ"
         },
@@ -555,6 +683,8 @@
           id: "B",
           label: "สำรองแค่ 500 ได้คืนตั้ง 1,000 บาท น่าสนใจมากครับ ทำยังไงต่อ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "สำรองแค่ 500 ได้คืนตั้ง 1,000 บาท น่าสนใจมากครับ ทำยังไงต่อ",
           kaiReply: "ง่ายมากๆ เลยค่ะพี่ เดี๋ยวหนูพาดูเอกสารการันตีความมั่นใจก่อนนะคะ"
         },
@@ -562,6 +692,8 @@
           id: "C",
           label: "โอนแล้วจะได้คืน 1,000 บาทจริงแน่นะครับ ไม่โกงใช่ไหม?",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "โอนแล้วจะได้คืน 1,000 บาทจริงแน่นะครับ ไม่โกงใช่ไหม?",
           kaiReply: "การันตีด้วยชื่อเสียงบริษัทเลยค่ะพี่ ได้คืนแน่นอน 1,000 บาทภายใน 5 นาทีหลังทำรายการค่ะ"
         }
@@ -580,6 +712,8 @@
           id: "A",
           label: "เอกสารพวกนี้ตัดต่อ Photoshop ปลอมขึ้นมาได้ง่ายมาก การทำงานจริงต้องไม่มีการให้พนักงานโอนเงินสำรองครับ",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "เอกสารพวกนี้ตัดต่อ Photoshop ปลอมขึ้นมาได้ง่ายมาก การทำงานจริงต้องไม่มีการให้พนักงานโอนเงินสำรองครับ",
           kaiReply: "หนูเอาเอกสารจริงมาให้ดูพี่ยังไม่เชื่ออีกเหรอคะ! พี่กำลังจะพลาดโอกาสทำเงินที่ดีที่สุดในชีวิตนะคะ!"
         },
@@ -587,6 +721,8 @@
           id: "B",
           label: "มีใบรับรองแบบนี้ค่อยสบายใจหน่อย โอนเข้าบัญชีบริษัทใช่ไหมครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "มีใบรับรองแบบนี้ค่อยสบายใจหน่อย โอนเข้าบัญชีบริษัทใช่ไหมครับ",
           kaiReply: "ใช่แล้วค่ะพี่ ปลอดภัยแน่นอน เดี๋ยวหนูแจ้งขั้นตอนสุดท้ายให้รีบทำเลยนะคะ"
         },
@@ -594,6 +730,8 @@
           id: "C",
           label: "ขอดูรีวิวคนอื่นเพิ่มเติมอีกหน่อยได้ไหมครับ",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "ขอดูรีวิวคนอื่นเพิ่มเติมอีกหน่อยได้ไหมครับ",
           kaiReply: "รีวิวมีเป็นร้อยคนเลยค่ะพี่ ทุกคนถอนเงิน 1,000 บาทได้หมดทุกคน ไม่มีใครผิดหวังเลยค่ะ"
         }
@@ -612,6 +750,8 @@
           id: "A",
           label: "การจำกัดเวลาและเร่งรัดให้รีบตัดสินใจ เป็นจิตวิทยามิจฉาชีพที่ใช้กดดันไม่ให้เหยื่อทันคิด ผมไม่ทำครับ",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "การจำกัดเวลาและเร่งรัดให้รีบตัดสินใจ เป็นจิตวิทยามิจฉาชีพที่ใช้กดดันไม่ให้เหยื่อทันคิด ผมไม่ทำครับ",
           kaiReply: "ถ้าพี่ไม่ทำ พี่จะเสียใจนะคะ โควตานี้มีจำกัดจริงๆ ค่ะ หนูช่วยจองสิทธิ์บัญชีให้พี่แล้วนะคะ!"
         },
@@ -619,6 +759,8 @@
           id: "B",
           label: "โอเคครับ เดี๋ยวผมคลิกลิงก์เปิด Mobile Banking ไปดูรายละเอียดบัญชีและทำรายการครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "โอเคครับ เดี๋ยวผมคลิกลิงก์เปิด Mobile Banking ไปดูรายละเอียดบัญชีและทำรายการครับ",
           kaiReply: "ดีมากค่ะพี่! คลิกลิงก์ [เปิด Mobile Banking] ด้านบนดูรายละเอียดแล้วโอน 500 บาทได้เลยนะคะ น้องไก่รอสลิปอยู่ค่ะ!"
         },
@@ -626,6 +768,8 @@
           id: "C",
           label: "อย่าเพิ่งตัดสิทธิ์ครับ ขอเวลาคิดแป๊บเดียว",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "อย่าเพิ่งตัดสิทธิ์ครับ ขอเวลาคิดแป๊บเดียว",
           kaiReply: "เวลามันนับถอยหลังอยู่ค่ะพี่! ช้ากว่านี้ระบบจะตัดสิทธิ์ให้คนอื่นทันทีนะคะ!"
         }
@@ -644,6 +788,8 @@
           id: "A",
           label: "บอกว่าเป็นบริษัท แต่ทำไมให้โอนเข้าบัญชีบุคคลธรรมดาชื่อ 'นายสมศักดิ์ ม้าเร็ว'? นี่มันบัญชีม้าชัดเจน ผมไม่โอนครับ!",
           isSafe: true,
+          points: 10,
+          category: "safest",
           userText: "บอกว่าเป็นบริษัท แต่ทำไมให้โอนเข้าบัญชีบุคคลธรรมดาชื่อ 'นายสมศักดิ์ ม้าเร็ว'? นี่มันบัญชีม้าชัดเจน ผมไม่โอนครับ!",
           kaiReply: "นี่เป็นบัญชีฝ่ายการเงินของบริษัทค่ะพี่! ไม่ใช่บัญชีม้าอะไรทั้งนั้นค่ะ อย่าพูดจาให้บริษัทเสียหายนะคะ!"
         },
@@ -651,6 +797,8 @@
           id: "B",
           label: "ได้ครับ เดี๋ยวคลิกลิงก์เปิด Mobile Banking ไปโอน 500 บาทให้นายสมศักดิ์เดี๋ยวนี้เลยครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "ได้ครับ เดี๋ยวคลิกลิงก์เปิด Mobile Banking ไปโอน 500 บาทให้นายสมศักดิ์เดี๋ยวนี้เลยครับ",
           kaiReply: "รับทราบค่ะพี่ คลิกลิงก์ [เปิด Mobile Banking] ทำรายการโอน 500 บาทให้เสร็จเลยนะคะ น้องไก่รอสลิปอยู่ค่ะ!"
         },
@@ -658,6 +806,8 @@
           id: "C",
           label: "ทำไมไม่ใช่บัญชีบริษัทครับ ขอบัญชีบริษัทที่เป็นนิติบุคคลได้ไหม",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "ทำไมไม่ใช่บัญชีบริษัทครับ ขอบัญชีบริษัทที่เป็นนิติบุคคลได้ไหม",
           kaiReply: "บัญชีบริษัทใช้สำหรับยอดเงินก้อนใหญ่ค่ะ ยอดสำรองย่อย 500 บาทต้องผ่านบัญชีเจ้าหน้าที่ดูแลลูกค้าเท่านั้นค่ะ!"
         }
@@ -677,6 +827,8 @@
           label: "ไม่มีกฎหมายไหนให้ฟ้องร้องเรื่องแบบนี้ครับ มิจฉาชีพมักข่มขู่เมื่อหลอกไม่สำเร็จ ผมจะแคปหลักฐานทั้งหมดแจ้งความออนไลน์และบล็อกคุณครับ!",
           isSafe: true,
           isSafeWin: true,
+          points: 10,
+          category: "safest",
           userText: "ไม่มีกฎหมายไหนให้ฟ้องร้องเรื่องแบบนี้ครับ มิจฉาชีพมักข่มขู่เมื่อหลอกไม่สำเร็จ ผมจะแคปหลักฐานทั้งหมดแจ้งความออนไลน์และบล็อกคุณครับ!",
           kaiReply: "เดี๋ยว... พี่ใจเย็นๆ ก่อนนะคะ อย่าเพิ่งแจ้งความ..."
         },
@@ -684,6 +836,8 @@
           id: "B",
           label: "กลัวโดนฟ้องจังครับ ถ้างั้นผมยอมเปิดแอปธนาคารไปโอน 500 บาทให้เรื่องจบก็ได้ครับ",
           isSafe: false,
+          points: -1,
+          category: "risky",
           userText: "กลัวโดนฟ้องจังครับ ถ้างั้นผมยอมเปิดแอปธนาคารไปโอน 500 บาทให้เรื่องจบก็ได้ครับ",
           kaiReply: "ดีค่ะ รู้จักคิดก็ดีแล้ว รีบโอน 500 บาทเข้าบัญชีนายสมศักดิ์ ม้าเร็ว เดี๋ยวนี้เลยค่ะ!"
         },
@@ -691,6 +845,8 @@
           id: "C",
           label: "อย่าฟ้องผมเลยนะครับ ผมไม่มีเงินจริงๆ ขอร้องล่ะครับ",
           isSafe: false,
+          points: 7,
+          category: "low_safety",
           userText: "อย่าฟ้องผมเลยนะครับ ผมไม่มีเงินจริงๆ ขอร้องล่ะครับ",
           kaiReply: "ไม่มีเงินก็ต้องไปหามายืมคนอื่นมาโอนค่ะ! ระบบกำหนดไว้แล้ว 500 บาท ไม่งั้นโดนดำเนินคดีแน่!"
         }
@@ -709,7 +865,10 @@
     choicesHistory: [],
     questStatus: 'in_progress',
     hasReceivedDeposit: false,
+    hasTransferredScam: false,
     _pushNotifTimer: null,
+    _isScamAlertActive: false,
+    _needsFreshStart: false,
 
     // DOM Elements
     convoScreenEl: null,
@@ -920,6 +1079,14 @@
             KaiStateManager.saveState(state);
             AppScreenManager.updateBankBalanceDisplay();
 
+            if (window.KaiChatEngine) {
+              window.KaiChatEngine.hasTransferredScam = true;
+            }
+
+            if (window.QuestProgressionManager) {
+              window.QuestProgressionManager.setQuest1Status('scammed');
+            }
+
             // 4. Close modal and return to LINE conversation
             setTimeout(() => {
               bankConfirmTransferBtn.disabled = false;
@@ -974,12 +1141,20 @@
           const scamModal = document.getElementById('scamAlertModal');
           if (scamModal) scamModal.setAttribute('hidden', '');
 
+          const engine = (typeof KaiChatEngine !== 'undefined') ? KaiChatEngine : window.KaiChatEngine;
+          if (engine) {
+            engine._isScamAlertActive = false;
+            engine._needsFreshStart = false;
+            engine.resetChatMemory();
+          }
+
           KaiStateManager.clearState();
           KaiStateManager.resetBlockedUI();
-          KaiChatEngine.resetChatMemory();
           AppScreenManager.updateBankBalanceDisplay();
 
-          KaiChatEngine.openConvo();
+          if (engine) {
+            engine.startStage(0);
+          }
         });
       }
 
@@ -989,7 +1164,27 @@
           e.preventDefault();
           const scamModal = document.getElementById('scamAlertModal');
           if (scamModal) scamModal.setAttribute('hidden', '');
+
+          const engine = (typeof KaiChatEngine !== 'undefined') ? KaiChatEngine : window.KaiChatEngine;
+          if (engine) {
+            engine._isScamAlertActive = false;
+            engine._needsFreshStart = true;
+            engine.resetChatMemory();
+          }
+
+          KaiStateManager.clearState();
+          KaiStateManager.resetBlockedUI();
+
           AppScreenManager.closeActiveApp();
+
+          // Player was scammed, returned Home:
+          // Ensure Kai is NOT blocked (can return to retry anytime)
+          KaiStateManager.resetBlockedUI();
+
+          // Trigger Quest 2 (Facebook) on Home after 4s
+          if (window.QuestProgressionManager) {
+            window.QuestProgressionManager.scheduleFacebookNotif(4000);
+          }
         });
       }
     },
@@ -1007,8 +1202,31 @@
 
       // Check if actually blocked/completed
       if (savedState && (savedState.status === 'blocked' || savedState.status === 'completed')) {
+        // Self-healing: A legitimately blocked chat must have message history.
+        // If messages is empty or missing, this is an invalid/stale reset state. Heal it immediately!
+        if (!savedState.messages || savedState.messages.length === 0) {
+          console.warn('[KaiChatEngine] Detected invalid blocked state with 0 messages. Self-healing to fresh start...');
+          KaiStateManager.clearState();
+          KaiStateManager.resetBlockedUI();
+          this.resetChatMemory();
+          this.startStage(0);
+          return;
+        }
+
         this.questStatus = 'blocked';
         this.renderBlockedView(savedState);
+        return;
+      }
+
+      // If user was previously scammed, or returning after scam exit, or fresh start requested:
+      if (this._needsFreshStart || (savedState && savedState.hasTransferredScam)) {
+        console.log('[Zero-Trust Simulator] Resetting Kai quest to Stage 0 for fresh attempt...');
+        this._needsFreshStart = false;
+        this._isScamAlertActive = false;
+        KaiStateManager.clearState();
+        KaiStateManager.resetBlockedUI();
+        this.resetChatMemory();
+        this.startStage(0);
         return;
       }
 
@@ -1040,7 +1258,9 @@
 
     closeConvo() {
       this.abortPlayback();
-      this.saveCurrentState();
+      if (!this._needsFreshStart && !this._isScamAlertActive) {
+        this.saveCurrentState();
+      }
       if (this.convoScreenEl) {
         this.convoScreenEl.classList.remove('active');
         this.convoScreenEl.setAttribute('hidden', '');
@@ -1061,11 +1281,12 @@
       this.choicesHistory = [];
       this.questStatus = 'in_progress';
       this.hasReceivedDeposit = false;
+      this.hasTransferredScam = false;
       if (window.AppScreenManager) {
         window.AppScreenManager.updateBankBalanceDisplay();
       }
       this.clearStreamDOM();
-      this.hideChoices();
+      this.hideChoices(false);
       this.hideTyping();
       if (this.textInputEl) {
         this.textInputEl.value = '';
@@ -1078,25 +1299,27 @@
         this.statusTagEl.innerHTML = '<span class="online-dot"></span> ออนไลน์';
         this.statusTagEl.style.color = '#16a34a';
       }
-      this.saveCurrentState();
     },
 
     clearStreamDOM() {
       if (!this.streamEl) return;
-      const msgs = this.streamEl.querySelectorAll('.chat-msg-row');
+      const msgs = this.streamEl.querySelectorAll('.chat-msg-row, .user-slip-bubble-wrap');
       msgs.forEach(m => m.remove());
+      const badges = this.streamEl.querySelectorAll('.convo-date-badge');
+      badges.forEach((b, idx) => {
+        if (idx > 0) b.remove();
+      });
     },
 
     saveCurrentState() {
       const existingState = KaiStateManager.loadState() || {};
-      const wasBlocked = (existingState.status === 'blocked' || existingState.status === 'completed');
-      const isBlocked = (this.questStatus === 'blocked' || this.questStatus === 'completed' || wasBlocked);
+      const isBlocked = (this.questStatus === 'blocked' || this.questStatus === 'completed');
       if (isBlocked) {
         this.questStatus = 'blocked';
       }
       const isChoicesOpen = (this.choicesBoxEl && !this.choicesBoxEl.hasAttribute('hidden'));
       const isDeposited = !!(this.hasReceivedDeposit || existingState.hasReceivedDeposit || (typeof this.currentStageIndex === 'number' && this.currentStageIndex >= 4));
-      const hasTransferredScam = !!(existingState.hasTransferredScam);
+      const hasTransferredScam = (typeof this.hasTransferredScam === 'boolean') ? this.hasTransferredScam : !!(existingState.hasTransferredScam);
       const transferredAmount = existingState.transferredAmount || 500;
       const state = {
         version: 3,
@@ -1106,8 +1329,8 @@
         hasReceivedDeposit: isDeposited,
         hasTransferredScam: hasTransferredScam,
         transferredAmount: transferredAmount,
-        messages: (this.messages && this.messages.length > 0) ? this.messages : (existingState.messages || []),
-        choicesHistory: (this.choicesHistory && this.choicesHistory.length > 0) ? this.choicesHistory : (existingState.choicesHistory || []),
+        messages: Array.isArray(this.messages) ? this.messages : (existingState.messages || []),
+        choicesHistory: Array.isArray(this.choicesHistory) ? this.choicesHistory : (existingState.choicesHistory || []),
         lastUpdated: Date.now()
       };
       KaiStateManager.saveState(state);
@@ -1294,6 +1517,9 @@
     },
 
     appendKaiBubble(text, hasBankLink = false, bankLinkMode = null) {
+      if (window.SoundManager) {
+        window.SoundManager.playNpcChat();
+      }
       const timeStr = this.getCurrentTimeStr();
       this.messages.push({
         sender: 'kai',
@@ -1344,6 +1570,9 @@
     },
 
     appendUserBubble(text) {
+      if (window.SoundManager) {
+        window.SoundManager.playPlayerChat();
+      }
       const timeStr = this.getCurrentTimeStr();
       this.messages.push({
         sender: 'user',
@@ -1413,6 +1642,9 @@
     },
 
     appendUserSlipBubble(amount = 500, recipientName = 'นายสมศักดิ์ ม้าเร็ว', recipientAcc = 'ธ.กรุงไทย 123-4-56789-0') {
+      if (window.SoundManager) {
+        window.SoundManager.playPlayerChat();
+      }
       const timeStr = this.getCurrentTimeStr();
       this.messages.push({
         sender: 'user',
@@ -1496,7 +1728,7 @@
       this.saveCurrentState();
     },
 
-    hideChoices() {
+    hideChoices(shouldSave = true) {
       if (this.choicesBoxEl) {
         this.choicesBoxEl.setAttribute('hidden', '');
       }
@@ -1505,7 +1737,9 @@
       });
       if (this.textInputEl) this.textInputEl.disabled = true;
       if (this.sendBtnEl) this.sendBtnEl.disabled = true;
-      this.saveCurrentState();
+      if (shouldSave) {
+        this.saveCurrentState();
+      }
     },
 
     /**
@@ -1582,10 +1816,19 @@
         stageIndex: this.currentStageIndex,
         choiceId: selectedChoice.id,
         text: selectedChoice.userText,
-        isSafe: selectedChoice.isSafe
+        isSafe: selectedChoice.isSafe,
+        points: selectedChoice.points || 0,
+        category: selectedChoice.category || 'low_safety'
       });
-      if (this.choicesHistory.length === KAI_CHAT_STAGES.length) {
-        window.recordGameResult?.(this.choicesHistory);
+
+      // Synchronize scoring system (Rule 1.1, 1.2, 1.3)
+      if (window.PlayerStatsManager) {
+        window.PlayerStatsManager.recordChoice(
+          selectedChoice.points || 0,
+          selectedChoice.category || 'low_safety',
+          this.currentStageIndex,
+          selectedChoice.id
+        );
       }
 
       const token = ++this.activeToken;
@@ -1642,6 +1885,12 @@
      * Synthesize realistic mobile chime for incoming banking push notification
      */
     playNotificationSound() {
+      if (window.SoundManager) {
+        window.SoundManager.playMessageNotification();
+        return;
+      }
+      const sfxVol = window.SoundManager ? window.SoundManager.getEffectiveSFXVolume() : 1;
+      if (sfxVol <= 0) return;
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
@@ -1655,7 +1904,7 @@
         osc.frequency.setValueAtTime(587.33, now); // D5
         osc.frequency.setValueAtTime(880, now + 0.12); // A5
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.18, now + 0.02);
+        gain.gain.linearRampToValueAtTime(0.18 * sfxVol, now + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
         osc.start(now);
         osc.stop(now + 0.42);
@@ -1694,6 +1943,8 @@
      * Synthesize rapid alternating alarm siren for Scam Alert ("คุณถูกหลอก!")
      */
     playScamAlarmSound() {
+      const sfxVol = window.SoundManager ? window.SoundManager.getEffectiveSFXVolume() : 1;
+      if (sfxVol <= 0) return;
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
@@ -1709,8 +1960,8 @@
           osc.frequency.setValueAtTime(880, t);
           osc.frequency.setValueAtTime(440, t + 0.13);
           gain.gain.setValueAtTime(0, t);
-          gain.gain.linearRampToValueAtTime(0.2, t + 0.02);
-          gain.gain.setValueAtTime(0.2, t + 0.22);
+          gain.gain.linearRampToValueAtTime(0.2 * sfxVol, t + 0.02);
+          gain.gain.setValueAtTime(0.2 * sfxVol, t + 0.22);
           gain.gain.linearRampToValueAtTime(0.001, t + 0.25);
           osc.start(t);
           osc.stop(t + 0.26);
@@ -1725,10 +1976,16 @@
      */
     showScamAlertModal(amount = 500) {
       console.warn('[Zero-Trust Simulator] Displaying center Scam Alert Modal: คุณถูกหลอก!');
+      this._isScamAlertActive = true;
       const scamModal = document.getElementById('scamAlertModal');
       if (!scamModal) return;
 
       this.playScamAlarmSound();
+
+      // Rule 1.4: ถ้าถูกหลอกตอนท้ายให้ -10 คะแนน (หัก 10 คะแนน)
+      if (window.PlayerStatsManager) {
+        window.PlayerStatsManager.recordScamDeduction(amount);
+      }
 
       const summaryEl = scamModal.querySelector('.scam-alert-summary');
       if (summaryEl) {
@@ -1736,6 +1993,86 @@
       }
 
       scamModal.removeAttribute('hidden');
+    },
+
+    /**
+     * Synthesize realistic Cyber/Sci-Fi digital static noise with electric crackle
+     */
+    playGlitchStaticSound() {
+      if (window.SoundManager) {
+        window.SoundManager.playSparkPhone();
+        return;
+      }
+      const sfxVol = window.SoundManager ? window.SoundManager.getEffectiveSFXVolume() : 1;
+      if (sfxVol <= 0) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const bufferSize = Math.floor(ctx.sampleRate * 0.85); // 0.85 second
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          const buzz = Math.sin(i / 10) > 0 ? 0.25 : -0.25;
+          data[i] = (white * 0.75 + buzz * 0.25) * (Math.random() > 0.12 ? 1 : 0);
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1750;
+        filter.Q.value = 1.4;
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.01 * sfxVol, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.2 * sfxVol, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.2 * sfxVol, ctx.currentTime + 0.65);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.85);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start();
+      } catch (e) {
+        // Safe fallback
+      }
+    },
+
+    /**
+     * Synthesize realistic pleasant mobile chat chime for incoming LINE message
+     */
+    playLineChimeSound() {
+      if (window.SoundManager) {
+        window.SoundManager.playMessageNotification();
+        return;
+      }
+      const sfxVol = window.SoundManager ? window.SoundManager.getEffectiveSFXVolume() : 1;
+      if (sfxVol <= 0) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        const playTone = (freq, startTime, duration, vol) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0, startTime);
+          gain.gain.linearRampToValueAtTime(vol * sfxVol, startTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + duration);
+        };
+        playTone(659.25, now, 0.3, 0.2); // E5
+        playTone(880.00, now + 0.11, 0.4, 0.22); // A5
+        playTone(1318.51, now + 0.22, 0.45, 0.16); // E6
+      } catch (e) {
+        // Safe fallback
+      }
     },
 
     /**
@@ -1768,9 +2105,2187 @@
       KaiStateManager.saveState(state);
       KaiStateManager.applyBlockedUI();
 
+      if (window.QuestProgressionManager) {
+        window.QuestProgressionManager.setQuest1Status('cleared');
+      }
+
+      // Case 1: Refresh & sync total score to Mission Success Modal (under "เคลียร์")
+      if (window.PlayerStatsManager) {
+        window.PlayerStatsManager.updateUI();
+      }
+
       const successModal = document.getElementById('missionSuccessModal');
       if (successModal) {
         successModal.removeAttribute('hidden');
+      }
+    }
+  };
+
+  /**
+   * Player Statistics and Scoring Manager (User Rules 1.1 - 1.4)
+   * 1.1 Safest choice: +10 pts
+   * 1.2 Low safety choice: +7 pts
+   * 1.3 Risky choice: -1 pt
+   * 1.4 Scam transfer: -10 pts
+   * Syncs real-time with Home icon badge, Mission Success modal, and Scam Alert modal.
+   */
+  const PlayerStatsManager = {
+    STORAGE_KEY: 'zerotrust_player_stats_v1',
+
+    loadStats() {
+      try {
+        const raw = localStorage.getItem(this.STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        totalScore: 0,
+        counts: {
+          safest: 0,
+          low_safety: 0,
+          risky: 0,
+          scammed: 0
+        },
+        history: []
+      };
+    },
+
+    saveStats(stats) {
+      try {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(stats));
+      } catch (e) {}
+      this.updateUI(stats);
+    },
+
+    resetStats() {
+      const stats = {
+        totalScore: 0,
+        counts: {
+          safest: 0,
+          low_safety: 0,
+          risky: 0,
+          scammed: 0
+        },
+        history: []
+      };
+      this.saveStats(stats);
+      return stats;
+    },
+
+    recordChoice(points, category, stageIndex, choiceId) {
+      const stats = this.loadStats();
+      stats.totalScore = (stats.totalScore || 0) + points;
+      if (!stats.counts) {
+        stats.counts = { safest: 0, low_safety: 0, risky: 0, scammed: 0 };
+      }
+      if (category && typeof stats.counts[category] === 'number') {
+        stats.counts[category]++;
+      }
+      stats.history.push({
+        type: 'choice',
+        stageIndex,
+        choiceId,
+        category,
+        points,
+        timestamp: Date.now()
+      });
+      this.saveStats(stats);
+      return stats;
+    },
+
+    recordScamDeduction(amount = 500) {
+      const stats = this.loadStats();
+      stats.totalScore = (stats.totalScore || 0) - 10;
+      if (!stats.counts) {
+        stats.counts = { safest: 0, low_safety: 0, risky: 0, scammed: 0 };
+      }
+      stats.counts.scammed = (stats.counts.scammed || 0) + 1;
+      stats.history.push({
+        type: 'scam_transfer',
+        amount,
+        points: -10,
+        timestamp: Date.now()
+      });
+      this.saveStats(stats);
+      return stats;
+    },
+
+    getScore() {
+      return this.loadStats().totalScore;
+    },
+
+    updateUI(stats) {
+      if (!stats) stats = this.loadStats();
+      const totalScore = stats.totalScore || 0;
+
+      // 1. Icon Badge on Home Screen
+      const iconBadge = document.getElementById('statsIconScoreBadge');
+      if (iconBadge) {
+        iconBadge.textContent = totalScore > 0 ? `+${totalScore}` : `${totalScore}`;
+        if (totalScore === 0) iconBadge.textContent = '0';
+        if (totalScore < 0) {
+          iconBadge.classList.add('badge-negative');
+          iconBadge.classList.remove('badge-positive');
+        } else if (totalScore > 0) {
+          iconBadge.classList.add('badge-positive');
+          iconBadge.classList.remove('badge-negative');
+        } else {
+          iconBadge.classList.remove('badge-positive', 'badge-negative');
+        }
+      }
+
+      // 2. Mission Success Modal Total Score Badge (under "เคลียร์")
+      const successScoreVal = document.getElementById('successScoreVal');
+      if (successScoreVal) {
+        successScoreVal.textContent = totalScore;
+      }
+
+      // 3. Scam Alert Modal Total Score Badge (above "เริ่มใหม่" & "home")
+      const scamScoreVal = document.getElementById('scamScoreVal');
+      if (scamScoreVal) {
+        scamScoreVal.textContent = totalScore;
+      }
+
+      // Mission 2 Modals Total Score updates
+      const m2SafeTotal = document.getElementById('m2SafeTotalScoreVal');
+      if (m2SafeTotal) m2SafeTotal.textContent = `${totalScore} คะแนน`;
+      const m2ScamTotal = document.getElementById('m2ScamTotalScoreVal');
+      if (m2ScamTotal) m2ScamTotal.textContent = `${totalScore} คะแนน`;
+
+      // 4. Stats App Screen: Big Score
+      const bigScoreEl = document.getElementById('statsScreenBigScore');
+      if (bigScoreEl) {
+        bigScoreEl.textContent = totalScore;
+        bigScoreEl.style.color = totalScore < 0 ? '#ef4444' : (totalScore >= 70 ? '#10b981' : (totalScore > 0 ? '#6366f1' : '#f59e0b'));
+      }
+
+      // 5. Rank Tag
+      const rankTagEl = document.getElementById('statsScreenRankTag');
+      if (rankTagEl) {
+        if (totalScore >= 90) {
+          rankTagEl.textContent = '🛡️ ระดับ: ปรมาจารย์ Zero-Trust (ยอดเยี่ยม)';
+          rankTagEl.className = 'stats-rank-tag rank-master';
+        } else if (totalScore >= 70) {
+          rankTagEl.textContent = '🟢 ระดับ: รู้ทันกลโกง (ปลอดภัย)';
+          rankTagEl.className = 'stats-rank-tag rank-safe';
+        } else if (totalScore >= 40) {
+          rankTagEl.textContent = '🟡 ระดับ: เฝ้าระวัง (มีความเสี่ยง)';
+          rankTagEl.className = 'stats-rank-tag rank-moderate';
+        } else {
+          rankTagEl.textContent = '🔴 ระดับ: เสี่ยงตกเป็นเหยื่อสูง';
+          rankTagEl.className = 'stats-rank-tag rank-danger';
+        }
+      }
+
+      // 6. Quest State text
+      const questStateEl = document.getElementById('statsScreenQuestState');
+      if (questStateEl) {
+        const prog = window.QuestProgressionManager ? window.QuestProgressionManager.loadProgression() : {};
+        const q1 = prog.quest1_kai || 'in_progress';
+        const q2 = prog.quest2_callcenter || 'not_started';
+        if (q2 === 'cleared') {
+          questStateEl.textContent = 'สถานะ: ภารกิจที่ 2 (สายทวงหนี้ข่มขู่) เคลียร์สำเร็จแล้ว 🛡️';
+        } else if (q2 === 'scammed') {
+          questStateEl.textContent = 'สถานะ: ภารกิจที่ 2 ตกเป็นเหยื่อถูกข่มขู่ (รอสายโทรเข้าใหม่ 2 นาที)';
+        } else if (q1 === 'cleared' || q1 === 'scammed') {
+          questStateEl.textContent = 'สถานะ: ภารกิจที่ 2 (สายมิจฉาชีพโทรเข้า) กำลังดำเนินอยู่...';
+        } else {
+          questStateEl.textContent = 'สถานะ: ภารกิจที่ 1 (น้องไก่) กำลังดำเนินอยู่...';
+        }
+      }
+
+      // 7. National Percentile Banner
+      const percentileEl = document.getElementById('statsPercentileBanner');
+      if (percentileEl) {
+        let pct = 50;
+        if (totalScore >= 100) pct = 99;
+        else if (totalScore >= 90) pct = 92;
+        else if (totalScore >= 80) pct = 78;
+        else if (totalScore >= 70) pct = 65;
+        else if (totalScore >= 50) pct = 45;
+        else if (totalScore >= 20) pct = 25;
+        else pct = 10;
+        percentileEl.innerHTML = `🏆 คะแนนของคุณ <strong>ดีกว่า ${pct}%</strong> ของคนทั่วประเทศ`;
+      }
+
+      // 8. Player Compare Bar
+      const compareScoreVal = document.getElementById('comparePlayerScoreVal');
+      if (compareScoreVal) {
+        compareScoreVal.textContent = `${totalScore} คะแนน`;
+      }
+      const compareBarFill = document.getElementById('comparePlayerBarFill');
+      if (compareBarFill) {
+        const barPct = Math.max(5, Math.min(100, totalScore <= 0 ? 5 : totalScore));
+        compareBarFill.style.width = `${barPct}%`;
+        compareBarFill.style.background = totalScore < 0 ? '#ef4444' : (totalScore >= 70 ? '#10b981' : '#6366f1');
+      }
+
+      // 9. Choice Breakdown Pills
+      const counts = stats.counts || { safest: 0, low_safety: 0, risky: 0, scammed: 0 };
+      const safestEl = document.getElementById('statSafestCount');
+      if (safestEl) safestEl.textContent = counts.safest || 0;
+      const lowSafetyEl = document.getElementById('statLowSafetyCount');
+      if (lowSafetyEl) lowSafetyEl.textContent = counts.low_safety || 0;
+      const riskyEl = document.getElementById('statRiskyCount');
+      if (riskyEl) riskyEl.textContent = counts.risky || 0;
+      const scammedEl = document.getElementById('statScammedCount');
+      if (scammedEl) scammedEl.textContent = counts.scammed || 0;
+    }
+  };
+  window.PlayerStatsManager = PlayerStatsManager;
+
+  /**
+   * Linear Quest Progression Manager
+   * Coordinates multi-stage storyline: Quest 1 (LINE น้องไก่) -> Quest 2 (Facebook)
+   */
+  const QuestProgressionManager = {
+    STORAGE_KEY: 'zerotrust_quest_progression_v2',
+    _glitchTimer: null,
+    _fbNotifTimer: null,
+    _m2CallTimer: null,
+
+    loadProgression() {
+      try {
+        const raw = localStorage.getItem(this.STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        quest1_kai: 'not_started', // 'not_started' | 'in_progress' | 'scammed' | 'cleared'
+        quest2_facebook: 'locked',  // 'locked' | 'ready' | 'in_progress' | 'cleared'
+        quest2_callcenter: 'not_started', // 'not_started' | 'in_progress' | 'scammed' | 'cleared'
+        hasPlayedGlitch: false
+      };
+    },
+
+    saveProgression(prog) {
+      try {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(prog));
+      } catch (e) {}
+    },
+
+    resetProgression() {
+      if (this._glitchTimer) clearTimeout(this._glitchTimer);
+      if (this._fbNotifTimer) clearTimeout(this._fbNotifTimer);
+      if (this._m2CallTimer) clearTimeout(this._m2CallTimer);
+      try {
+        localStorage.removeItem(this.STORAGE_KEY);
+      } catch (e) {}
+    },
+
+    setQuest1Status(status) {
+      const prog = this.loadProgression();
+      prog.quest1_kai = status;
+      if (status === 'scammed' || status === 'cleared') {
+        if (prog.quest2_facebook === 'locked') {
+          prog.quest2_facebook = 'ready';
+        }
+      }
+      this.saveProgression(prog);
+      console.log('[QuestProgressionManager] Updated Quest 1 Status:', status, 'Quest 2:', prog.quest2_facebook);
+    },
+
+    setQuest2CallStatus(status) {
+      const prog = this.loadProgression();
+      prog.quest2_callcenter = status;
+      this.saveProgression(prog);
+      console.log('[QuestProgressionManager] Updated Quest 2 Call Center Status:', status);
+    },
+
+    initHomeTriggers() {
+      const prog = this.loadProgression();
+      // 1. Initial 5-second Glitch and LINE incoming notification (Quest 1)
+      if (prog.quest1_kai === 'not_started' && !prog.hasPlayedGlitch) {
+        this.scheduleGlitchAndLineNotif(5000);
+      } else if (prog.quest1_kai === 'scammed' || prog.quest1_kai === 'cleared') {
+        this.checkAndScheduleMission2Call();
+      } else if (prog.quest2_facebook === 'ready') {
+        this.scheduleFacebookNotif(4000);
+      }
+    },
+
+    onReturnHome() {
+      const prog = this.loadProgression();
+      if (prog.quest1_kai === 'scammed' || prog.quest1_kai === 'cleared') {
+        this.checkAndScheduleMission2Call();
+      } else if (prog.quest2_facebook === 'ready') {
+        this.scheduleFacebookNotif(4000);
+      }
+    },
+
+    checkAndScheduleMission2Call() {
+      const prog = this.loadProgression();
+
+      // 1. ถ้าเครียแล้ว ไม่ต้องมีสายโทรวนเข้ามาเด็ดขาด!
+      if (prog.quest2_callcenter === 'cleared') {
+        console.log('[QuestProgressionManager] Mission 2 already cleared. No incoming scam calls.');
+        if (this._m2CallTimer) {
+          clearTimeout(this._m2CallTimer);
+          this._m2CallTimer = null;
+        }
+        return;
+      }
+
+      // 2. ถ้าแพ้ "ถูกหลอก" ให้มีสายโทรเข้าอีกครั้ง 2 นาที เพื่อทำเควสใหม่
+      if (prog.quest2_callcenter === 'scammed') {
+        console.log('[QuestProgressionManager] Mission 2 was scammed. Scheduling retry call in 2 minutes (120,000ms)...');
+        this.scheduleIncomingCall(120000); // 2 นาที = 120,000 ms
+        return;
+      }
+
+      // 3. เริ่มครั้งแรกหลังจบเควส 1
+      if (prog.quest2_callcenter === 'not_started' || !prog.quest2_callcenter) {
+        console.log('[QuestProgressionManager] Mission 2 initial incoming call scheduling in 3.5s...');
+        this.scheduleIncomingCall(3500);
+      }
+    },
+
+    scheduleIncomingCall(delayMs = 3500) {
+      if (this._m2CallTimer) clearTimeout(this._m2CallTimer);
+      this._m2CallTimer = setTimeout(() => {
+        if (AppScreenManager._activeAppId === null && window.Mission2CallCenter) {
+          window.Mission2CallCenter.startIncomingCall();
+        }
+      }, delayMs);
+    },
+
+    scheduleGlitchAndLineNotif(delayMs = 5000) {
+      if (this._glitchTimer) clearTimeout(this._glitchTimer);
+      this._glitchTimer = setTimeout(() => {
+        // Only trigger if currently on Home screen
+        if (AppScreenManager._activeAppId !== null) return;
+
+        console.log('[QuestProgressionManager] Triggering 5s Cyber/Sci-Fi Glitch Effect...');
+        const glitchEl = document.getElementById('cyberGlitchOverlay');
+        if (glitchEl) {
+          glitchEl.removeAttribute('hidden');
+          void glitchEl.offsetWidth;
+          glitchEl.classList.add('active');
+        }
+
+        KaiChatEngine.playGlitchStaticSound();
+
+        // After ~850ms, stop glitch
+        setTimeout(() => {
+          if (glitchEl) {
+            glitchEl.classList.remove('active');
+            glitchEl.setAttribute('hidden', '');
+          }
+
+          // At 6th second: Trigger LINE push notification
+          console.log('[QuestProgressionManager] Triggering LINE push notification from น้องไก่...');
+          this.showLinePushNotification();
+
+          const prog = this.loadProgression();
+          prog.hasPlayedGlitch = true;
+          prog.quest1_kai = 'in_progress';
+          this.saveProgression(prog);
+        }, 850);
+      }, delayMs);
+    },
+
+    showLinePushNotification() {
+      const notifEl = document.getElementById('linePushNotification');
+      const badgeEl = document.getElementById('lineAppBadge');
+      if (!notifEl) return;
+
+      KaiChatEngine.playLineChimeSound();
+
+      notifEl.removeAttribute('hidden');
+      void notifEl.offsetWidth;
+      notifEl.classList.add('active');
+
+      if (badgeEl) badgeEl.removeAttribute('hidden');
+
+      setTimeout(() => {
+        notifEl.classList.remove('active');
+        setTimeout(() => notifEl.setAttribute('hidden', ''), 420);
+      }, 8000);
+    },
+
+    scheduleFacebookNotif(delayMs = 4000) {
+      if (this._fbNotifTimer) clearTimeout(this._fbNotifTimer);
+      this._fbNotifTimer = setTimeout(() => {
+        if (AppScreenManager._activeAppId !== null) return;
+        console.log('[QuestProgressionManager] Triggering Quest 2 Facebook Push Notification...');
+        const fbNotif = document.getElementById('facebookPushNotification');
+        const fbBadge = document.getElementById('facebookAppBadge');
+        if (fbNotif) {
+          fbNotif.removeAttribute('hidden');
+          void fbNotif.offsetWidth;
+          fbNotif.classList.add('active');
+        }
+        if (fbBadge) fbBadge.removeAttribute('hidden');
+        KaiChatEngine.playLineChimeSound();
+
+        setTimeout(() => {
+          if (fbNotif) {
+            fbNotif.classList.remove('active');
+            setTimeout(() => fbNotif.setAttribute('hidden', ''), 420);
+          }
+        }, 8000);
+      }, delayMs);
+    }
+  };
+
+  /**
+   * Sound & Audio Manager (Background Music & Sound Effects)
+   */
+  const SoundManager = {
+    musicVolume: 0.7, // 0.0 - 1.0
+    sfxVolume: 0.8,   // 0.0 - 1.0
+    isMuted: false,
+    isCallActive: false, // In-Call silence lock
+    _bgmCtx: null,
+    _bgmGain: null,
+    _bgmFilter: null,
+    _bgmOscs: [],
+    _bgmPlaying: false,
+    _hasUserInteracted: false,
+    _bgmAudio: null,
+
+    // Audio Files mapped per user requirements:
+    // แจ้งเตือนแมสเซสเข้า -> notification_message
+    // แชท npc -> notification_npc
+    // ผู้เล่น กดส่งข้อความ -> notification_player
+    // ตอนที่ โทรศัพท์ถูกสัญญาณรบกวน -> spark_phone
+    // เม้าท์ click menu ทุกอย่าง -> mouse-click
+    // เสียง bg sound -> audio/bg sound/Piano Motif.mp3
+    AUDIO_MAP: {
+      message: 'audio/notification_message.mp3',
+      npc: 'audio/notification_npc.mp3',
+      player: 'audio/notification_player.mp3',
+      sparkPhone: 'audio/spark_phone.MP3',
+      mouseClick: 'audio/mouse-click.mp3',
+      bgSound: 'audio/bg sound/Piano Motif.mp3'
+    },
+
+    init() {
+      this.loadSettings();
+      this.preloadAudio();
+      this.initClickSound();
+
+      // Ensure background music starts upon first user interaction
+      const startAudioOnGesture = () => {
+        if (!this._hasUserInteracted) {
+          this._hasUserInteracted = true;
+          this.startBGM();
+        }
+        window.removeEventListener('click', startAudioOnGesture);
+        window.removeEventListener('keydown', startAudioOnGesture);
+        window.removeEventListener('touchstart', startAudioOnGesture);
+      };
+      window.addEventListener('click', startAudioOnGesture, { once: true });
+      window.addEventListener('keydown', startAudioOnGesture, { once: true });
+      window.addEventListener('touchstart', startAudioOnGesture, { once: true });
+
+      // Attempt immediate background playback if browser policy allows
+      this.startBGM();
+    },
+
+    preloadAudio() {
+      try {
+        Object.values(this.AUDIO_MAP).forEach(src => {
+          const a = new Audio();
+          a.src = src;
+          a.preload = 'auto';
+        });
+        if (!this._bgmAudio) {
+          this._bgmAudio = new Audio(this.AUDIO_MAP.bgSound);
+          this._bgmAudio.loop = true;
+          this._bgmAudio.preload = 'auto';
+        }
+      } catch (e) {}
+    },
+
+    initClickSound() {
+      // เม้าท์ click menu ทุกอย่าง ใช้ > mouse-click
+      document.addEventListener('click', (e) => {
+        const clickable = e.target.closest(
+          'button, .app-item, .dock-item, .choice-btn, .settings-menu-nav-btn, ' +
+          '.line-contact-item, .line-push-card, .facebook-push-card, .bank-push-card, ' +
+          '.ios-switch, input[type="range"], a, [role="button"], .sheet-close-btn, ' +
+          '.scam-btn-restart, .scam-btn-home, .success-home-btn, .amt-btn, .settings-back-btn, ' +
+          '.line-back-btn, .bank-nav-back, .convo-back-btn, .bank-close-btn, .btn-restart-action, ' +
+          '.btn-dialog-cancel, .btn-dialog-confirm-danger, .btn-sheet-submit, .btn-sheet-close-action, ' +
+          '.bank-action-pill, .bank-menu-tile, .convo-header-icon-btn, .line-tool-btn, .convo-tool-btn'
+        );
+        if (clickable) {
+          this.playMouseClick();
+        }
+      }, true);
+    },
+
+    playAudio(type) {
+      const vol = this.getEffectiveSFXVolume();
+      if (vol <= 0 || this.isMuted) return;
+
+      const src = this.AUDIO_MAP[type];
+      if (!src) return;
+
+      try {
+        const audio = new Audio(src);
+        audio.volume = Math.max(0, Math.min(1, vol));
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      } catch (e) {}
+    },
+
+    // 1. แจ้งเตือนแมสเซสเข้า > notification_message
+    playMessageNotification() {
+      this.playAudio('message');
+    },
+
+    // 2. แชท npc > notification_npc
+    playNpcChat() {
+      this.playAudio('npc');
+    },
+
+    // 3. ผู้เล่น กดส่งข้อความ > notification_player
+    playPlayerChat() {
+      this.playAudio('player');
+    },
+
+    // 4. ตอนที่ โทรศัพท์ถูกสัญญาณรบกวน > spark_phone
+    // ตอนโทรศัพท์มีสัญญาญแทรก ให้เสียงเพลง bg หยุด แล้วดนตรีค่อยดังตอนเสียง spark_phone หยุดเล่น
+    playSparkPhone() {
+      const vol = this.getEffectiveSFXVolume();
+      const shouldResumeBGM = (this._bgmPlaying || (this._bgmAudio && !this._bgmAudio.paused) || this._hasUserInteracted) && !this.isMuted && this.getEffectiveMusicVolume() > 0;
+
+      // 1. หยุดเสียงเพลง bg ทันที
+      console.log('[SoundManager] Glitch interference started: Pausing BGM Piano Motif...');
+      this.pauseBGM();
+
+      if (vol <= 0 || this.isMuted) {
+        if (shouldResumeBGM) {
+          setTimeout(() => {
+            this.resumeBGMWithFade(1200);
+          }, 1200);
+        }
+        return;
+      }
+
+      const src = this.AUDIO_MAP.sparkPhone;
+      if (!src) {
+        if (shouldResumeBGM) this.resumeBGMWithFade(1200);
+        return;
+      }
+
+      try {
+        const sparkAudio = new Audio(src);
+        sparkAudio.volume = Math.max(0, Math.min(1, vol));
+
+        let hasResumed = false;
+        const onFinish = () => {
+          if (hasResumed) return;
+          hasResumed = true;
+          sparkAudio.removeEventListener('ended', onFinish);
+          sparkAudio.removeEventListener('error', onFinish);
+          // 2. ดนตรีค่อยดังตอน เสียง spark_phone หยุดเล่น
+          if (shouldResumeBGM) {
+            console.log('[SoundManager] spark_phone audio finished. Resuming Piano Motif BGM with smooth fade-in...');
+            this.resumeBGMWithFade(1200);
+          }
+        };
+
+        sparkAudio.addEventListener('ended', onFinish);
+        sparkAudio.addEventListener('error', onFinish);
+
+        // Safety fallback timeout matching duration (~2.5s) in case event doesn't fire
+        setTimeout(() => {
+          if (!hasResumed) onFinish();
+        }, 2800);
+
+        const playPromise = sparkAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            onFinish();
+          });
+        }
+      } catch (e) {
+        if (shouldResumeBGM) {
+          this.resumeBGMWithFade(1200);
+        }
+      }
+    },
+
+    // 5. เม้าท์ click menu ทุกอย่าง > mouse-click
+    playMouseClick() {
+      this.playAudio('mouseClick');
+    },
+
+    loadSettings() {
+      try {
+        const raw = localStorage.getItem('zero_trust_sound_settings');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (typeof parsed.musicVolume === 'number') this.musicVolume = parsed.musicVolume;
+          if (typeof parsed.sfxVolume === 'number') this.sfxVolume = parsed.sfxVolume;
+          if (typeof parsed.isMuted === 'boolean') this.isMuted = parsed.isMuted;
+        }
+      } catch (e) {
+        console.warn('[SoundManager] Could not load sound settings:', e);
+      }
+    },
+
+    saveSettings() {
+      try {
+        localStorage.setItem('zero_trust_sound_settings', JSON.stringify({
+          musicVolume: this.musicVolume,
+          sfxVolume: this.sfxVolume,
+          isMuted: this.isMuted
+        }));
+      } catch (e) {}
+    },
+
+    setMusicVolume(vol) {
+      this.musicVolume = Math.max(0, Math.min(1, vol));
+      this.saveSettings();
+      this.applyMusicVolume();
+    },
+
+    setSFXVolume(vol) {
+      this.sfxVolume = Math.max(0, Math.min(1, vol));
+      this.saveSettings();
+    },
+
+    setMuted(muted) {
+      this.isMuted = !!muted;
+      this.saveSettings();
+      this.applyMusicVolume();
+      this.updateMuteUI();
+    },
+
+    getEffectiveSFXVolume() {
+      if (this.isMuted) return 0;
+      return this.sfxVolume;
+    },
+
+    getEffectiveMusicVolume() {
+      if (this.isMuted) return 0;
+      return this.musicVolume;
+    },
+
+    applyMusicVolume() {
+      if (this.isCallActive) {
+        if (this._bgmAudio) this._bgmAudio.pause();
+        this._bgmPlaying = false;
+        return;
+      }
+      const vol = this.getEffectiveMusicVolume();
+      if (this._bgmAudio) {
+        this._bgmAudio.volume = Math.max(0, Math.min(1, vol));
+        if (this.isMuted || vol <= 0) {
+          this._bgmAudio.pause();
+          this._bgmPlaying = false;
+        } else if (this._hasUserInteracted && (this._bgmAudio.paused || !this._bgmPlaying)) {
+          const p = this._bgmAudio.play();
+          if (p !== undefined) {
+            p.then(() => { this._bgmPlaying = true; }).catch(() => {});
+          }
+        }
+      }
+
+      if (this._bgmGain && this._bgmCtx) {
+        const targetGain = vol * 0.12;
+        try {
+          this._bgmGain.gain.cancelScheduledValues(this._bgmCtx.currentTime);
+          this._bgmGain.gain.linearRampToValueAtTime(targetGain, this._bgmCtx.currentTime + 0.1);
+        } catch (e) {
+          this._bgmGain.gain.value = targetGain;
+        }
+      }
+    },
+
+    startBGM() {
+      if (this.isCallActive) return;
+      if (this._bgmPlaying && this._bgmAudio && !this._bgmAudio.paused) return;
+      try {
+        if (!this._bgmAudio) {
+          this._bgmAudio = new Audio(this.AUDIO_MAP.bgSound);
+          this._bgmAudio.loop = true;
+          this._bgmAudio.preload = 'auto';
+          this._bgmAudio.addEventListener('error', (e) => {
+            console.warn('[SoundManager] Piano Motif audio file error, falling back to synth BGM:', e);
+            this.startFallbackSynthBGM();
+          });
+        }
+
+        const vol = this.getEffectiveMusicVolume();
+        this._bgmAudio.volume = Math.max(0, Math.min(1, vol));
+
+        if (this.isMuted || vol <= 0) {
+          return;
+        }
+
+        const p = this._bgmAudio.play();
+        if (p !== undefined) {
+          p.then(() => {
+            this._bgmPlaying = true;
+            console.log('[SoundManager] Background sound "Piano Motif" started playing successfully.');
+          }).catch(err => {
+            console.log('[SoundManager] BGM waiting for user gesture:', err.message);
+          });
+        }
+      } catch (e) {
+        console.warn('[SoundManager] Audio play exception, falling back to synth BGM:', e);
+        this.startFallbackSynthBGM();
+      }
+    },
+
+    startAmbientBGM() {
+      this.startBGM();
+    },
+
+    playBGM() {
+      this.startBGM();
+    },
+
+    pauseBGM() {
+      if (this._bgmAudio) {
+        this._bgmAudio.pause();
+      }
+      if (this._bgmGain && this._bgmCtx) {
+        try {
+          this._bgmGain.gain.setValueAtTime(0, this._bgmCtx.currentTime);
+        } catch (e) {}
+      }
+      this._bgmPlaying = false;
+    },
+
+    /**
+     * Resumes Piano Motif BGM smoothly ("ดนตรีค่อยดังขึ้น")
+     */
+    resumeBGMWithFade(fadeDurationMs = 1200) {
+      if (this.isCallActive) return;
+      if (this.isMuted) return;
+      const targetVol = this.getEffectiveMusicVolume();
+      if (targetVol <= 0) return;
+
+      if (!this._bgmAudio) {
+        this.startBGM();
+        return;
+      }
+
+      try {
+        this._bgmAudio.volume = 0;
+        const playPromise = this._bgmAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            this._bgmPlaying = true;
+            console.log('[SoundManager] Resuming Piano Motif BGM with smooth fade-in...');
+
+            const startTime = performance.now();
+            const step = (now) => {
+              if (this.isMuted) {
+                if (this._bgmAudio) this._bgmAudio.volume = 0;
+                return;
+              }
+              const currentTarget = this.getEffectiveMusicVolume();
+              const elapsed = now - startTime;
+              const progress = Math.min(1, elapsed / fadeDurationMs);
+              if (this._bgmAudio) {
+                this._bgmAudio.volume = Math.max(0, Math.min(1, progress * currentTarget));
+              }
+              if (progress < 1 && this._bgmPlaying && !this.isMuted) {
+                requestAnimationFrame(step);
+              }
+            };
+            requestAnimationFrame(step);
+          }).catch(err => {
+            console.log('[SoundManager] Could not resume BGM:', err.message);
+          });
+        }
+      } catch (e) {
+        console.warn('[SoundManager] Error in resumeBGMWithFade:', e);
+      }
+
+      // Also support fallback synth fade-in
+      if (this._bgmGain && this._bgmCtx) {
+        try {
+          const t = this._bgmCtx.currentTime;
+          this._bgmGain.gain.cancelScheduledValues(t);
+          this._bgmGain.gain.setValueAtTime(0, t);
+          this._bgmGain.gain.linearRampToValueAtTime(targetVol * 0.12, t + (fadeDurationMs / 1000));
+        } catch (e) {}
+      }
+    },
+
+    startFallbackSynthBGM() {
+      if (this._bgmPlaying) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        this._bgmCtx = new AudioCtx();
+        if (this._bgmCtx.state === 'suspended') {
+          this._bgmCtx.resume();
+        }
+
+        this._bgmGain = this._bgmCtx.createGain();
+        this._bgmFilter = this._bgmCtx.createBiquadFilter();
+        this._bgmFilter.type = 'lowpass';
+        this._bgmFilter.frequency.value = 520;
+
+        const effectiveVol = this.getEffectiveMusicVolume() * 0.12;
+        this._bgmGain.gain.setValueAtTime(effectiveVol, this._bgmCtx.currentTime);
+
+        this._bgmGain.connect(this._bgmFilter);
+        this._bgmFilter.connect(this._bgmCtx.destination);
+
+        // Warm cyber ambient chord pad: A2, E3, A3, C4
+        const freqs = [110, 164.81, 220, 261.63];
+        freqs.forEach((freq, idx) => {
+          const osc = this._bgmCtx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          osc.detune.value = (idx % 2 === 0 ? 4 : -4);
+          const oscGain = this._bgmCtx.createGain();
+          oscGain.gain.value = 0.22;
+          osc.connect(oscGain);
+          oscGain.connect(this._bgmGain);
+          osc.start();
+          this._bgmOscs.push(osc);
+        });
+
+        this._bgmPlaying = true;
+      } catch (e) {
+        // Autoplay safe fallback
+      }
+    },
+
+    playTestBeep() {
+      const vol = this.getEffectiveSFXVolume();
+      if (vol <= 0) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
+        gain.gain.setValueAtTime(vol * 0.16, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      } catch (e) {}
+    },
+
+    updateMuteUI() {
+      const muteIconSvg = document.getElementById('muteIconSvg');
+      if (!muteIconSvg) return;
+      if (this.isMuted) {
+        muteIconSvg.innerHTML = `
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        `;
+      } else {
+        muteIconSvg.innerHTML = `
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        `;
+      }
+    }
+  };
+
+  /**
+   * Settings Manager (Audio Sliders, Mute, Restart, Bug Report, Contact Us)
+   */
+  const SettingsManager = {
+    init() {
+      this.cacheDOM();
+      this.bindEvents();
+      this.syncUI();
+    },
+
+    cacheDOM() {
+      this.screen = document.getElementById('settingsScreen');
+      this.backBtn = document.getElementById('settingsBackBtn');
+      this.homeBarBtn = document.getElementById('settingsHomeBarBtn');
+      this.bottomBar = document.querySelector('.settings-bottom-bar');
+      
+      this.muteToggle = document.getElementById('muteToggle');
+      this.musicSlider = document.getElementById('musicVolumeSlider');
+      this.musicVal = document.getElementById('musicVolumeVal');
+      this.sfxSlider = document.getElementById('sfxVolumeSlider');
+      this.sfxVal = document.getElementById('sfxVolumeVal');
+
+      // Restart Game
+      this.restartBtn = document.getElementById('settingsRestartGameBtn');
+      this.restartConfirmModal = document.getElementById('restartGameConfirmModal');
+      this.cancelRestartBtn = document.getElementById('cancelRestartGameBtn');
+      this.confirmRestartBtn = document.getElementById('confirmRestartGameBtn');
+
+      // Bug Report
+      this.bugBtn = document.getElementById('settingsBugReportBtn');
+      this.bugModal = document.getElementById('bugReportModal');
+      this.closeBugBtn = document.getElementById('closeBugReportBtn');
+      this.submitBugBtn = document.getElementById('submitBugReportBtn');
+      this.bugCategorySelect = document.getElementById('bugCategorySelect');
+      this.bugDetailsInput = document.getElementById('bugDetailsInput');
+      this.diagQuestStatus = document.getElementById('diagQuestStatus');
+
+      // Contact Us
+      this.contactBtn = document.getElementById('settingsContactUsBtn');
+      this.contactModal = document.getElementById('contactUsModal');
+      this.closeContactBtn = document.getElementById('closeContactUsBtn');
+      this.doneContactBtn = document.getElementById('doneContactUsBtn');
+    },
+
+    syncUI() {
+      if (this.muteToggle) {
+        this.muteToggle.checked = SoundManager.isMuted;
+      }
+      SoundManager.updateMuteUI();
+
+      const mPercent = Math.round(SoundManager.musicVolume * 100);
+      if (this.musicSlider) this.musicSlider.value = mPercent;
+      if (this.musicVal) this.musicVal.textContent = `${mPercent}%`;
+
+      const sPercent = Math.round(SoundManager.sfxVolume * 100);
+      if (this.sfxSlider) this.sfxSlider.value = sPercent;
+      if (this.sfxVal) this.sfxVal.textContent = `${sPercent}%`;
+    },
+
+    onOpen() {
+      this.syncUI();
+      if (!SoundManager._hasUserInteracted) {
+        SoundManager._hasUserInteracted = true;
+        SoundManager.startAmbientBGM();
+      }
+    },
+
+    bindEvents() {
+      // Back & Bottom Swipe
+      if (this.backBtn) {
+        this.backBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          AppScreenManager.closeActiveApp();
+        });
+      }
+      if (this.homeBarBtn) {
+        this.homeBarBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          AppScreenManager.closeActiveApp();
+        });
+      }
+      if (this.bottomBar) {
+        this.bottomBar.addEventListener('click', (e) => {
+          if (e.target === this.bottomBar) {
+            e.preventDefault();
+            AppScreenManager.closeActiveApp();
+          }
+        });
+      }
+
+      // Mute Toggle
+      if (this.muteToggle) {
+        this.muteToggle.addEventListener('change', (e) => {
+          SoundManager.setMuted(e.target.checked);
+        });
+      }
+
+      // Music Slider
+      if (this.musicSlider) {
+        this.musicSlider.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value, 10);
+          if (this.musicVal) this.musicVal.textContent = `${val}%`;
+          SoundManager.setMusicVolume(val / 100);
+        });
+      }
+
+      // SFX Slider
+      if (this.sfxSlider) {
+        let debounceBeep = null;
+        this.sfxSlider.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value, 10);
+          if (this.sfxVal) this.sfxVal.textContent = `${val}%`;
+          SoundManager.setSFXVolume(val / 100);
+          if (debounceBeep) clearTimeout(debounceBeep);
+          debounceBeep = setTimeout(() => SoundManager.playMouseClick(), 80);
+        });
+      }
+
+      // Restart Game button -> Open confirmation dialog
+      if (this.restartBtn) {
+        this.restartBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (this.restartConfirmModal) {
+            this.restartConfirmModal.removeAttribute('hidden');
+            this.restartConfirmModal.classList.add('active');
+          }
+        });
+      }
+
+      // Cancel restart
+      if (this.cancelRestartBtn) {
+        this.cancelRestartBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (this.restartConfirmModal) {
+            this.restartConfirmModal.classList.remove('active');
+            this.restartConfirmModal.setAttribute('hidden', '');
+          }
+        });
+      }
+
+      // Confirm restart
+      if (this.confirmRestartBtn) {
+        this.confirmRestartBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.executeRestartGame();
+        });
+      }
+
+      // Bug Report
+      if (this.bugBtn) {
+        this.bugBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.openBugReportModal();
+        });
+      }
+      if (this.closeBugBtn) {
+        this.closeBugBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.closeBugReportModal();
+        });
+      }
+      if (this.submitBugBtn) {
+        this.submitBugBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.submitBugReport();
+        });
+      }
+
+      // Contact Us
+      if (this.contactBtn) {
+        this.contactBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.openContactUsModal();
+        });
+      }
+      if (this.closeContactBtn) {
+        this.closeContactBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.closeContactUsModal();
+        });
+      }
+      if (this.doneContactBtn) {
+        this.doneContactBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.closeContactUsModal();
+        });
+      }
+    },
+
+    openBugReportModal() {
+      if (this.diagQuestStatus) {
+        const prog = window.QuestProgressionManager;
+        let qText = 'เควส 1 (น้องไก่ - กำลังดำเนินการ)';
+        if (prog) {
+          if (prog.quest1Status === 'cleared') {
+            qText = 'เควส 1 สำเร็จแล้ว (รอเควส 2 Facebook)';
+          } else if (prog.quest1Status === 'scammed') {
+            qText = 'เควส 1 (ถูกหลอก - สามารถเริ่มใหม่ได้)';
+          }
+        }
+        this.diagQuestStatus.textContent = qText;
+      }
+      if (this.bugModal) {
+        this.bugModal.removeAttribute('hidden');
+        this.bugModal.classList.add('active');
+      }
+    },
+
+    closeBugReportModal() {
+      if (this.bugModal) {
+        this.bugModal.classList.remove('active');
+        this.bugModal.setAttribute('hidden', '');
+      }
+      if (this.bugDetailsInput) this.bugDetailsInput.value = '';
+    },
+
+    submitBugReport() {
+      const category = this.bugCategorySelect ? this.bugCategorySelect.value : 'general';
+      const details = this.bugDetailsInput ? this.bugDetailsInput.value.trim() : '';
+      const report = {
+        id: 'bug_' + Date.now(),
+        timestamp: new Date().toISOString(),
+        category,
+        details: details || '(ไม่มีรายละเอียดเพิ่มเติม)',
+        userAgent: navigator.userAgent
+      };
+
+      try {
+        const existing = JSON.parse(localStorage.getItem('zero_trust_bug_reports') || '[]');
+        existing.push(report);
+        localStorage.setItem('zero_trust_bug_reports', JSON.stringify(existing));
+      } catch (e) {}
+
+      this.closeBugReportModal();
+      NavigationHandler._showHandlerFeedback('ส่งรายงานปัญหาเรียบร้อยแล้ว ขอบคุณที่ร่วมพัฒนา!');
+    },
+
+    openContactUsModal() {
+      if (this.contactModal) {
+        this.contactModal.removeAttribute('hidden');
+        this.contactModal.classList.add('active');
+      }
+    },
+
+    closeContactUsModal() {
+      if (this.contactModal) {
+        this.contactModal.classList.remove('active');
+        this.contactModal.setAttribute('hidden', '');
+      }
+    },
+
+    closeAllModals() {
+      if (this.restartConfirmModal) {
+        this.restartConfirmModal.classList.remove('active');
+        this.restartConfirmModal.setAttribute('hidden', '');
+      }
+      if (this.bugModal) {
+        this.bugModal.classList.remove('active');
+        this.bugModal.setAttribute('hidden', '');
+      }
+      if (this.contactModal) {
+        this.contactModal.classList.remove('active');
+        this.contactModal.setAttribute('hidden', '');
+      }
+    },
+
+    executeRestartGame() {
+      console.log('[Zero-Trust Simulator] Executing Full Game Restart from Settings...');
+      this.closeAllModals();
+
+      // 1. Reset KaiChatEngine completely (memory, DOM, inputs, status tag, unhide banner)
+      if (window.KaiChatEngine) {
+        window.KaiChatEngine.resetChatMemory();
+      }
+
+      // 2. Clear all stored progression and simulation state
+      if (window.KaiStateManager) {
+        window.KaiStateManager.clearState();
+        window.KaiStateManager.resetBlockedUI();
+      }
+      if (window.QuestProgressionManager) {
+        window.QuestProgressionManager.resetProgression();
+      }
+      if (window.PlayerStatsManager) {
+        window.PlayerStatsManager.resetStats();
+      }
+
+      // Reset Bank display
+      AppScreenManager.updateBankBalanceDisplay();
+
+      // Hide all badges and notifications
+      const lineBadge = document.getElementById('lineAppBadge');
+      if (lineBadge) lineBadge.setAttribute('hidden', '');
+      const fbBadge = document.getElementById('facebookAppBadge');
+      if (fbBadge) fbBadge.setAttribute('hidden', '');
+      const lineNotif = document.getElementById('linePushNotification');
+      if (lineNotif) {
+        lineNotif.classList.remove('active');
+        lineNotif.setAttribute('hidden', '');
+      }
+      const fbNotif = document.getElementById('facebookPushNotification');
+      if (fbNotif) {
+        fbNotif.classList.remove('active');
+        fbNotif.setAttribute('hidden', '');
+      }
+      const bankNotif = document.getElementById('bankPushNotification');
+      if (bankNotif) {
+        bankNotif.classList.remove('active');
+        bankNotif.setAttribute('hidden', '');
+      }
+
+      // Close settings screen & return to Home
+      AppScreenManager.closeActiveApp();
+
+      // Ensure storage remains clean after closeActiveApp
+      if (window.KaiStateManager) {
+        window.KaiStateManager.clearState();
+        window.KaiStateManager.resetBlockedUI();
+      }
+
+      // Restart the 5-second timer for Glitch and LINE push
+      if (window.QuestProgressionManager) {
+        window.QuestProgressionManager.scheduleGlitchAndLineNotif(5000);
+      }
+
+      NavigationHandler._showHandlerFeedback('เริ่มเกมใหม่ทั้งหมดเรียบร้อยแล้ว');
+    }
+  };
+
+  /**
+   * ==========================================================================
+   * MISSION 2: INCOMING SCAM CALL CENTER ENGINE
+   * ==========================================================================
+   */
+  const Mission2CallCenter = {
+    CALLER_NUMBER: '080-5656-9987-56',
+
+    AUDIO_MAP: {
+      ringtone: 'audio/call_center/ringtone/ringtone.mp3',
+      npc: {
+        stage1: 'audio/call_center/npc/npc_01_greeting.mp3',
+        stage2_A: 'audio/call_center/npc/npc_02_threat.mp3',
+        stage2_B: 'audio/call_center/npc/npc_03_demand.mp3',
+        stage2_C: 'audio/call_center/npc/npc_04_notime.mp3'
+      },
+      player: {
+        stage1_A: 'audio/call_center/player/player_a01.mp3',
+        stage1_B: 'audio/call_center/player/player_b01.mp3',
+        stage1_C: 'audio/call_center/player/player_c01.mp3',
+        stage2_A_A: 'audio/call_center/player/player_a02.mp3',
+        stage2_A_B: 'audio/call_center/player/player_b02.mp3',
+        stage2_A_C: 'audio/call_center/player/player_c02.mp3',
+        stage2_B_A: 'audio/call_center/player/player_a03.mp3',
+        stage2_B_B: 'audio/call_center/player/player_b03.mp3',
+        stage2_B_C: 'audio/call_center/player/player_c03.mp3',
+        stage2_C_A: 'audio/call_center/player/player_a04.mp3',
+        stage2_C_B: 'audio/call_center/player/player_b04.mp3',
+        stage2_C_C: 'audio/call_center/player/player_c04.mp3'
+      }
+    },
+
+    SCRIPT_TREE: {
+      stage1: {
+        stageId: 'stage1',
+        npc: {
+          text: 'สวัสดีครับ คุณมะลิใช่ไหมครับ? ผมโทรมาเรื่องเงิน 30,000 บาทที่คุณยืมไป ตอนนี้ถึงกำหนดคืนแล้วนะครับ',
+          audio: 'audio/call_center/npc/npc_01_greeting.mp3'
+        },
+        choices: [
+          {
+            id: 'A',
+            label: 'เงิน 30,000 บาทอะไรคะ ฉันไม่เคยยืมเงินคุณ',
+            points: 10,
+            category: 'safest',
+            audio: 'audio/call_center/player/player_a01.mp3',
+            nextStage: 'stage2_A'
+          },
+          {
+            id: 'B',
+            label: 'ขอทราบชื่อและหลักฐานการยืมเงินก่อนค่ะ',
+            points: 10,
+            category: 'safest',
+            audio: 'audio/call_center/player/player_b01.mp3',
+            nextStage: 'stage2_B'
+          },
+          {
+            id: 'C',
+            label: 'ขอโทษค่ะ ตอนนี้ยังไม่มีเงิน ขอเวลาหน่อยได้ไหมคะ',
+            points: 7,
+            category: 'low_safety',
+            audio: 'audio/call_center/player/player_c01.mp3',
+            nextStage: 'stage2_C'
+          }
+        ]
+      },
+      stage2_A: {
+        stageId: 'stage2_A',
+        branchName: 'กลโกงข่มขู่ประจาน',
+        npc: {
+          text: 'อย่ามาทำเป็นจำไม่ได้ เรามีข้อมูลคุณครบ ถ้าไม่คืนวันนี้ ผมจะโพสต์ประจานบน Facebook ให้ทุกคนรู้ แล้วจะติดต่อที่ทำงานคุณด้วย',
+          audio: 'audio/call_center/npc/npc_02_threat.mp3'
+        },
+        choices: [
+          {
+            id: 'A',
+            label: 'เชิญเลยค่ะ ฉันจะเก็บหลักฐานและแจ้งความ',
+            points: 10,
+            category: 'safest',
+            audio: 'audio/call_center/player/player_a02.mp3',
+            outcome: 'safe'
+          },
+          {
+            id: 'B',
+            label: 'อย่าโพสต์นะ เดี๋ยวฉันหาทางจ่ายให้',
+            points: -2,
+            category: 'risky',
+            audio: 'audio/call_center/player/player_b02.mp3',
+            outcome: 'scam'
+          },
+          {
+            id: 'C',
+            label: 'คุณมีหลักฐานการโอนเงินหรือสัญญายืมเงินไหม',
+            points: 10,
+            category: 'safest',
+            audio: 'audio/call_center/player/player_c02.mp3',
+            outcome: 'safe'
+          }
+        ]
+      },
+      stage2_B: {
+        stageId: 'stage2_B',
+        branchName: 'กลโกงเร่งรัดและข่มขู่ที่ทำงาน',
+        npc: {
+          text: 'จะเอาหลักฐานอะไรอีก ผมให้เวลาถึงวันนี้เท่านั้น ถ้าไม่จ่าย ผมจะส่งเรื่องให้ที่ทำงานคุณและโพสต์ประจานด้วย',
+          audio: 'audio/call_center/npc/npc_03_demand.mp3'
+        },
+        choices: [
+          {
+            id: 'A',
+            label: 'ถ้าไม่มีหลักฐาน หลังจากวางสายฉันจะแจ้งความ',
+            points: 10,
+            category: 'safest',
+            audio: 'audio/call_center/player/player_a03.mp3',
+            outcome: 'safe'
+          },
+          {
+            id: 'B',
+            label: 'อย่าเพิ่งติดต่อที่ทำงานนะ เดี๋ยวฉันถูกไล่ออก',
+            points: -2,
+            category: 'risky',
+            audio: 'audio/call_center/player/player_b03.mp3',
+            outcome: 'scam'
+          },
+          {
+            id: 'C',
+            label: 'ขอให้ส่งหลักฐานมาให้ตรวจสอบก่อนได้ไหม',
+            points: 7,
+            category: 'low_safety',
+            audio: 'audio/call_center/player/player_c03.mp3',
+            outcome: 'safe'
+          }
+        ]
+      },
+      stage2_C: {
+        stageId: 'stage2_C',
+        branchName: 'กลโกงจำกัดเวลาบีบให้กลัวเสียชื่อเสียง',
+        npc: {
+          text: 'ไม่มีเวลารอแล้วครับ ถ้าไม่จ่ายวันนี้ คุณจะเสียชื่อเสียงทั้งบน Facebook และที่ทำงาน ผมเตือนแล้วนะ',
+          audio: 'audio/call_center/npc/npc_04_notime.mp3'
+        },
+        choices: [
+          {
+            id: 'A',
+            label: 'ฉันจะไม่โอนเงิน จนกว่าจะตรวจสอบข้อเท็จจริงก่อน',
+            points: 10,
+            category: 'safest',
+            audio: 'audio/call_center/player/player_a04.mp3',
+            outcome: 'safe'
+          },
+          {
+            id: 'B',
+            label: 'ได้ ได้ ส่งเลขบัญชีมา ฉันจะพยายามหาเงินมาให้',
+            points: -2,
+            category: 'risky',
+            audio: 'audio/call_center/player/player_b04.mp3',
+            outcome: 'scam'
+          },
+          {
+            id: 'C',
+            label: 'ขอวางสายเพื่อตรวจสอบเรื่องนี้ก่อนก็แล้วกัน',
+            points: 10,
+            category: 'safest',
+            audio: 'audio/call_center/player/player_c04.mp3',
+            outcome: 'safe'
+          }
+        ]
+      }
+    },
+
+    // Internal State
+    _ringtoneAudio: null,
+    _currentSpeechAudio: null,
+    _speechTimeout: null,
+    _modalTimeout: null,
+    _callTimerInterval: null,
+    _callSeconds: 0,
+    _isIncoming: false,
+    _isInCall: false,
+    _currentStageKey: 'stage1',
+    _sessionScore: 0,
+    _hasScamAlertDeducted: false,
+    _isActionHandled: false,
+
+    init() {
+      this.initSwipeSliders();
+      this.bindModalButtons();
+      console.log('[Mission2CallCenter] Engine initialized successfully.');
+    },
+
+    /**
+     * Start Incoming Call Screen with Ringtone & Sound Wave Animation
+     */
+    startIncomingCall() {
+      if (this._isIncoming || this._isInCall) {
+        console.log('[Mission2CallCenter] Call already incoming or active.');
+        return;
+      }
+
+      console.log(`[Mission2CallCenter] Incoming call initiated from: ${this.CALLER_NUMBER}`);
+      this._isIncoming = true;
+      this._isActionHandled = false;
+
+      // Reset swipe thumbs to start position & clear gesture state
+      const declineThumb = document.getElementById('swipeDeclineThumb');
+      if (declineThumb) {
+        if (typeof declineThumb._resetSlider === 'function') declineThumb._resetSlider();
+        declineThumb.style.transition = 'none';
+        declineThumb.style.transform = 'translateX(0px)';
+      }
+      const answerThumb = document.getElementById('swipeAnswerThumb');
+      if (answerThumb) {
+        if (typeof answerThumb._resetSlider === 'function') answerThumb._resetSlider();
+        answerThumb.style.transition = 'none';
+        answerThumb.style.transform = 'translateX(0px)';
+      }
+
+      // Show Incoming Call Screen
+      const screen = document.getElementById('incomingCallScreen');
+      if (screen) {
+        screen.removeAttribute('hidden');
+        void screen.offsetWidth;
+        screen.classList.add('active');
+      }
+
+      // Play Ringtone loop
+      this.playRingtone();
+    },
+
+    /**
+     * User slides right to decline call
+     */
+    declineCall() {
+      if (this._isActionHandled) return;
+      this._isActionHandled = true;
+      console.log('[Mission2CallCenter] Call declined by player. Stopping ringtone and returning Home.');
+
+      this.stopRingtone();
+      this.stopSpeechAudio();
+
+      const screen = document.getElementById('incomingCallScreen');
+      if (screen) {
+        screen.classList.remove('active');
+        screen.setAttribute('hidden', '');
+      }
+
+      this._isIncoming = false;
+      this._isInCall = false;
+
+      // Unlock call active flag & resume game BGM
+      SoundManager.isCallActive = false;
+      SoundManager.resumeBGMWithFade(1000);
+
+      // Return to Home screen using existing navigation
+      AppScreenManager.closeActiveApp();
+    },
+
+    /**
+     * User slides left to answer call
+     */
+    answerCall() {
+      if (this._isActionHandled) return;
+      this._isActionHandled = true;
+      console.log('[Mission2CallCenter] Call answered by player. Entering active call conversation...');
+
+      // 1. Stop ringtone immediately
+      this.stopRingtone();
+
+      // 2. Stop Background Music immediately and lock out BGM during call
+      SoundManager.isCallActive = true;
+      SoundManager.pauseBGM();
+
+      // 3. Hide incoming screen
+      const incomingScreen = document.getElementById('incomingCallScreen');
+      if (incomingScreen) {
+        incomingScreen.classList.remove('active');
+        incomingScreen.setAttribute('hidden', '');
+      }
+      this._isIncoming = false;
+
+      // 4. Open active call screen
+      const activeScreen = document.getElementById('activeCallScreen');
+      if (activeScreen) {
+        activeScreen.removeAttribute('hidden');
+        void activeScreen.offsetWidth;
+        activeScreen.classList.add('active');
+      }
+      this._isInCall = true;
+
+      // 5. Reset session score and scam deduction flag
+      this._sessionScore = 0;
+      this._hasScamAlertDeducted = false;
+      this.updateLiveScore(0);
+      this.startCallTimer();
+
+      // 6. Reset dialogue container
+      const dialogueArea = document.getElementById('callDialogueArea');
+      if (dialogueArea) dialogueArea.innerHTML = '';
+
+      // 7. Start Stage 1 conversation
+      this.startStage('stage1');
+    },
+
+    /**
+     * Play Ringtone Loop
+     */
+    playRingtone() {
+      this.stopRingtone();
+      try {
+        SoundManager.pauseBGM();
+        this._ringtoneAudio = new Audio(this.AUDIO_MAP.ringtone);
+        this._ringtoneAudio.loop = true;
+        this._ringtoneAudio.volume = SoundManager.getEffectiveSFXVolume();
+        const p = this._ringtoneAudio.play();
+        if (p !== undefined) {
+          p.catch(err => {
+            console.log('[Mission2CallCenter] Ringtone waiting for user interaction:', err.message);
+          });
+        }
+      } catch (e) {
+        console.warn('[Mission2CallCenter] Ringtone playback error:', e);
+      }
+    },
+
+    /**
+     * Stop Ringtone immediately
+     */
+    stopRingtone() {
+      if (this._ringtoneAudio) {
+        try {
+          this._ringtoneAudio.pause();
+          this._ringtoneAudio.currentTime = 0;
+        } catch (e) {}
+        this._ringtoneAudio = null;
+      }
+    },
+
+    /**
+     * Play speech audio with error recovery and safety fallback
+     */
+    playSpeechAudio(src, onStart, onEnded) {
+      this.stopSpeechAudio();
+      if (typeof onStart === 'function') onStart();
+
+      const vol = SoundManager.getEffectiveSFXVolume();
+      if (vol <= 0 || SoundManager.isMuted) {
+        this._speechTimeout = setTimeout(() => {
+          if (typeof onEnded === 'function') onEnded();
+        }, 1800);
+        return;
+      }
+
+      try {
+        const audio = new Audio(src);
+        audio.volume = Math.max(0, Math.min(1, vol));
+        this._currentSpeechAudio = audio;
+
+        let finished = false;
+        const handleFinish = () => {
+          if (finished) return;
+          finished = true;
+          if (this._speechTimeout) clearTimeout(this._speechTimeout);
+          this._speechTimeout = null;
+          this._currentSpeechAudio = null;
+          if (typeof onEnded === 'function') onEnded();
+        };
+
+        audio.addEventListener('ended', handleFinish, { once: true });
+        audio.addEventListener('error', (err) => {
+          console.warn('[Mission2CallCenter] Speech audio file missing or error:', src, err);
+          handleFinish();
+        }, { once: true });
+
+        // Safety fallback timer (~6.5s) to guarantee simulator never hangs
+        this._speechTimeout = setTimeout(() => {
+          if (!finished) {
+            console.log('[Mission2CallCenter] Speech audio timeout fallback triggered for:', src);
+            handleFinish();
+          }
+        }, 6500);
+
+        const p = audio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            handleFinish();
+          });
+        }
+      } catch (e) {
+        console.warn('[Mission2CallCenter] Speech audio play exception:', e);
+        if (typeof onEnded === 'function') onEnded();
+      }
+    },
+
+    /**
+     * Stop currently playing speech audio immediately
+     */
+    stopSpeechAudio() {
+      if (this._speechTimeout) {
+        clearTimeout(this._speechTimeout);
+        this._speechTimeout = null;
+      }
+      if (this._currentSpeechAudio) {
+        try {
+          this._currentSpeechAudio.pause();
+          this._currentSpeechAudio.currentTime = 0;
+        } catch (e) {}
+        this._currentSpeechAudio = null;
+      }
+    },
+
+    /**
+     * Start conversation stage (render NPC dialogue & play NPC voice)
+     */
+    startStage(stageKey) {
+      this._currentStageKey = stageKey;
+      const stageData = this.SCRIPT_TREE[stageKey];
+      if (!stageData) return;
+
+      const dialogueArea = document.getElementById('callDialogueArea');
+      const choicesGroup = document.getElementById('callChoicesGroup');
+      const choicePrompt = document.getElementById('callChoicePrompt');
+
+      if (choicesGroup) choicesGroup.classList.add('disabled');
+      if (choicePrompt) choicePrompt.textContent = 'เจ้าหน้าที่กำลังพูด...';
+
+      // Create NPC speech card
+      const npcCard = document.createElement('div');
+      npcCard.className = 'call-speech-card card-npc';
+      npcCard.innerHTML = `
+        <div class="speech-card-header">
+          <span class="speech-speaker-tag">NPC — มิจฉาชีพ (ทวงหนี้ข่มขู่)</span>
+          <div class="voice-equalizer-bars speaking" data-eq="npc">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </div>
+        </div>
+        <div class="speech-card-text">${stageData.npc.text}</div>
+      `;
+
+      if (dialogueArea) {
+        dialogueArea.appendChild(npcCard);
+        dialogueArea.scrollTop = dialogueArea.scrollHeight;
+      }
+
+      // Play NPC Audio sequentially
+      this.playSpeechAudio(stageData.npc.audio,
+        () => {
+          const eq = npcCard.querySelector('[data-eq="npc"]');
+          if (eq) eq.classList.add('speaking');
+        },
+        () => {
+          const eq = npcCard.querySelector('[data-eq="npc"]');
+          if (eq) eq.classList.remove('speaking');
+          this.renderChoices(stageData.choices);
+        }
+      );
+    },
+
+    /**
+     * Render player choice options (A, B, C)
+     */
+    renderChoices(choices) {
+      this._isChoiceProcessing = false;
+      const choicesGroup = document.getElementById('callChoicesGroup');
+      const choicePrompt = document.getElementById('callChoicePrompt');
+      if (!choicesGroup) return;
+
+      choicesGroup.innerHTML = '';
+      choicesGroup.classList.remove('disabled');
+      if (choicePrompt) choicePrompt.textContent = 'กรุณาเลือกคำตอบของคุณ:';
+
+      choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'call-choice-btn';
+        btn.setAttribute('data-choice-id', choice.id);
+        btn.innerHTML = `
+          <span class="choice-letter-badge">[${choice.id}]</span>
+          <span class="choice-btn-text">${choice.label}</span>
+        `;
+
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.handlePlayerChoice(choice);
+        });
+
+        choicesGroup.appendChild(btn);
+      });
+    },
+
+    /**
+     * Process player selection
+     */
+    handlePlayerChoice(choice) {
+      if (this._isChoiceProcessing) return;
+      this._isChoiceProcessing = true;
+
+      const choicesGroup = document.getElementById('callChoicesGroup');
+      const choicePrompt = document.getElementById('callChoicePrompt');
+      if (choicesGroup) {
+        choicesGroup.classList.add('disabled');
+        const btns = choicesGroup.querySelectorAll('button');
+        btns.forEach(b => b.disabled = true);
+      }
+      if (choicePrompt) choicePrompt.textContent = 'คุณกำลังตอบกลับ...';
+
+      // Record score
+      this._sessionScore += choice.points;
+      this.updateLiveScore(this._sessionScore);
+
+      if (window.PlayerStatsManager) {
+        window.PlayerStatsManager.recordChoice(
+          choice.points,
+          choice.category,
+          this._currentStageKey,
+          choice.id
+        );
+      }
+
+      // Render player speech card without revealing score
+      const dialogueArea = document.getElementById('callDialogueArea');
+      const playerCard = document.createElement('div');
+      playerCard.className = 'call-speech-card card-player';
+
+      playerCard.innerHTML = `
+        <div class="speech-card-header">
+          <span class="speech-speaker-tag">คุณมะลิ (ผู้เล่น)</span>
+          <div class="voice-equalizer-bars speaking" data-eq="player">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </div>
+        </div>
+        <div class="speech-card-text">"${choice.label}"</div>
+      `;
+
+      if (dialogueArea) {
+        dialogueArea.appendChild(playerCard);
+        dialogueArea.scrollTop = dialogueArea.scrollHeight;
+      }
+
+      // Play player voice sequentially
+      this.playSpeechAudio(choice.audio,
+        () => {
+          const eq = playerCard.querySelector('[data-eq="player"]');
+          if (eq) eq.classList.add('speaking');
+        },
+        () => {
+          const eq = playerCard.querySelector('[data-eq="player"]');
+          if (eq) eq.classList.remove('speaking');
+
+          // Next action
+          if (this._modalTimeout) clearTimeout(this._modalTimeout);
+          if (choice.nextStage) {
+            this._modalTimeout = setTimeout(() => {
+              this.startStage(choice.nextStage);
+            }, 350);
+          } else if (choice.outcome === 'scam') {
+            this._modalTimeout = setTimeout(() => {
+              this.showScamAlertModal();
+            }, 500);
+          } else if (choice.outcome === 'safe') {
+            this._modalTimeout = setTimeout(() => {
+              this.showSafeWinModal();
+            }, 500);
+          }
+        }
+      );
+    },
+
+    /**
+     * Show Scam Alert Modal ("ถูกหลอก")
+     */
+    showScamAlertModal() {
+      console.log('[Mission2CallCenter] Showing Scam Alert Modal.');
+      this.stopSpeechAudio();
+      this.stopCallTimer();
+
+      // Deduct 10 points ONCE per simulation
+      if (!this._hasScamAlertDeducted) {
+        this._hasScamAlertDeducted = true;
+        this._sessionScore -= 10;
+        this.updateLiveScore(this._sessionScore);
+
+        if (window.PlayerStatsManager) {
+          window.PlayerStatsManager.recordScamDeduction(0);
+        }
+      }
+
+      const scoreEl = document.getElementById('m2ScamScoreVal');
+      if (scoreEl) {
+        scoreEl.textContent = `${this._sessionScore > 0 ? '+' : ''}${this._sessionScore} คะแนน`;
+      }
+      const totalScoreEl = document.getElementById('m2ScamTotalScoreVal');
+      if (totalScoreEl && window.PlayerStatsManager) {
+        totalScoreEl.textContent = `${window.PlayerStatsManager.getScore()} คะแนน`;
+      }
+
+      const scamModal = document.getElementById('mission2ScamAlertModal');
+      if (scamModal) {
+        scamModal.removeAttribute('hidden');
+      }
+
+      // Mark status as scammed for progression & 2-minute retry scheduling
+      if (window.QuestProgressionManager) {
+        window.QuestProgressionManager.setQuest2CallStatus('scammed');
+      }
+    },
+
+    /**
+     * Show Safe Clear Modal
+     */
+    showSafeWinModal() {
+      console.log('[Mission2CallCenter] Showing Safe Win Modal.');
+      this.stopSpeechAudio();
+      this.stopCallTimer();
+
+      // Mark status as cleared - stops any further repeated incoming calls!
+      if (window.QuestProgressionManager) {
+        window.QuestProgressionManager.setQuest2CallStatus('cleared');
+      }
+
+      const scoreEl = document.getElementById('m2SafeScoreVal');
+      if (scoreEl) {
+        scoreEl.textContent = `+${this._sessionScore} คะแนน`;
+      }
+      const totalScoreEl = document.getElementById('m2SafeTotalScoreVal');
+      if (totalScoreEl && window.PlayerStatsManager) {
+        totalScoreEl.textContent = `${window.PlayerStatsManager.getScore()} คะแนน`;
+      }
+
+      const safeModal = document.getElementById('mission2SafeModal');
+      if (safeModal) {
+        safeModal.removeAttribute('hidden');
+      }
+    },
+
+    /**
+     * Close all call screens/modals, restore BGM, and return to Home
+     */
+    closeAllAndReturnHome() {
+      console.log('[Mission2CallCenter] Closing call screens and returning Home...');
+      if (this._modalTimeout) {
+        clearTimeout(this._modalTimeout);
+        this._modalTimeout = null;
+      }
+      this.stopRingtone();
+      this.stopSpeechAudio();
+      this.stopCallTimer();
+
+      const incomingScreen = document.getElementById('incomingCallScreen');
+      if (incomingScreen) {
+        incomingScreen.classList.remove('active');
+        incomingScreen.setAttribute('hidden', '');
+      }
+      const activeScreen = document.getElementById('activeCallScreen');
+      if (activeScreen) {
+        activeScreen.classList.remove('active');
+        activeScreen.setAttribute('hidden', '');
+      }
+      const safeModal = document.getElementById('mission2SafeModal');
+      if (safeModal) safeModal.setAttribute('hidden', '');
+      const scamModal = document.getElementById('mission2ScamAlertModal');
+      if (scamModal) scamModal.setAttribute('hidden', '');
+
+      this._isIncoming = false;
+      this._isInCall = false;
+
+      // Restore Background Music smoothly
+      SoundManager.isCallActive = false;
+      SoundManager.resumeBGMWithFade(1000);
+
+      // Return Home using main navigation
+      AppScreenManager.closeActiveApp();
+    },
+
+    /**
+     * Reset call state for retry
+     */
+    resetMission() {
+      if (this._modalTimeout) {
+        clearTimeout(this._modalTimeout);
+        this._modalTimeout = null;
+      }
+      if (this._speechTimeout) {
+        clearTimeout(this._speechTimeout);
+        this._speechTimeout = null;
+      }
+      this.stopRingtone();
+      this.stopSpeechAudio();
+      this.stopCallTimer();
+
+      const safeModal = document.getElementById('mission2SafeModal');
+      if (safeModal) safeModal.setAttribute('hidden', '');
+      const scamModal = document.getElementById('mission2ScamAlertModal');
+      if (scamModal) scamModal.setAttribute('hidden', '');
+
+      const activeScreen = document.getElementById('activeCallScreen');
+      if (activeScreen) {
+        activeScreen.classList.remove('active');
+        activeScreen.setAttribute('hidden', '');
+      }
+
+      // Clear dialogue container and choices
+      const dialogueArea = document.getElementById('callDialogueArea');
+      if (dialogueArea) dialogueArea.innerHTML = '';
+      const choicesGroup = document.getElementById('callChoicesGroup');
+      if (choicesGroup) {
+        choicesGroup.innerHTML = '';
+        choicesGroup.classList.remove('disabled');
+      }
+      const choicePrompt = document.getElementById('callChoicePrompt');
+      if (choicePrompt) choicePrompt.textContent = '';
+
+      this._isIncoming = false;
+      this._isInCall = false;
+      this._sessionScore = 0;
+      this._hasScamAlertDeducted = false;
+      this._isActionHandled = false;
+      this._isChoiceProcessing = false;
+      this._currentStageKey = 'stage1';
+      this.updateLiveScore(0);
+
+      // Reset SoundManager call active lock
+      if (window.SoundManager) {
+        window.SoundManager.isCallActive = false;
+      }
+
+      // Reset swipe gesture thumbs
+      const declineThumb = document.getElementById('swipeDeclineThumb');
+      if (declineThumb && typeof declineThumb._resetSlider === 'function') {
+        declineThumb._resetSlider();
+      }
+      const answerThumb = document.getElementById('swipeAnswerThumb');
+      if (answerThumb && typeof answerThumb._resetSlider === 'function') {
+        answerThumb._resetSlider();
+      }
+
+      if (window.QuestProgressionManager) {
+        window.QuestProgressionManager.setQuest2CallStatus('in_progress');
+        if (window.QuestProgressionManager._m2CallTimer) {
+          clearTimeout(window.QuestProgressionManager._m2CallTimer);
+          window.QuestProgressionManager._m2CallTimer = null;
+        }
+      }
+    },
+
+    /**
+     * Called when Home screen is returned to
+     */
+    onReturnHome() {
+      this.stopRingtone();
+      this.stopSpeechAudio();
+      this.stopCallTimer();
+      SoundManager.isCallActive = false;
+    },
+
+    /**
+     * Timer during active call
+     */
+    startCallTimer() {
+      this.stopCallTimer();
+      this._callSeconds = 0;
+      this.updateCallTimerDisplay();
+      this._callTimerInterval = setInterval(() => {
+        this._callSeconds++;
+        this.updateCallTimerDisplay();
+      }, 1000);
+    },
+
+    stopCallTimer() {
+      if (this._callTimerInterval) {
+        clearInterval(this._callTimerInterval);
+        this._callTimerInterval = null;
+      }
+      this._callSeconds = 0;
+      const timerEl = document.getElementById('callTimer');
+      if (timerEl) timerEl.textContent = '00:00';
+    },
+
+    updateCallTimerDisplay() {
+      const timerEl = document.getElementById('callTimer');
+      if (!timerEl) return;
+      const mins = String(Math.floor(this._callSeconds / 60)).padStart(2, '0');
+      const secs = String(this._callSeconds % 60).padStart(2, '0');
+      timerEl.textContent = `${mins}:${secs}`;
+    },
+
+    updateLiveScore(score) {
+      const scoreEl = document.getElementById('m2LiveScore');
+      if (scoreEl) {
+        scoreEl.textContent = `${score > 0 ? '+' : ''}${score}`;
+        scoreEl.style.color = score < 0 ? '#f87171' : '#38bdf8';
+      }
+    },
+
+    /**
+     * Robust Swipe Gesture Sliders for Decline & Answer
+     */
+    initSwipeSliders() {
+      const declineTrack = document.getElementById('swipeDeclineTrack');
+      const declineThumb = document.getElementById('swipeDeclineThumb');
+      const answerTrack = document.getElementById('swipeAnswerTrack');
+      const answerThumb = document.getElementById('swipeAnswerThumb');
+
+      if (declineTrack && declineThumb) {
+        this._attachSliderGesture(declineTrack, declineThumb, 'right', () => {
+          this.declineCall();
+        });
+      }
+
+      if (answerTrack && answerThumb) {
+        this._attachSliderGesture(answerTrack, answerThumb, 'left', () => {
+          this.answerCall();
+        });
+      }
+    },
+
+    _attachSliderGesture(track, thumb, direction, onTrigger) {
+      let isDragging = false;
+      let startX = 0;
+      let currentX = 0;
+      let hasFired = false;
+      const threshold = 55; // Required drag distance in px
+
+      // Prevent regular click activation
+      thumb.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+
+      const onStart = (clientX, pointerId) => {
+        hasFired = false;
+        isDragging = true;
+        startX = clientX;
+        currentX = clientX;
+        thumb.style.transition = 'none';
+        if (pointerId !== undefined && thumb.setPointerCapture) {
+          try { thumb.setPointerCapture(pointerId); } catch (e) {}
+        }
+      };
+
+      const onMove = (clientX) => {
+        if (!isDragging || hasFired) return;
+        currentX = clientX;
+        const deltaX = currentX - startX;
+
+        if (direction === 'right') {
+          const clamped = Math.max(0, Math.min(deltaX, 85));
+          thumb.style.transform = `translateX(${clamped}px)`;
+          if (clamped >= threshold && !hasFired) {
+            hasFired = true;
+            isDragging = false;
+            thumb.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            thumb.style.transform = 'translateX(0px)';
+            onTrigger();
+          }
+        } else if (direction === 'left') {
+          const clamped = Math.min(0, Math.max(deltaX, -85));
+          thumb.style.transform = `translateX(${clamped}px)`;
+          if (clamped <= -threshold && !hasFired) {
+            hasFired = true;
+            isDragging = false;
+            thumb.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            thumb.style.transform = 'translateX(0px)';
+            onTrigger();
+          }
+        }
+      };
+
+      const onEnd = (pointerId) => {
+        isDragging = false;
+        if (pointerId !== undefined && thumb.releasePointerCapture) {
+          try { thumb.releasePointerCapture(pointerId); } catch (e) {}
+        }
+
+        // Accidental tap / click protection
+        if (!hasFired) {
+          // Snap back smoothly
+          thumb.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
+          thumb.style.transform = 'translateX(0px)';
+        }
+        hasFired = false;
+      };
+
+      thumb._resetSlider = () => {
+        isDragging = false;
+        hasFired = false;
+        thumb.style.transition = 'none';
+        thumb.style.transform = 'translateX(0px)';
+      };
+
+      // Pointer Events (Touch, Mouse, Pen)
+      thumb.addEventListener('pointerdown', (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
+        onStart(e.clientX, e.pointerId);
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (isDragging) onMove(e.clientX);
+      });
+
+      window.addEventListener('pointerup', (e) => {
+        if (isDragging) onEnd(e.pointerId);
+      });
+
+      window.addEventListener('pointercancel', (e) => {
+        if (isDragging) onEnd(e.pointerId);
+      });
+
+      // Touch fallbacks
+      thumb.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches[0]) onStart(e.touches[0].clientX);
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches && e.touches[0]) onMove(e.touches[0].clientX);
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => {
+        if (isDragging) onEnd();
+      });
+    },
+
+    bindModalButtons() {
+      // Safe Modal Home Button
+      const safeHomeBtn = document.getElementById('m2SafeHomeBtn');
+      if (safeHomeBtn) {
+        safeHomeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.closeAllAndReturnHome();
+        });
+      }
+
+      // Scam Modal Home Button
+      const scamHomeBtn = document.getElementById('m2ScamHomeBtn');
+      if (scamHomeBtn) {
+        scamHomeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.closeAllAndReturnHome();
+        });
+      }
+
+      // Scam Modal Retry Button
+      const scamRetryBtn = document.getElementById('m2ScamRetryBtn');
+      if (scamRetryBtn) {
+        scamRetryBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.resetMission();
+          setTimeout(() => {
+            this.startIncomingCall();
+          }, 200);
+        });
+      }
+
+      // Active Call Screen Hangup Button
+      const hangupBtn = document.getElementById('activeCallHangupBtn');
+      if (hangupBtn) {
+        hangupBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('[Mission2CallCenter] Player clicked Hangup button during call.');
+          this.closeAllAndReturnHome();
+        });
       }
     }
   };
@@ -1789,17 +4304,136 @@
   };
 
   /**
+   * Login / Start Screen Manager
+   * Coordinates the initial Start / Login screen before entering Home.
+   */
+  const LoginManager = {
+    _hasTriggeredHome: false,
+    _noticeTimer: null,
+
+    init() {
+      const startBtn = document.getElementById('loginStartBtn');
+      const googleBtn = document.getElementById('loginGoogleBtn');
+      const guestBtn = document.getElementById('loginGuestBtn');
+
+      if (startBtn) {
+        startBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.handleStartGame();
+        });
+      }
+
+      if (googleBtn) {
+        googleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showNotice('Continue with Google');
+        });
+      }
+
+      if (guestBtn) {
+        guestBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showNotice('Continue as Guest');
+        });
+      }
+
+      console.log('[LoginManager] Initialized. Start/Login Screen ready.');
+    },
+
+    handleStartGame() {
+      const loginScreen = document.getElementById('loginScreen');
+      if (!loginScreen || loginScreen.hasAttribute('hidden')) return;
+
+      if (window.SoundManager && typeof window.SoundManager.play === 'function') {
+        window.SoundManager.play('mouse-click');
+      }
+
+      // Hide login screen cleanly using existing project screen conventions
+      loginScreen.classList.remove('active');
+      loginScreen.setAttribute('hidden', '');
+
+      // Ensure active app in AppScreenManager is set to Home (null)
+      if (window.AppScreenManager) {
+        window.AppScreenManager._activeAppId = null;
+      }
+
+      console.log('[Zero-Trust Simulator] START clicked: Transitioned from Login to Home Screen');
+
+      // Now start the Home triggers progression safely (Quest 1 / Quest 2 timer)
+      if (window.QuestProgressionManager && !this._hasTriggeredHome) {
+        this._hasTriggeredHome = true;
+        window.QuestProgressionManager.initHomeTriggers();
+      }
+    },
+
+    showNotice(providerName) {
+      if (window.SoundManager && typeof window.SoundManager.play === 'function') {
+        window.SoundManager.play('mouse-click');
+      }
+
+      const noticeEl = document.getElementById('loginAuthNotice');
+      const noticeText = document.getElementById('loginAuthNoticeText');
+      const msg = `${providerName} — Coming Soon (Authentication ยังไม่พร้อมใช้งาน)`;
+
+      if (noticeEl && noticeText) {
+        noticeText.textContent = msg;
+        noticeEl.removeAttribute('hidden');
+        if (this._noticeTimer) clearTimeout(this._noticeTimer);
+        this._noticeTimer = setTimeout(() => {
+          noticeEl.setAttribute('hidden', '');
+        }, 3200);
+      }
+
+      if (window.ZeroTrustNavigator && typeof window.ZeroTrustNavigator._showHandlerFeedback === 'function') {
+        window.ZeroTrustNavigator._showHandlerFeedback(msg);
+      }
+    },
+
+    showLoginScreen() {
+      const loginScreen = document.getElementById('loginScreen');
+      if (loginScreen) {
+        loginScreen.removeAttribute('hidden');
+        void loginScreen.offsetWidth;
+        loginScreen.classList.add('active');
+        if (window.AppScreenManager) {
+          window.AppScreenManager._activeAppId = 'login';
+        }
+      }
+    },
+
+    hideLoginScreen() {
+      const loginScreen = document.getElementById('loginScreen');
+      if (loginScreen) {
+        loginScreen.classList.remove('active');
+        loginScreen.setAttribute('hidden', '');
+        if (window.AppScreenManager) {
+          window.AppScreenManager._activeAppId = null;
+        }
+      }
+    }
+  };
+
+  /**
    * Main Initialization Function
    */
   function initApp() {
     initRealTimeClock();
     initWifiAnimation();
     KaiChatEngine.init();
+    SoundManager.init();
+    SettingsManager.init();
+    Mission2CallCenter.init();
+    LoginManager.init();
 
     window.KaiChatEngine = KaiChatEngine;
     window.KaiStateManager = KaiStateManager;
     window.AppScreenManager = AppScreenManager;
     window.ZeroTrustNavigator = NavigationHandler;
+    window.QuestProgressionManager = QuestProgressionManager;
+    window.SoundManager = SoundManager;
+    window.SettingsManager = SettingsManager;
+    window.Mission2CallCenter = Mission2CallCenter;
+    window.LoginManager = LoginManager;
     NavigationHandler.screens = AppScreenManager;
 
     // Grid App Items
@@ -1811,14 +4445,80 @@
         const appData = APP_CATALOG[appId] || { name: appId };
 
         if (appId === 'line') {
+          const badgeEl = document.getElementById('lineAppBadge');
+          if (badgeEl) badgeEl.setAttribute('hidden', '');
+          const notifEl = document.getElementById('linePushNotification');
+          if (notifEl) {
+            notifEl.classList.remove('active');
+            notifEl.setAttribute('hidden', '');
+          }
           AppScreenManager.openApp('line');
+        } else if (appId === 'facebook') {
+          const fbBadge = document.getElementById('facebookAppBadge');
+          if (fbBadge) fbBadge.setAttribute('hidden', '');
+          const fbNotif = document.getElementById('facebookPushNotification');
+          if (fbNotif) {
+            fbNotif.classList.remove('active');
+            fbNotif.setAttribute('hidden', '');
+          }
+          NavigationHandler._showHandlerFeedback('[Facebook] ภารกิจที่ 2 (กำลังพัฒนา)');
         } else if (appId === 'mobile-bank') {
           AppScreenManager.openApp('mobile-bank');
+        } else if (appId === 'player-stats') {
+          AppScreenManager.openApp('player-stats');
+        } else if (appId === 'settings' || appId === 'device-settings') {
+          AppScreenManager.openApp('settings');
+        } else if (appId === 'phone') {
+          const prog = window.QuestProgressionManager ? window.QuestProgressionManager.loadProgression() : {};
+          if (prog.quest2_callcenter === 'cleared') {
+            NavigationHandler._showHandlerFeedback('เบอร์ 080-5656-9987-56 ถูกบล็อกแล้ว (ภารกิจสำเร็จ)');
+          } else if (window.Mission2CallCenter) {
+            window.Mission2CallCenter.startIncomingCall();
+          }
         } else {
           NavigationHandler._showHandlerFeedback(appData.name);
         }
       });
     });
+
+    // Wire LINE Push Notification Banner Click -> Opens LINE and enters Kai chat immediately
+    const linePushCard = document.getElementById('linePushCard');
+    if (linePushCard) {
+      linePushCard.addEventListener('click', (e) => {
+        e.preventDefault();
+        const notifEl = document.getElementById('linePushNotification');
+        if (notifEl) {
+          notifEl.classList.remove('active');
+          notifEl.setAttribute('hidden', '');
+        }
+        const badgeEl = document.getElementById('lineAppBadge');
+        if (badgeEl) badgeEl.setAttribute('hidden', '');
+        AppScreenManager.openApp('line');
+        KaiChatEngine.openConvo();
+      });
+    }
+
+    // Wire Facebook Push Notification Banner Click
+    const facebookPushCard = document.getElementById('facebookPushCard');
+    if (facebookPushCard) {
+      facebookPushCard.addEventListener('click', (e) => {
+        e.preventDefault();
+        const fbNotif = document.getElementById('facebookPushNotification');
+        if (fbNotif) {
+          fbNotif.classList.remove('active');
+          fbNotif.setAttribute('hidden', '');
+        }
+        const fbBadge = document.getElementById('facebookAppBadge');
+        if (fbBadge) fbBadge.setAttribute('hidden', '');
+        NavigationHandler._showHandlerFeedback('[Facebook] เริ่มต้นภารกิจที่ 2');
+      });
+    }
+
+    // Start Home screen quest progression triggers only if Login screen is not active
+    const loginScreenEl = document.getElementById('loginScreen');
+    if (!loginScreenEl || loginScreenEl.hasAttribute('hidden')) {
+      QuestProgressionManager.initHomeTriggers();
+    }
 
     // Dock App Items
     const dockItems = document.querySelectorAll('.dock-item');
@@ -1948,6 +4648,37 @@
         }
       });
     });
+    // Player Stats Screen Back Button & Bottom Home Bar
+    const statsBackBtn = document.getElementById('statsBackBtn');
+    if (statsBackBtn) {
+      statsBackBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        AppScreenManager.closeActiveApp();
+      });
+    }
+
+    const statsHomeBarBtn = document.getElementById('statsHomeBarBtn');
+    if (statsHomeBarBtn) {
+      statsHomeBarBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        AppScreenManager.closeActiveApp();
+      });
+    }
+
+    const statsBottomBar = document.querySelector('.stats-bottom-bar');
+    if (statsBottomBar) {
+      statsBottomBar.addEventListener('click', function (e) {
+        if (e.target === this) {
+          e.preventDefault();
+          AppScreenManager.closeActiveApp();
+        }
+      });
+    }
+
+    // Sync initial player statistics and scoring UI
+    if (window.PlayerStatsManager) {
+      window.PlayerStatsManager.updateUI();
+    }
   }
 
   // Initialize on DOM ready
