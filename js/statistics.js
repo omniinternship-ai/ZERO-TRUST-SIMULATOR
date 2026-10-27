@@ -3,13 +3,42 @@
   const $ = id => document.getElementById(id);
   const config = window.SUPABASE_CONFIG;
   const message = text => { $('message').textContent = text; };
+  function showSignup(show) {
+    $('login').hidden = show; $('signup').hidden = !show;
+    message('');
+    $(show ? 'signupEmail' : 'email').focus();
+  }
+  $('showSignup').addEventListener('click', () => showSignup(true));
+  $('showLogin').addEventListener('click', () => showSignup(false));
   if (!config?.url || !config.publishableKey || !window.supabase) {
     message('ยังไม่ได้เชื่อมต่อ: ตั้งค่า js/supabase-config.js และรัน supabase/schema.sql ก่อน');
     $('loginForm').querySelector('button').disabled = true;
+    $('signupForm').querySelector('button').disabled = true;
     return;
   }
   const client = window.supabase.createClient(config.url, config.publishableKey, { auth: { storageKey: 'zt-admin-auth' } });
   let rows = [];
+  $('signupForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const email = $('signupEmail').value.trim();
+    const password = $('signupPassword').value;
+    if (password !== $('confirmPassword').value) { message('รหัสผ่านทั้งสองช่องไม่ตรงกัน'); return; }
+    if (password.length < 8) { message('กรุณาตั้งรหัสผ่านอย่างน้อย 8 ตัวอักษร'); return; }
+    const button = event.submitter; button.disabled = true;
+    try {
+      const { data, error } = await client.auth.signUp({ email, password });
+      if (error) throw error;
+      $('signupPassword').value = ''; $('confirmPassword').value = '';
+      // Keep registration separate from the administrator session.
+      if (data.session) {
+        const logout = await client.auth.signOut();
+        if (logout.error) throw logout.error;
+      }
+      showSignup(false); $('email').value = email;
+      message('ส่งคำขอสมัครแล้ว หากได้รับอีเมลยืนยัน กรุณากดยืนยันก่อนเข้าสู่ระบบ บัญชีต้องได้รับสิทธิ์ผู้ดูแลก่อนดูสถิติรวม');
+    } catch (error) { message(error.message); }
+    finally { button.disabled = false; }
+  });
   function cell(row, value) { const td = document.createElement('td'); td.textContent = value; row.append(td); }
   function render() {
     $('total').textContent = rows.length;

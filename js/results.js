@@ -28,7 +28,7 @@
   back.addEventListener('click', closeStatistics);
   icon.addEventListener('click', event => {
     event.stopImmediatePropagation();
-    if (!frame.getAttribute('src')) frame.src = 'statistics.html?embed=1';
+    if (!frame.getAttribute('src')) frame.src = 'statistics.html?embed=1&v=signup1';
     screen.hidden = false; screen.style.display = 'flex'; back.focus();
   });
   let client;
