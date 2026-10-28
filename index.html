@@ -1,0 +1,2688 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Zero-Trust Simulator — Home Screen Prototype</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/blocktown-app.css?v=094a2666aefc">
+</head>
+<body>
+  <!-- 16:9 Presentation Stage with Atmospheric CSS Glow (No Raster Images) -->
+  <div class="simulator-stage">
+    <div class="ambient-glow glow-top-left" aria-hidden="true"></div>
+    <div class="ambient-glow glow-bottom-right" aria-hidden="true"></div>
+    <div class="ambient-glow glow-center" aria-hidden="true"></div>
+    <div class="vignette-overlay" aria-hidden="true"></div>
+
+    <!-- Phone Hardware Chassis Mockup -->
+    <div class="phone-mockup" id="phoneMockup" role="region" aria-label="จำลองหน้าจอสมาร์ตโฟน">
+      <!-- Hardware Buttons (CSS Built) -->
+      <div class="phone-btn phone-btn-volume-up" aria-hidden="true"></div>
+      <div class="phone-btn phone-btn-volume-down" aria-hidden="true"></div>
+      <div class="phone-btn phone-btn-power" aria-hidden="true"></div>
+      <div class="speaker-grille" aria-hidden="true"></div>
+
+      <!-- Phone Screen with Blue Gradient Wallpaper -->
+      <div class="phone-screen">
+        <!-- System Toast Feedback for Navigation Handler -->
+        <div id="systemToast" class="system-toast" role="status" aria-live="polite"></div>
+
+        <!-- Cyber/Sci-Fi Glitch Overlay (Triggered before incoming cyber threat) -->
+        <div class="cyber-glitch-overlay" id="cyberGlitchOverlay" aria-hidden="true" hidden>
+          <div class="glitch-scanlines"></div>
+          <div class="glitch-color-shift glitch-shift-r"></div>
+          <div class="glitch-color-shift glitch-shift-b"></div>
+          <div class="glitch-noise-bar bar-1"></div>
+          <div class="glitch-noise-bar bar-2"></div>
+          <div class="glitch-noise-bar bar-3"></div>
+          <div class="glitch-flash-layer"></div>
+        </div>
+
+        <!-- Simulated LINE Incoming Push Notification Banner (Quest 1 - น้องไก่) -->
+        <div class="line-push-notification" id="linePushNotification" role="alert" aria-live="assertive" hidden>
+          <div class="line-push-card" id="linePushCard">
+            <div class="line-push-avatar-box">
+              <svg viewBox="0 0 100 100" class="line-push-avatar-svg" aria-hidden="true">
+                <circle cx="50" cy="50" r="50" fill="#06C755"/>
+                <path d="M82.8 48.3c0-14.7-14.7-26.6-32.8-26.6S17.2 33.6 17.2 48.3c0 13.2 11.6 24.2 27.3 26.1 1.1.2 2.5.7 2.9 1.6.3.8.2 2.1.1 2.9-.2 1.4-.9 5.5-1.1 6.7-.4 1.9.8 1.9 1.7 1.4 7.6-4.5 20.6-12.1 28.1-20.7 4.6-5.1 6.6-11.4 6.6-17.4z" fill="#FFFFFF"/>
+                <path d="M31.2 42.4h3.8v10.9h6.8v3.4H31.2V42.4z" fill="#06C755"/>
+                <path d="M44.4 42.4h3.8v14.3h-3.8V42.4z" fill="#06C755"/>
+                <path d="M51.1 42.4h3.7l6.3 8.6v-8.6h3.8v14.3h-3.7l-6.3-8.6v8.6h-3.8V42.4z" fill="#06C755"/>
+                <path d="M67.5 42.4h10.3v3.4h-6.5v2.2h5.7v3.2h-5.7v2.2h6.5v3.3H67.5V42.4z" fill="#06C755"/>
+              </svg>
+              <span class="line-push-avatar-badge">ไก่</span>
+            </div>
+            <div class="line-push-content">
+              <div class="line-push-header">
+                <div class="line-push-brand">
+                  <span class="line-push-app-name">LINE</span>
+                  <span class="line-push-dot">•</span>
+                  <span class="line-push-sender">น้องไก่</span>
+                </div>
+                <span class="line-push-time">ตอนนี้</span>
+              </div>
+              <div class="line-push-title">น้องไก่ ส่งข้อความถึงคุณ</div>
+              <div class="line-push-preview">สวัสดีค่ะ พอดีเห็นโปรไฟล์พี่น่าสนใจ บริษัทเรากำลังเปิดรับสมัครทีมงาน...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated Facebook Incoming Push Notification Banner (Mission 03) -->
+        <div class="facebook-push-notification" id="facebookPushNotification" role="alert" aria-live="assertive" hidden>
+          <div class="facebook-push-card" id="facebookPushCard">
+            <div class="facebook-push-avatar-box">
+              <svg viewBox="0 0 100 100" class="facebook-push-logo" aria-hidden="true">
+                <circle cx="50" cy="50" r="50" fill="#1877F2"/>
+                <path d="M62.5 52.8l1.4-9.3h-8.9v-6c0-2.6 1.3-5.1 5.3-5.1h4.1V24.5s-3.7-.6-7.3-.6c-7.4 0-12.3 4.5-12.3 12.7v6.9h-8.2v9.3h8.2V78a49.9 49.9 0 0 0 10.7.8c3.7 0 7.3-.3 10.7-.8V52.8h-3z" fill="#FFFFFF"/>
+              </svg>
+            </div>
+            <div class="facebook-push-content">
+              <div class="facebook-push-header">
+                <span class="facebook-push-app-name">Facebook</span>
+                <span class="facebook-push-time">ตอนนี้</span>
+              </div>
+              <div class="facebook-push-title">ภารกิจที่ 3: งานออนไลน์รายได้ดี</div>
+              <div class="facebook-push-preview">BrightWork Connect กำลังเปิดรับสมัครงานออนไลน์ (คลิกเพื่อดูรายละเอียด)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated Banking Push Notification Banner (Slides down from top) -->
+        <div class="bank-push-notification" id="bankPushNotification" role="alert" aria-live="assertive" hidden>
+          <div class="push-notif-card" id="bankPushCard">
+            <div class="push-notif-icon-box">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
+            </div>
+            <div class="push-notif-content">
+              <div class="push-notif-header">
+                <span class="push-notif-app-name">Mobile Banking</span>
+                <span class="push-notif-time">ตอนนี้</span>
+              </div>
+              <div class="push-notif-title">เงินเข้า +120.00 บาท</div>
+              <div class="push-notif-desc">บจก. พีแอนด์เค โอนเงินเข้า บัญชี xxx-x-xxxxx-x สำเร็จ</div>
+              <div class="push-notif-balance">ยอดเงินคงเหลือ: <strong>2,000,120.00 บาท</strong> (คลิกเพื่อดูบัญชี)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Status Bar: 10:00, Wi-Fi, Cellular, Battery -->
+        <header class="phone-status-bar" aria-label="แถบสถานะ">
+          <div class="status-left">
+            <span class="status-time" id="statusTime">--:--</span>
+          </div>
+          <div class="status-right">
+            <!-- Wi-Fi Icon with Animated Signal Drop -->
+            <svg class="status-icon wifi-icon" id="wifiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-label="สัญญาณ Wi-Fi">
+              <path class="wifi-arc wifi-arc-outer" d="M1.42 9a16 16 0 0 1 21.16 0"/>
+              <path class="wifi-arc wifi-arc-mid" d="M5 12.55a11 11 0 0 1 14.08 0"/>
+              <path class="wifi-arc wifi-arc-inner" d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+              <circle class="wifi-dot" cx="12" cy="19.5" r="1.2" fill="currentColor"/>
+            </svg>
+            <!-- Cellular Signal Icon -->
+            <svg class="status-icon" viewBox="0 0 24 24" fill="currentColor" aria-label="สัญญาณโทรศัพท์">
+              <rect x="2" y="16" width="3.5" height="5" rx="1"/>
+              <rect x="7.5" y="12" width="3.5" height="9" rx="1"/>
+              <rect x="13" y="8" width="3.5" height="13" rx="1"/>
+              <rect x="18.5" y="4" width="3.5" height="17" rx="1"/>
+            </svg>
+            <!-- Battery Icon -->
+            <svg class="status-icon status-battery" viewBox="0 0 28 14" fill="currentColor" aria-label="ระดับแบตเตอรี่">
+              <rect x="1" y="1" width="22" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="3" y="3" width="15" height="8" rx="2" fill="currentColor"/>
+              <path d="M24.5 4.5C25.3 4.5 26 5.2 26 6V8C26 8.8 25.3 9.5 24.5 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </header>
+
+        <!-- Main Screen Body -->
+        <main class="phone-body">
+          <!-- App Grid (3 Columns x 3 Rows) -->
+          <nav class="app-grid" aria-label="ตารางแอปพลิเคชัน">
+            <!-- Row 1 - App 1: LINE -->
+            <button class="app-item" data-app-id="line" data-app-name="LINE" type="button" aria-label="เปิดแอป LINE">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <circle cx="50" cy="50" r="50" fill="#06C755"/>
+                  <path d="M82.8 48.3c0-14.7-14.7-26.6-32.8-26.6S17.2 33.6 17.2 48.3c0 13.2 11.6 24.2 27.3 26.1 1.1.2 2.5.7 2.9 1.6.3.8.2 2.1.1 2.9-.2 1.4-.9 5.5-1.1 6.7-.4 1.9.8 1.9 1.7 1.4 7.6-4.5 20.6-12.1 28.1-20.7 4.6-5.1 6.6-11.4 6.6-17.4z" fill="#FFFFFF"/>
+                  <path d="M31.2 42.4h3.8v10.9h6.8v3.4H31.2V42.4z" fill="#06C755"/>
+                  <path d="M44.4 42.4h3.8v14.3h-3.8V42.4z" fill="#06C755"/>
+                  <path d="M51.1 42.4h3.7l6.3 8.6v-8.6h3.8v14.3h-3.7l-6.3-8.6v8.6h-3.8V42.4z" fill="#06C755"/>
+                  <path d="M67.5 42.4h10.3v3.4h-6.5v2.2h5.7v3.2h-5.7v2.2h6.5v3.3H67.5V42.4z" fill="#06C755"/>
+                </svg>
+                <span class="app-unread-badge" id="lineAppBadge" hidden>1</span>
+              </div>
+              <span class="app-label">LINE</span>
+            </button>
+
+            <!-- Row 1 - App 2: Facebook -->
+            <button class="app-item" data-app-id="facebook" data-app-name="Facebook" type="button" aria-label="เปิดแอป Facebook">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <circle cx="50" cy="50" r="50" fill="#1877F2"/>
+                  <path d="M62.5 52.8l1.4-9.3h-8.9v-6c0-2.6 1.3-5.1 5.3-5.1h4.1V24.5s-3.7-.6-7.3-.6c-7.4 0-12.3 4.5-12.3 12.7v6.9h-8.2v9.3h8.2V78a49.9 49.9 0 0 0 10.7.8c3.7 0 7.3-.3 10.7-.8V52.8h-3z" fill="#FFFFFF"/>
+                </svg>
+                <span class="app-unread-badge" id="facebookAppBadge" hidden>1</span>
+              </div>
+              <span class="app-label">Facebook</span>
+            </button>
+
+            <!-- Row 1 - App 3: Email -->
+            <button class="app-item" data-app-id="email" data-app-name="Email" type="button" aria-label="เปิดแอป Email">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <circle cx="50" cy="50" r="50" fill="#FFFFFF"/>
+                  <g transform="translate(20, 26)">
+                    <rect x="0" y="4" width="60" height="40" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.6"/>
+                    <path d="M2 7l28 20L58 7" fill="none" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 41l20-16M58 41L38 25" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round"/>
+                    <path d="M3 6.5C3 4.5 4.5 3 6.5 3h47C55.5 3 57 4.5 57 6.5L30 25.5 3 6.5z" fill="#FFFFFF"/>
+                  </g>
+                </svg>
+              </div>
+              <span class="app-label">Email</span>
+            </button>
+
+            <!-- Row 2 - App 1: ข้อความ -->
+            <button class="app-item" data-app-id="messages" data-app-name="ข้อความ" type="button" aria-label="เปิดแอป ข้อความ">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="msgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#38B6FF"/>
+                      <stop offset="100%" stop-color="#0077E6"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="50" fill="url(#msgGrad)"/>
+                  <path d="M50 25c-15.5 0-28 10.7-28 24 0 7.6 4.1 14.4 10.6 18.7-.3 2.8-1.5 6.6-3.8 9.5 3.8-.4 8.7-2.1 12.2-5 2.9.6 6 .9 9 .9 15.5 0 28-10.7 28-24S65.5 25 50 25z" fill="#FFFFFF"/>
+                  <circle cx="39" cy="48" r="3.6" fill="#0077E6"/>
+                  <circle cx="50" cy="48" r="3.6" fill="#0077E6"/>
+                  <circle cx="61" cy="48" r="3.6" fill="#0077E6"/>
+                </svg>
+              </div>
+              <span class="app-label">ข้อความ</span>
+            </button>
+
+            <!-- Row 2 - App 2: App กู้เงิน -->
+            <button class="app-item" data-app-id="loan-app" data-app-name="App กู้เงิน" type="button" aria-label="เปิดแอป กู้เงิน">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <circle cx="50" cy="50" r="50" fill="#FFFFFF"/>
+                  <!-- Stacked Cash Banknotes -->
+                  <g transform="translate(38, 40) rotate(-6)">
+                    <rect x="0" y="0" width="38" height="22" rx="3.5" fill="#66BB6A" stroke="#388E3C" stroke-width="1.4"/>
+                    <circle cx="19" cy="11" r="5.5" fill="#81C784"/>
+                    <text x="19" y="14.5" font-size="9.5" font-weight="bold" fill="#1B5E20" text-anchor="middle" font-family="sans-serif">฿</text>
+                  </g>
+                  <!-- Calculator -->
+                  <g transform="translate(24, 28)">
+                    <rect x="0" y="0" width="28" height="38" rx="4" fill="#546E7A" stroke="#37474F" stroke-width="1.2"/>
+                    <rect x="3.5" y="4" width="21" height="9" rx="2" fill="#C8E6C9"/>
+                    <rect x="14" y="6.5" width="8" height="4" rx="1" fill="#2E7D32"/>
+                    <circle cx="7" cy="18" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="14" cy="18" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="21" cy="18" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="7" cy="24" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="14" cy="24" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="21" cy="24" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="7" cy="30" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="14" cy="30" r="2.2" fill="#ECEFF1"/>
+                    <circle cx="21" cy="30" r="2.2" fill="#FFB74D"/>
+                  </g>
+                </svg>
+              </div>
+              <span class="app-label">App กู้เงิน</span>
+            </button>
+
+            <!-- Row 2 - App 3: แกลเลอรี่ -->
+            <button class="app-item" data-app-id="gallery" data-app-name="แกลเลอรี่" type="button" aria-label="เปิดแอป แกลเลอรี่">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <circle cx="50" cy="50" r="50" fill="#FFFFFF"/>
+                  <g transform="translate(50, 50)" opacity="0.94">
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#FFCC00" />
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#FF9500" transform="rotate(45)" />
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#FF2D55" transform="rotate(90)" />
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#AF52DE" transform="rotate(135)" />
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#5856D6" transform="rotate(180)" />
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#007AFF" transform="rotate(225)" />
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#34C759" transform="rotate(270)" />
+                    <ellipse cx="0" cy="-17" rx="7" ry="13.5" fill="#A4E747" transform="rotate(315)" />
+                    <circle cx="0" cy="0" r="4.2" fill="#FFFFFF"/>
+                  </g>
+                </svg>
+              </div>
+              <span class="app-label">แกลเลอรี่</span>
+            </button>
+
+            <!-- Row 3 - App 1: Sharing Tube -->
+            <button class="app-item" data-app-id="sharing-tube" data-app-name="Sharing Tube" type="button" aria-label="เปิดแอป Sharing Tube">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="stGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#4FC3F7"/>
+                      <stop offset="100%" stop-color="#0288D1"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="50" fill="url(#stGrad)"/>
+                  <!-- White Cloud Base -->
+                  <path d="M68 62H32c-6.6 0-12-5.4-12-12 0-5.8 4.1-10.6 9.6-11.8C31.5 30.5 38.3 25 46.5 25c7.9 0 14.6 5.1 16.7 12.3 5.3.8 9.3 5.4 9.3 10.9 0 7.6-6.4 13.8-14.5 13.8z" fill="#FFFFFF"/>
+                  <!-- Red Tube Play Badge -->
+                  <rect x="36" y="38" width="28" height="20" rx="6" fill="#E53935"/>
+                  <polygon points="48,43 55,48 48,53" fill="#FFFFFF"/>
+                </svg>
+              </div>
+              <span class="app-label">Sharing Tube</span>
+            </button>
+
+            <!-- Row 3 - App 2: Shot ซีรี่ย์ -->
+            <button class="app-item" data-app-id="shot-series" data-app-name="Shot ซีรี่ย์" type="button" aria-label="เปิดแอป Shot ซีรี่ย์">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="shotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#EF5350"/>
+                      <stop offset="100%" stop-color="#C62828"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="50" fill="url(#shotGrad)"/>
+                  <!-- Film Frame -->
+                  <rect x="25" y="27" width="50" height="46" rx="5" fill="#FFFFFF" fill-opacity="0.2" stroke="#FFFFFF" stroke-width="2.4"/>
+                  <!-- Left Sprockets -->
+                  <rect x="28" y="31" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="28" y="39" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="28" y="47" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="28" y="55" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="28" y="63" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <!-- Right Sprockets -->
+                  <rect x="67.5" y="31" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="67.5" y="39" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="67.5" y="47" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="67.5" y="55" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <rect x="67.5" y="63" width="4.5" height="4" rx="1" fill="#FFFFFF"/>
+                  <!-- Center Play Triangle -->
+                  <polygon points="46,42 58,50 46,58" fill="#FFFFFF"/>
+                </svg>
+              </div>
+              <span class="app-label">Shot ซีรี่ย์</span>
+            </button>
+
+            <!-- Row 3 - App 3: TikTok -->
+            <button class="app-item" data-app-id="tiktok" data-app-name="TikTok" type="button" aria-label="เปิดแอป TikTok">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <circle cx="50" cy="50" r="50" fill="#000000"/>
+                  <!-- TikTok Note Glyph with Chromatic Offset -->
+                  <g transform="translate(5, 4)">
+                    <!-- Cyan Layer -->
+                    <path d="M48.2 23.3c3.5 4.3 8.7 7.1 14.5 7.4v7.7c-5.7-.3-10.8-2.6-14.7-6.2v25.3a18.5 18.5 0 1 1-18.5-18.5c1.8 0 3.5.3 5.1.8v8.6a9.8 9.8 0 1 0 4.6 8.3V15.2h8.8l.2 8.1z" fill="#25F4EE" transform="translate(-1.8, -1.8)"/>
+                    <!-- Magenta Layer -->
+                    <path d="M48.2 23.3c3.5 4.3 8.7 7.1 14.5 7.4v7.7c-5.7-.3-10.8-2.6-14.7-6.2v25.3a18.5 18.5 0 1 1-18.5-18.5c1.8 0 3.5.3 5.1.8v8.6a9.8 9.8 0 1 0 4.6 8.3V15.2h8.8l.2 8.1z" fill="#FE2C55" transform="translate(1.8, 1.8)"/>
+                    <!-- White Core Layer -->
+                    <path d="M48.2 23.3c3.5 4.3 8.7 7.1 14.5 7.4v7.7c-5.7-.3-10.8-2.6-14.7-6.2v25.3a18.5 18.5 0 1 1-18.5-18.5c1.8 0 3.5.3 5.1.8v8.6a9.8 9.8 0 1 0 4.6 8.3V15.2h8.8l.2 8.1z" fill="#FFFFFF"/>
+                  </g>
+                </svg>
+              </div>
+              <span class="app-label">TikTok</span>
+            </button>
+
+            <!-- Row 4 - App 1: Mobile Bank -->
+            <button class="app-item" data-app-id="mobile-bank" data-app-name="Mobile Bank" type="button" aria-label="เปิดแอป Mobile Bank">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="bankGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#1D4ED8"/>
+                      <stop offset="100%" stop-color="#0F172A"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="50" fill="url(#bankGrad)"/>
+                  <!-- Neoclassical Bank Facade -->
+                  <g fill="#FFFFFF" transform="translate(23, 23)">
+                    <polygon points="27,4 2,16 52,16"/>
+                    <rect x="0" y="17" width="54" height="3" rx="1"/>
+                    <rect x="5" y="22" width="6.5" height="21" rx="1.5"/>
+                    <rect x="17.5" y="22" width="6.5" height="21" rx="1.5"/>
+                    <rect x="30" y="22" width="6.5" height="21" rx="1.5"/>
+                    <rect x="42.5" y="22" width="6.5" height="21" rx="1.5"/>
+                    <rect x="2" y="44" width="50" height="3.5" rx="1"/>
+                    <rect x="0" y="48.5" width="54" height="4.5" rx="1.5"/>
+                  </g>
+                </svg>
+              </div>
+              <span class="app-label">Mobile Bank</span>
+            </button>
+
+            <!-- Row 4 - App 2: มินิเกม (Mini Games) -->
+            <button class="app-item" data-app-id="blocktown" data-app-name="BlockTown" type="button" aria-label="เปิดเกม BlockTown 3 มิติ"><div class="app-icon-wrapper"><svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true"><rect width="100" height="100" rx="27" fill="#335e49"/><path d="M13 67 50 46 87 67 50 89Z" fill="#a7c978"/><path d="M22 42 40 31 58 42 40 53Z" fill="#f5dfa7"/><path d="M22 42v23l18 11V53Z" fill="#ce9f6d"/><path d="M40 53v23l18-11V42Z" fill="#eabf87"/><rect x="59" y="34" width="21" height="34" rx="3" fill="#8bc6b4"/><path d="M56 34 69 23 83 34Z" fill="#e8eed2"/><rect x="62" y="41" width="6" height="6" fill="#eff9e9"/><path d="m22 22 2-6 2 6 6 2-6 2-2 6-2-6-6-2Z" fill="#fff3b5"/></svg></div><span class="app-label">BlockTown</span></button>
+            <button class="app-item" data-app-id="minigames" data-app-name="มินิเกม" type="button" aria-label="เปิดแอป มินิเกม">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="minigameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FF5722"/>
+                      <stop offset="50%" stop-color="#E91E63"/>
+                      <stop offset="100%" stop-color="#9C27B0"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="50" fill="url(#minigameGrad)"/>
+                  <!-- Gamepad / Joystick Controller -->
+                  <g fill="#FFFFFF" transform="translate(18, 26)">
+                    <path d="M52 14c-4.2-7-12-9-20-9s-15.8 2-20 9c-5.2 8.7-8 23.5-4 30.5 3 5.3 10 7.5 15.5 3.5l6-4.5h13l6 4.5c5.5 4 12.5 1.8 15.5-3.5 4-7 1.2-21.8-4-30.5z" opacity="0.95"/>
+                    <!-- D-Pad (Left) -->
+                    <rect x="14" y="22" width="6" height="16" rx="1.5" fill="#2E1065"/>
+                    <rect x="9" y="27" width="16" height="6" rx="1.5" fill="#2E1065"/>
+                    <!-- Action Buttons (Right) -->
+                    <circle cx="45" cy="25" r="3.2" fill="#00E676"/>
+                    <circle cx="51" cy="31" r="3.2" fill="#FFD600"/>
+                    <circle cx="39" cy="31" r="3.2" fill="#2979FF"/>
+                    <circle cx="45" cy="37" r="3.2" fill="#FF1744"/>
+                  </g>
+                </svg>
+              </div>
+              <span class="app-label">มินิเกม</span>
+            </button>
+
+            <!-- Row 4 - App 3: สถิติผู้เล่น -->
+            <button class="app-item" data-app-id="player-stats" data-app-name="สถิติผู้เล่น" type="button" aria-label="เปิดแอป สถิติผู้เล่น">
+              <div class="app-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="statsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#4F46E5"/>
+                      <stop offset="50%" stop-color="#7C3AED"/>
+                      <stop offset="100%" stop-color="#9333EA"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="50" fill="url(#statsGrad)"/>
+                  <!-- Analytics / Podium Chart with Star Badge -->
+                  <g fill="#FFFFFF">
+                    <rect x="23" y="52" width="12" height="24" rx="3" fill-opacity="0.85"/>
+                    <rect x="44" y="36" width="12" height="40" rx="3"/>
+                    <rect x="65" y="46" width="12" height="30" rx="3" fill-opacity="0.9"/>
+                    <circle cx="29" cy="46" r="3.5" fill="#FBBF24"/>
+                    <circle cx="50" cy="28" r="4.5" fill="#FBBF24"/>
+                    <circle cx="71" cy="38" r="3.5" fill="#FBBF24"/>
+                    <path d="M29 46 L50 28 L71 38" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  </g>
+                </svg>
+                <!-- Live Score Badge on Home Icon -->
+                <span class="stats-icon-badge" id="statsIconScoreBadge">0</span>
+              </div>
+              <span class="app-label">สถิติผู้เล่น</span>
+            </button>
+          </nav>
+
+          <!-- Bottom Dock (3 Items) -->
+          <footer class="phone-dock-area">
+            <nav class="phone-dock" aria-label="แถบแอปพลิเคชันล่าง">
+              <!-- Dock Item 1: Setting -->
+              <button class="app-item dock-item" data-app-id="settings" data-app-name="Setting" type="button" aria-label="เปิด Setting">
+                <div class="app-icon-wrapper">
+                  <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                    <circle cx="50" cy="50" r="50" fill="#78909C"/>
+                    <path d="M57.6 22l-1.3-4.8c-.3-1-1.2-1.7-2.3-1.7h-8c-1.1 0-2 .7-2.3 1.7L42.4 22c-1.8.7-3.4 1.7-4.9 2.9l-4.7-2c-1-.4-2.2-.1-2.9.8l-5.6 5.6c-.8.8-1 1.9-.6 2.9l2 4.7c-1.2 1.5-2.2 3.1-2.9 4.9L18 42.4c-1 .3-1.7 1.2-1.7 2.3v8c0 1.1.7 2 1.7 2.3l4.8 1.3c.7 1.8 1.7 3.4 2.9 4.9l-2 4.7c-.4 1-.1 2.2.8 2.9l5.6 5.6c.8.8 1.9 1 2.9.6l4.7-2c1.5 1.2 3.1 2.2 4.9 2.9l1.3 4.8c.3 1 1.2 1.7 2.3 1.7h8c1.1 0 2-.7 2.3-1.7l1.3-4.8c1.8-.7 3.4-1.7 4.9-2.9l4.7 2c1 .4 2.2.1 2.9-.8l5.6-5.6c.8-.8 1-1.9.6-2.9l-2-4.7c1.2-1.5 2.2-3.1 2.9-4.9l4.8-1.3c1-.3 1.7-1.2 1.7-2.3v-8c0-1.1-.7-2-1.7-2.3l-4.8-1.3c-.7-1.8-1.7-3.4-2.9-4.9l2-4.7c.4-1 .1-2.2-.8-2.9l-5.6-5.6c-.8-.8-1.9-1-2.9-.6l-4.7 2c-1.5-1.2-3.1-2.2-4.9-2.9zM50 62c-6.6 0-12-5.4-12-12s5.4-12 12-12 12 5.4 12 12-5.4 12-12 12z" fill="#FFFFFF"/>
+                  </svg>
+                </div>
+                <span class="app-label">Setting</span>
+              </button>
+
+              <!-- Dock Item 2: โทรศัพท์ -->
+              <button class="app-item dock-item" data-app-id="phone" data-app-name="โทรศัพท์" type="button" aria-label="เปิดแอป โทรศัพท์">
+                <div class="app-icon-wrapper">
+                  <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                    <circle cx="50" cy="50" r="50" fill="#2ECC71"/>
+                    <path d="M68.5 61.2c-2.4-.2-4.8-.8-7-1.7-1.4-.6-3-.2-4 .8l-4.2 4.2c-6.8-3.6-12.4-9.2-16-16l4.2-4.2c1-1 1.4-2.6.8-4-1-2.2-1.5-4.6-1.7-7-.2-1.6-1.6-2.8-3.2-2.8H26.3c-1.8 0-3.3 1.5-3.3 3.3 0 24.3 19.7 44 44 44 1.8 0 3.3-1.5 3.3-3.3v-11.2c0-1.6-1.2-3-2.8-3.2z" fill="#FFFFFF"/>
+                  </svg>
+                </div>
+                <span class="app-label">โทรศัพท์</span>
+              </button>
+
+              <!-- Dock Item 3: กล้อง -->
+              <button class="app-item dock-item" data-app-id="camera" data-app-name="กล้อง" type="button" aria-label="เปิดแอป กล้อง">
+                <div class="app-icon-wrapper">
+                  <svg viewBox="0 0 100 100" class="app-icon-svg" aria-hidden="true">
+                    <circle cx="50" cy="50" r="50" fill="#546E7A"/>
+                    <path d="M67 33h-7.2l-2.6-3.8c-.8-1.1-2-1.7-3.3-1.7h-7.8c-1.3 0-2.5.6-3.3 1.7L40.2 33H33c-3.9 0-7 3.1-7 7v24c0 3.9 3.1 7 7 7h34c3.9 0 7-3.1 7-7V40c0-3.9-3.1-7-7-7zm-17 31c-6.6 0-12-5.4-12-12s5.4-12 12-12 12 5.4 12 12-5.4 12-12 12zm0-20c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm19-3c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="#FFFFFF"/>
+                  </svg>
+                </div>
+                <span class="app-label">กล้อง</span>
+              </button>
+            </nav>
+            <div class="phone-home-indicator" aria-hidden="true"></div>
+          </footer>
+        </main>
+
+        <!-- ================================================================
+             LOGIN / START SCREEN (Zero-Trust Simulator)
+             ================================================================ -->
+        <section class="login-screen active" id="loginScreen" role="region" aria-label="หน้าจอเริ่มต้นและเข้าสู่ระบบ">
+          <!-- Cyber Atmospheric Backdrop inside Phone Screen -->
+          <div class="login-backdrop" aria-hidden="true">
+            <div class="login-grid-pattern"></div>
+            <div class="login-glow-orb orb-top"></div>
+            <div class="login-glow-orb orb-bottom"></div>
+          </div>
+
+          <!-- Main Centered Content Container -->
+          <div class="login-content-box">
+            <!-- Cybersecurity Shield Emblem -->
+            <div class="login-shield-badge" aria-hidden="true">
+              <div class="login-shield-ring"></div>
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="login-shield-icon">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <circle cx="12" cy="11" r="3" stroke-width="1.8"/>
+                <path d="M12 14v3" stroke-width="1.8"/>
+              </svg>
+            </div>
+
+            <!-- Game Title: Line 1: ZERO TRUST | Line 2: SIMULATOR (Italic & Tilted upward) -->
+            <h1 class="login-title-group">
+              <span class="login-title-primary">ZERO TRUST</span>
+              <span class="login-title-secondary">SIMULATOR</span>
+            </h1>
+
+            <div class="login-tagline">CYBER RESILIENCE SIMULATION</div>
+
+            <!-- Prominent START Button -->
+            <button class="login-start-btn" id="loginStartBtn" type="button" aria-label="เริ่มเกม Zero Trust Simulator">
+              <span class="start-btn-glow" aria-hidden="true"></span>
+              <span class="start-btn-text">START</span>
+              <svg class="start-btn-arrow" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+
+            <!-- Google and Guest Auth Action Buttons -->
+            <div class="login-auth-group" role="group" aria-label="ตัวเลือกการเข้าสู่ระบบ">
+              <!-- Button 1: Continue with Google -->
+              <button class="login-auth-btn login-btn-google" id="loginGoogleBtn" type="button" aria-label="เข้าสู่ระบบด้วย Google">
+                <svg class="auth-btn-icon google-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.665-5.17 3.665-9.12z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.28 21.44 7.33 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.13z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.28 2.56 1.25 6.58l4.03 3.13c.95-2.83 3.6-4.96 6.72-4.96z"/>
+                </svg>
+                <span class="auth-btn-text">Continue with Google</span>
+              </button>
+
+              <!-- Button 2: Continue as Guest -->
+              <button class="login-auth-btn login-btn-guest" id="loginGuestBtn" type="button" aria-label="เข้าสู่ระบบแบบ Guest">
+                <svg class="auth-btn-icon guest-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span class="auth-btn-text">Continue as Guest</span>
+              </button>
+            </div>
+
+            <!-- Feedback Notice (Coming Soon) -->
+            <div class="login-auth-notice" id="loginAuthNotice" role="status" aria-live="polite" hidden>
+              <span class="notice-icon" aria-hidden="true">ℹ️</span>
+              <span class="notice-text" id="loginAuthNoticeText">เข้าสู่ระบบด้วย Google</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mobile Bank App Screen (Simulated Screen) -->
+        <section class="mobile-bank-screen" id="mobileBankScreen" role="region" aria-label="แอปพลิเคชัน Mobile Bank" hidden>
+          <!-- Top App Bar: บัญชีเงินฝาก (ซ้าย) / 3 ขีด (ขวา) -->
+          <header class="bank-top-bar">
+            <div class="bank-top-left">
+              <button class="bank-nav-back" id="bankBackBtn" type="button" aria-label="กลับสู่หน้าจอหลัก">
+                <svg viewBox="0 0 24 24" class="bank-icon-svg" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <h2 class="bank-screen-title">บัญชีเงินฝาก</h2>
+            </div>
+            <div class="bank-top-right">
+              <button class="bank-menu-btn" id="bankMenuBtn" type="button" aria-label="เมนูเพิ่มเติม">
+                <svg viewBox="0 0 24 24" class="bank-icon-svg" aria-hidden="true">
+                  <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                  <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                  <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- Bank Body Content -->
+          <div class="bank-body">
+            <!-- กรอบสีฟ้าใหญ่เด่น (Blue Featured Account Card) -->
+            <div class="bank-featured-card">
+              <div class="card-wave-bg" aria-hidden="true"></div>
+
+              <!-- Top Row: Account Number (Left) & Account Type (Right) -->
+              <div class="bank-card-header">
+                <span class="bank-card-acc-num">xxx-x-xxxxx-x</span>
+                <div class="bank-card-type-box">
+                  <span class="bank-card-type-name">ออมทรัพย์</span>
+                  <span class="bank-card-main-tag">บัญชีหลัก</span>
+                </div>
+              </div>
+
+              <!-- Middle: Balance Section -->
+              <div class="bank-card-balance-box">
+                <span class="bank-balance-caption">ยอดเงินคงเหลือ</span>
+                <div class="bank-balance-row">
+                  <span class="bank-balance-val">500</span>
+                  <span class="bank-balance-currency">บาท</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions: โอนเงิน | เติมเงิน | จ่ายบิล | เมนูอื่นๆ -->
+            <div class="bank-quick-actions" role="toolbar" aria-label="เมนูการทำธุรกรรม">
+              <!-- Action 1: โอนเงิน -->
+              <button class="bank-action-item" data-action="โอนเงิน" type="button" aria-label="โอนเงิน">
+                <!-- Interactive Guide Pointer & Tooltip for Bank Transfer (Mission 01) -->
+                <div class="bank-action-guide-wrapper" id="bankTransferGuide" hidden>
+                  <div class="bank-guide-tooltip">
+                    <span class="bank-guide-sparkle">💡</span>
+                    <span class="bank-guide-text">กด "โอนเงิน" เพื่อทำรายการ</span>
+                  </div>
+                  <div class="bank-guide-pointer" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" class="bank-pointer-down-svg" width="24" height="24" fill="#0056b3">
+                      <path d="M12 21.5l-7.5-7.5c-.6-.6-.2-1.6.7-1.6h3.8V4c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v8.4h3.8c.9 0 1.3 1 .7 1.6L12 21.5z" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="bank-action-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 16V4M7 4L3 8M7 4L11 8"/>
+                    <path d="M17 8V20M17 20L21 16M17 20L13 16"/>
+                  </svg>
+                </div>
+                <span class="bank-action-text">โอนเงิน</span>
+              </button>
+
+              <!-- Action 2: เติมเงิน -->
+              <button class="bank-action-item" data-action="เติมเงิน" type="button" aria-label="เติมเงิน">
+                <div class="bank-action-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="5" y="2" width="14" height="20" rx="3"/>
+                    <line x1="12" y1="18" x2="12" y2="18.01"/>
+                    <line x1="9" y1="9" x2="15" y2="9"/>
+                    <line x1="12" y1="6" x2="12" y2="12"/>
+                  </svg>
+                </div>
+                <span class="bank-action-text">เติมเงิน</span>
+              </button>
+
+              <!-- Action 3: จ่ายบิล -->
+              <button class="bank-action-item" data-action="จ่ายบิล" type="button" aria-label="จ่ายบิล">
+                <div class="bank-action-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 2v20l3-2 3 2 3-2 3 2 4-2V2l-4 2-3-2-3 2-3-2-3 2z"/>
+                    <line x1="8" y1="8" x2="16" y2="8"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                    <line x1="8" y1="16" x2="12" y2="16"/>
+                  </svg>
+                </div>
+                <span class="bank-action-text">จ่ายบิล</span>
+              </button>
+
+              <!-- Action 4: เมนูอื่นๆ (...) -->
+              <button class="bank-action-item" data-action="เมนูอื่นๆ" type="button" aria-label="เมนูอื่นๆ">
+                <div class="bank-action-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="5" cy="12" r="2.2"/>
+                    <circle cx="12" cy="12" r="2.2"/>
+                    <circle cx="19" cy="12" r="2.2"/>
+                  </svg>
+                </div>
+                <span class="bank-action-text">เมนูอื่นๆ</span>
+              </button>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="bank-activity-card">
+              <div class="bank-activity-header">
+                <span class="bank-activity-title">รายการเดินบัญชีล่าสุด</span>
+                <span class="bank-activity-badge">ปกติ</span>
+              </div>
+              <div class="bank-empty-notice" id="bankActivityEmptyNotice">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" stroke-width="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>ไม่มีรายการผิดปกติ พร้อมใช้งานระบบ Zero-Trust</span>
+              </div>
+              <div class="bank-activity-list" id="bankActivityList" hidden></div>
+            </div>
+          </div>
+
+          <!-- Transfer Simulation Modal (Inside Mobile Bank) -->
+          <div class="bank-modal-backdrop" id="bankTransferModal" hidden>
+            <div class="bank-transfer-dialog">
+              <div class="bank-dialog-header">
+                <h3 class="bank-dialog-title">ยืนยันการโอนเงิน (จำลอง)</h3>
+                <button class="bank-dialog-close" id="bankTransferCloseBtn" type="button" aria-label="ปิด">&times;</button>
+              </div>
+
+              <div class="bank-transfer-card">
+                <div class="transfer-from-to">
+                  <div class="transfer-party">
+                    <span class="party-label">จากบัญชี</span>
+                    <span class="party-name">ออมทรัพย์ บัญชีหลัก</span>
+                    <span class="party-acc">xxx-x-xxxxx-x</span>
+                  </div>
+                  <div class="transfer-arrow">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563EB" stroke-width="2.2" aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </div>
+                  <div class="transfer-party">
+                    <span class="party-label">ไปยังบัญชี</span>
+                    <span class="party-name party-danger" id="bankTransferRecipientName">นายสมศักดิ์ ม้าเร็ว</span>
+                    <span class="party-acc" id="bankTransferRecipientAcc">ธ.กรุงไทย 123-4-56789-0</span>
+                  </div>
+                </div>
+
+                <div class="transfer-amount-row">
+                  <span class="amount-title">ยอดเงินโอน (บาท)</span>
+                  <div class="transfer-amount-input-box">
+                    <input type="number" id="transferAmountInput" class="transfer-amount-input" value="500" min="1" max="2000000" step="1" aria-label="ระบุจำนวนเงินโอน">
+                    <span class="amount-currency">บาท</span>
+                  </div>
+                </div>
+
+                <div class="transfer-memo-row">
+                  <span class="memo-title">บันทึกช่วยจำ:</span>
+                  <span class="memo-val" id="bankTransferMemoVal">สำรองเงินงานออนไลน์ (เสี่ยงภัยมิจฉาชีพสูง)</span>
+                </div>
+              </div>
+
+              <div class="bank-dialog-actions" id="bankDefaultDialogActions">
+                <button class="bank-btn-confirm" id="bankConfirmTransferBtn" type="button">ยืนยันการโอนเงิน</button>
+                <button class="bank-btn-cancel" id="bankCancelTransferBtn" type="button">ยกเลิกธุรกรรม</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Big Red Blinking Danger Warning Overlay -->
+          <div class="bank-warning-overlay" id="bankWarningOverlay" hidden>
+            <div class="bank-warning-box">
+              <div class="warning-icon-halo">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+
+              <!-- EXACT REQUIRED PHRASE FROM PROMPT -->
+              <h2 class="bank-warning-headline">หยุด! คุณกำลังเสี่ยงตกเป็นเหยื่อมิจฉาชีพ อย่าโอนเงินเพิ่มโดยไม่ตรวจสอบ</h2>
+
+              <div class="warning-body-desc">
+                <p><strong>วิเคราะห์จุดตาย (Point of Failure):</strong></p>
+                <p>นี่คือกลโกง <em>"หลอกทำงานออนไลน์ / กดรับออเดอร์"</em> ยอดเงิน 500 บาทที่คุณโอนไปจะเข้าบัญชีม้าของมิจฉาชีพทันที และคุณจะไม่ได้เงิน 1,000 บาทคืนอย่างแน่นอน!</p>
+                <p>มิจฉาชีพจะหลอกล่อให้คุณโอนเงินเพิ่มขึ้นเรื่อยๆ เป็น 2,000 จนถึงหลักหมื่นหลักแสนบาท โดยอ้างว่าระบบล็อกหรือทำภารกิจไม่ครบ</p>
+              </div>
+
+              <div class="warning-actions">
+                <button class="warning-btn-review" id="warningReviewChatBtn" type="button">ย้อนกลับไปทบทวนสถานการณ์ใน LINE</button>
+                <button class="warning-btn-home" id="warningBackHomeBtn" type="button">กลับสู่หน้าจอหลัก (Home)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Home Swipe Bar for Bank Screen -->
+          <footer class="bank-bottom-bar">
+            <button class="bank-home-bar-btn" id="bankHomeBarBtn" type="button" aria-label="กลับหน้าจอหลัก"></button>
+          </footer>
+        </section>
+
+        <!-- LINE App Chat List Screen (Simulated Screen) -->
+        <section class="line-chat-screen" id="lineChatScreen" role="region" aria-label="แอปพลิเคชัน LINE แชท" hidden>
+          <!-- LINE Header: แชท (ซ้าย) / อัลบัม, ปฏิทิน, รูป + (ขวา) -->
+          <header class="line-header">
+            <div class="line-header-left">
+              <button class="line-nav-back" id="lineBackBtn" type="button" aria-label="กลับสู่หน้าจอหลัก">
+                <svg viewBox="0 0 24 24" class="line-header-icon" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <h1 class="line-header-title">แชท</h1>
+            </div>
+            <div class="line-header-right">
+              <!-- Icon อัลบัม -->
+              <button class="line-tool-btn" id="lineAlbumBtn" type="button" aria-label="อัลบัม">
+                <svg viewBox="0 0 24 24" class="line-header-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="4"/>
+                  <circle cx="8.5" cy="8.5" r="1.8" fill="currentColor"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+              </button>
+
+              <!-- Icon ปฏิทิน -->
+              <button class="line-tool-btn" id="lineCalendarBtn" type="button" aria-label="ปฏิทิน">
+                <svg viewBox="0 0 24 24" class="line-header-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="17" rx="3"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="9" x2="21" y2="9"/>
+                  <circle cx="8" cy="14" r="1" fill="currentColor"/>
+                  <circle cx="12" cy="14" r="1" fill="currentColor"/>
+                  <circle cx="16" cy="14" r="1" fill="currentColor"/>
+                </svg>
+              </button>
+
+              <!-- Icon รูป + -->
+              <button class="line-tool-btn" id="lineAddChatBtn" type="button" aria-label="เพิ่มแชทใหม่">
+                <svg viewBox="0 0 24 24" class="line-header-icon" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  <line x1="12" y1="8" x2="12" y2="14"/>
+                  <line x1="9" y1="11" x2="15" y2="11"/>
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- Search Bar: ค้นหา (ซ้าย) / แสกน qr (ขวา) -->
+          <div class="line-search-bar">
+            <div class="line-search-box">
+              <svg viewBox="0 0 24 24" class="line-search-icon" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/>
+                <line x1="21" y1="21" x2="16" y2="16"/>
+              </svg>
+              <input type="text" class="line-search-input" placeholder="ค้นหา" aria-label="ค้นหาแชท" readonly>
+            </div>
+            <!-- ปุ่มแสกน QR -->
+            <button class="line-qr-btn" id="lineQrBtn" type="button" aria-label="แสกน QR">
+              <svg viewBox="0 0 24 24" class="line-qr-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <rect x="7" y="7" width="3" height="3" fill="currentColor"/>
+                <rect x="14" y="7" width="3" height="3" fill="currentColor"/>
+                <rect x="7" y="14" width="3" height="3" fill="currentColor"/>
+                <line x1="3" y1="12" x2="21" y2="12" stroke="#06C755" stroke-width="1.8"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Chat List Body (7 Chats with distinct scam personas) -->
+          <div class="line-chat-scroll" role="list" aria-label="รายการแชท">
+            <!-- 1. น้องไก่ (หลอกทำงานออนไลน์ / กดรับออเดอร์) -->
+            <div class="line-chat-item" role="listitem" tabindex="0" data-chat-id="kai" data-chat-name="น้องไก่" data-scam="หลอกทำงานออนไลน์กดรับออเดอร์">
+              <div class="line-avatar" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
+                <span class="avatar-text">ไก่</span>
+              </div>
+              <div class="line-chat-info">
+                <div class="line-chat-top-row">
+                  <span class="line-contact-name">น้องไก่</span>
+                  <span class="line-chat-time">14:32</span>
+                </div>
+                <div class="line-chat-bottom-row">
+                  <p class="line-chat-preview">พี่คะ สนใจงานเสริมกดรับออเดอร์ไหมคะ วันละ 500-1,000 บาท ทำที่บ้านได้...</p>
+                  <span class="line-unread-badge">2</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. น้องน้ำ (หลอกรักชวนลงทุน / Romance Scam) -->
+            <div class="line-chat-item" role="listitem" tabindex="0" data-chat-id="nam" data-chat-name="น้องน้ำ" data-scam="หลอกรักชวนลงทุนเทรดคริปโต">
+              <div class="line-avatar" style="background: linear-gradient(135deg, #00BCD4, #0097A7);">
+                <span class="avatar-text">น้ำ</span>
+              </div>
+              <div class="line-chat-info">
+                <div class="line-chat-top-row">
+                  <span class="line-contact-name">น้องน้ำ</span>
+                  <span class="line-chat-time">12:15</span>
+                </div>
+                <div class="line-chat-bottom-row">
+                  <p class="line-chat-preview">น้ำเพิ่งถอนกำไรจากพอร์ตมาได้ 50,000 เลย อยากให้พี่ลองดูบ้างจัง...</p>
+                  <span class="line-unread-badge">1</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. น้องจ๊อด (งานออนไลน์รายได้ดี / หลอกเก็บเงินมัดจำ 100,000 บาท) -->
+            <div class="line-chat-item" id="jodChatContactItem" role="listitem" tabindex="0" data-chat-id="jod" data-chat-name="น้องจ๊อด" data-scam="งานออนไลน์รายได้ดี (หลอกเก็บเงินมัดจำ 100,000 บาท)">
+              <div class="line-avatar" style="background: linear-gradient(135deg, #4CAF50, #388E3C);">
+                <span class="avatar-text">จ๊อด</span>
+              </div>
+              <div class="line-chat-info">
+                <div class="line-chat-top-row">
+                  <span class="line-contact-name">น้องจ๊อด</span>
+                  <span class="line-chat-time">10:48</span>
+                </div>
+                <div class="line-chat-bottom-row">
+                  <p class="line-chat-preview">พี่ครับ สนใจงานแอดมินออนไลน์ WFH ไหมครับ รายได้ดี...</p>
+                  <span class="line-unread-badge">3</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. น้องหมวย (เงินกู้นอกระบบ / โอนค่าค้ำประกันก่อน) -->
+            <div class="line-chat-item" role="listitem" tabindex="0" data-chat-id="muay" data-chat-name="น้องหมวย" data-scam="เงินกู้ออนไลน์อนุมัติไวโอนเงินค้ำประกันก่อน">
+              <div class="line-avatar" style="background: linear-gradient(135deg, #E91E63, #C2185B);">
+                <span class="avatar-text">หมวย</span>
+              </div>
+              <div class="line-chat-info">
+                <div class="line-chat-top-row">
+                  <span class="line-contact-name">น้องหมวย</span>
+                  <span class="line-chat-time">เมื่อวาน</span>
+                </div>
+                <div class="line-chat-bottom-row">
+                  <p class="line-chat-preview">สินเชื่ออนุมัติไววงเงิน 100,000 ดอกเบี้ย 0.5% ปรึกษาฟรีไม่ต้องมีคนค้ำ...</p>
+                  <span class="line-unread-badge">1</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. คนจริงใจ (แก๊งคอลเซ็นเตอร์ / พัสดุตกค้างผิดกฎหมาย) -->
+            <div class="line-chat-item" role="listitem" tabindex="0" data-chat-id="jingjai" data-chat-name="คนจริงใจ" data-scam="อ้างพัสดุตกค้างมีสิ่งผิดกฎหมายเชื่อมโยงคดีฟอกเงิน">
+              <div class="line-avatar" style="background: linear-gradient(135deg, #673AB7, #512DA8);">
+                <span class="avatar-text">จริงใจ</span>
+              </div>
+              <div class="line-chat-info">
+                <div class="line-chat-top-row">
+                  <span class="line-contact-name">คนจริงใจ</span>
+                  <span class="line-chat-time">เมื่อวาน</span>
+                </div>
+                <div class="line-chat-bottom-row">
+                  <p class="line-chat-preview">แจ้งเตือนพัสดุหมายเลข TH98231 ตกค้างและมีสิ่งของผิดกฎหมาย ติดต่อเจ้าหน้าที่...</p>
+                  <span class="line-unread-badge">4</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 6. จีน (แอบอ้างเพื่อน / ปลอมโปรไฟล์ยืมเงินด่วน) -->
+            <div class="line-chat-item" role="listitem" tabindex="0" data-chat-id="jean" data-chat-name="จีน" data-scam="แอบอ้างเป็นเพื่อนขอยืมเงินด่วน">
+              <div class="line-avatar" style="background: linear-gradient(135deg, #009688, #00796B);">
+                <span class="avatar-text">จีน</span>
+              </div>
+              <div class="line-chat-info">
+                <div class="line-chat-top-row">
+                  <span class="line-contact-name">จีน</span>
+                  <span class="line-chat-time">24 ต.ค.</span>
+                </div>
+                <div class="line-chat-bottom-row">
+                  <p class="line-chat-preview">แก บัญชีธนาคารเราเข้าไม่ได้ ขอยืมสำรอง 3,000 บาทก่อน เดี๋ยวเย็นนี้โอนคืนนะ...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7. แก้ว (แอบอ้างหน่วยงานรัฐ / แอปดูดเงินคืนภาษี) -->
+            <div class="line-chat-item" role="listitem" tabindex="0" data-chat-id="kaew" data-chat-name="แก้ว" data-scam="แอบอ้างกรมสรรพากรหลอกติดตั้งแอปดูดเงินคืนภาษี">
+              <div class="line-avatar" style="background: linear-gradient(135deg, #FF5722, #D84315);">
+                <span class="avatar-text">แก้ว</span>
+              </div>
+              <div class="line-chat-info">
+                <div class="line-chat-top-row">
+                  <span class="line-contact-name">แก้ว</span>
+                  <span class="line-chat-time">22 ต.ค.</span>
+                </div>
+                <div class="line-chat-bottom-row">
+                  <p class="line-chat-preview">กรมสรรพากรแจ้งอัปเดตข้อมูลผู้เสียภาษีและรับเงินคืนภาษีด่วนผ่านแอป...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LINE Bottom Navigation Tabs -->
+          <nav class="line-tab-bar" aria-label="แถบเมนู LINE">
+            <button class="line-tab-btn" type="button">
+              <svg viewBox="0 0 24 24" class="line-tab-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <span class="line-tab-label">หน้าหลัก</span>
+            </button>
+
+            <button class="line-tab-btn active" type="button" aria-current="page">
+              <svg viewBox="0 0 24 24" class="line-tab-icon" fill="currentColor" aria-hidden="true">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+              <span class="line-tab-label">แชท</span>
+            </button>
+
+            <button class="line-tab-btn" type="button">
+              <svg viewBox="0 0 24 24" class="line-tab-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              <span class="line-tab-label">VOOM</span>
+            </button>
+
+            <button class="line-tab-btn" type="button">
+              <svg viewBox="0 0 24 24" class="line-tab-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="3"/>
+                <circle cx="16" cy="12" r="2"/>
+              </svg>
+              <span class="line-tab-label">Wallet</span>
+            </button>
+          </nav>
+
+          <!-- Bottom Home Swipe Bar for LINE Screen -->
+          <footer class="line-bottom-bar">
+            <button class="line-home-bar-btn" id="lineHomeBarBtn" type="button" aria-label="กลับหน้าจอหลัก"></button>
+          </footer>
+        </section>
+
+        <!-- LINE Chat Conversation Screen with น้องไก่ -->
+        <section class="line-convo-screen" id="lineConvoScreen" role="region" aria-label="ห้องแชท น้องไก่" hidden>
+          <!-- Convo Header -->
+          <header class="convo-header">
+            <div class="convo-header-left">
+              <button class="convo-back-btn" id="lineConvoBackBtn" type="button" aria-label="กลับหน้ารายการแชท">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <div class="convo-avatar" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
+                <span>ไก่</span>
+              </div>
+              <div class="convo-user-meta">
+                <span class="convo-user-name">น้องไก่</span>
+                <span class="convo-status-tag"><span class="online-dot"></span> ออนไลน์</span>
+              </div>
+            </div>
+
+            <div class="convo-header-right">
+              <button class="convo-tool-btn" id="convoHomeBtn" type="button" aria-label="กลับหน้าจอหลัก" title="กลับหน้าจอหลัก">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              </button>
+              <button class="convo-tool-btn" id="convoSearchBtn" type="button" aria-label="ค้นหาในแชท">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"/>
+                  <line x1="21" y1="21" x2="16" y2="16"/>
+                </svg>
+              </button>
+              <button class="convo-tool-btn" id="convoCallBtn" type="button" aria-label="โทร">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </button>
+              <button class="convo-tool-btn" id="convoMenuBtn" type="button" aria-label="เมนู">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                  <line x1="3" y1="12" x2="21" y2="12"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- Chat Stream Area -->
+          <div class="convo-stream" id="convoStream" role="log" aria-live="polite">
+            <div class="convo-date-badge"><span>วันนี้</span></div>
+            <!-- Dynamic Messages injected here -->
+            <div class="chat-typing-indicator" id="kaiTypingIndicator" hidden>
+              <div class="typing-avatar" style="background: linear-gradient(135deg, #FF9800, #F57C00);">ไก่</div>
+              <div class="typing-bubble">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Reply & Decision Area -->
+          <div class="convo-bottom-bar" id="convoBottomBar">
+            <!-- Blocked Notice Banner (Shown when quest is completed & Kai is blocked) -->
+            <div class="convo-blocked-banner" id="convoBlockedBanner" hidden>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+              <span>บัญชีนี้ถูกบล็อกแล้ว (ภารกิจสำเร็จ ไม่สามารถส่งข้อความได้)</span>
+            </div>
+            <!-- A / B / C Choices Box (Pops up when Kai finishes speaking in current stage) -->
+            <div class="decision-choices-box" id="decisionChoicesBox" hidden>
+              <div class="choices-header">
+                <span class="choices-title">เลือกแนวทางตอบกลับ:</span>
+              </div>
+              <div class="choices-list">
+                <button class="choice-btn" data-choice="A" type="button">
+                  <span class="choice-badge">A</span>
+                  <span class="choice-label" id="choiceLabelA">ตัวเลือก A</span>
+                </button>
+                <button class="choice-btn" data-choice="B" type="button">
+                  <span class="choice-badge">B</span>
+                  <span class="choice-label" id="choiceLabelB">ตัวเลือก B</span>
+                </button>
+                <button class="choice-btn" data-choice="C" type="button">
+                  <span class="choice-badge">C</span>
+                  <span class="choice-label" id="choiceLabelC">ตัวเลือก C</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Standard Chat Input Bar -->
+            <div class="convo-input-row">
+              <button class="convo-addon-btn" type="button" aria-label="แนบไฟล์">+</button>
+              <button class="convo-addon-btn" type="button" aria-label="กล้อง">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </button>
+              <div class="convo-input-wrapper">
+                <input type="text" id="convoTextInput" class="convo-text-input" placeholder="พิมพ์ข้อความ..." autocomplete="off">
+              </div>
+              <button class="convo-send-btn" id="convoSendBtn" type="button" aria-label="ส่งข้อความ">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Home Swipe Bar -->
+          <footer class="convo-bottom-indicator">
+            <button class="line-home-bar-btn" id="convoHomeBarBtn" type="button" aria-label="กลับหน้าจอหลัก"></button>
+          </footer>
+        </section>
+
+        <!-- Mission Success Celebration Modal -->
+        <div class="mission-success-modal" id="missionSuccessModal" hidden>
+          <div class="success-card">
+            <div class="success-shield-halo">
+              <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="#16A34A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <h2 class="success-title">ภารกิจสำเร็จ! (เคลียร์)</h2>
+            <div class="success-total-score-badge" id="successTotalScoreBadge">
+              คะแนนรวมทั้งหมด: <span id="successScoreVal">100</span> คะแนน
+            </div>
+            <p class="success-subtitle">คุณมีภูมิคุ้มกันไซเบอร์ระดับ Zero-Trust: ตรวจจับและรู้ทันกลโกงหลอกทำงานออนไลน์ของน้องไก่ได้ครบทั้ง 10 จุดเสี่ยง โดยไม่ตกเป็นเหยื่อและไม่โอนเงิน!</p>
+            <div class="success-score-box">
+              <span id="successEvalText">ผลการประเมิน: ผ่านการทดสอบระดับสูงสุด (10/10)</span>
+            </div>
+            <button class="success-home-btn" id="successHomeBtn" type="button">กลับสู่หน้าจอหลัก (Home)</button>
+          </div>
+        </div>
+
+        <!-- Scam Alert Modal ("คุณถูกหลอก" Flashing Red Alert) -->
+        <div class="scam-alert-overlay" id="scamAlertModal" hidden>
+          <div class="scam-alert-box">
+            <!-- Pulsing Red Flashing Beacon -->
+            <div class="scam-beacon">
+              <div class="beacon-ring"></div>
+              <div class="beacon-icon">
+                <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#ef4444" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Central Bold Headline -->
+            <h2 class="scam-alert-title">คุณถูกหลอก!</h2>
+
+            <div class="scam-alert-desc">
+              <p class="scam-alert-summary">คุณได้โอนเงิน <strong>500 บาท</strong> เข้าบัญชีม้าของมิจฉาชีพแล้ว</p>
+              <div class="scam-lesson-box">
+                <div class="lesson-tag">⚠️ ข้อสังเกตกลโกง Zero-Trust</div>
+                <ul class="lesson-list">
+                  <li>หลอกให้ทดลองงานได้เงินจริง 120 บาท เพื่อล่อให้ตายใจ</li>
+                  <li>ชวนทำภารกิจ VIP แล้วให้โอนเงินสำรองเข้าบัญชีบุคคลธรรมดา</li>
+                  <li>มิจฉาชีพจะเชิดเงินหนี และไม่มีการจ่ายเงินคืน 1,000 บาทจริง</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- คะแนนรวม ขึ้นมา ด้านบน ปุ่ม เริ่มใหม่ และ home -->
+            <div class="scam-total-score-badge" id="scamTotalScoreBadge">
+              คะแนนรวมทั้งหมด: <span id="scamScoreVal">-10</span> คะแนน
+            </div>
+
+            <!-- 2 Bottom Buttons: เริ่มใหม่ & Home -->
+            <div class="scam-alert-actions">
+              <button class="scam-btn-restart" id="scamRestartBtn" type="button">เริ่มใหม่</button>
+              <button class="scam-btn-home" id="scamHomeBtn" type="button">Home</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================
+             FACEBOOK APP SCREEN (Simulated Screen — Mission 03)
+             ================================================================ -->
+        <section class="facebook-screen" id="facebookScreen" role="region" aria-label="แอปพลิเคชัน Facebook" hidden>
+          <!-- Top App Bar: Back Button, Facebook Logo, Search & Messenger Icons -->
+          <header class="facebook-header">
+            <div class="facebook-header-left">
+              <button class="facebook-nav-back" id="facebookBackBtn" type="button" aria-label="กลับสู่หน้าจอหลัก">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <span class="facebook-brand-title">facebook</span>
+            </div>
+            <div class="facebook-header-right">
+              <button class="facebook-tool-btn" id="facebookSearchBtn" type="button" aria-label="ค้นหา">
+                <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"/>
+                  <line x1="21" y1="21" x2="16" y2="16"/>
+                </svg>
+              </button>
+              <button class="facebook-tool-btn" id="facebookMsgBtn" type="button" aria-label="ข้อความ">
+                <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- Facebook Sub-nav Tabs -->
+          <nav class="facebook-tab-bar" aria-label="แถบเมนู Facebook">
+            <button class="facebook-tab-btn active" type="button" aria-label="ฟีดข่าว">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+            </button>
+            <button class="facebook-tab-btn" type="button" aria-label="เพื่อน">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </button>
+            <button class="facebook-tab-btn" type="button" aria-label="วิดีโอ">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                <line x1="7" y1="2" x2="7" y2="22"/>
+                <line x1="17" y1="2" x2="17" y2="22"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <line x1="2" y1="7" x2="7" y2="7"/>
+                <line x1="2" y1="17" x2="7" y2="17"/>
+                <line x1="17" y1="17" x2="22" y2="17"/>
+                <line x1="17" y1="7" x2="22" y2="7"/>
+              </svg>
+            </button>
+            <button class="facebook-tab-btn" type="button" aria-label="การแจ้งเตือน">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </button>
+            <button class="facebook-tab-btn" type="button" aria-label="เมนู">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+          </nav>
+
+          <!-- Feed Content Area -->
+          <div class="facebook-feed-scroll">
+            <!-- Simulated In-Game Disclaimer Banner -->
+            <div class="facebook-sim-banner">
+              <span class="sim-badge">ภารกิจที่ 3 จำลองในเกม</span>
+              <span>โพสต์นี้เป็นการจำลองสถานการณ์กลโกงงานออนไลน์ (ไม่ใช่ Facebook จริง)</span>
+            </div>
+
+            <!-- Friend Jod Recommendation Card (ฉากที่ 1: Facebook) -->
+            <div class="fb-friend-share-card">
+              <div class="fb-friend-avatar">จ๊อด</div>
+              <div class="fb-friend-bubble">
+                <div class="fb-friend-name">น้องจ๊อด</div>
+                <div class="fb-friend-text">เฮ้ย เราเจอประกาศรับสมัครงานออนไลน์มา น่าสนใจมากเลย งานแอดมิน ทำที่บ้านได้ รายได้ 18,000–35,000 บาทต่อเดือน ไม่จำกัดวุฒิ ไม่ต้องมีประสบการณ์ด้วย</div>
+              </div>
+            </div>
+
+            <!-- Recruitment Post Card (BrightWork Connect) -->
+            <article class="facebook-post-card" id="brightworkPostCard">
+              <!-- Post Author Header -->
+              <div class="facebook-post-header">
+                <div class="fb-author-avatar">
+                  <span>BW</span>
+                  <div class="fb-verified-mini" title="เพจที่ได้รับการยืนยัน (จำลอง)">✓</div>
+                </div>
+                <div class="fb-author-info">
+                  <div class="fb-author-name-row">
+                    <span class="fb-author-name">BrightWork Connect</span>
+                    <svg class="fb-verified-icon" viewBox="0 0 24 24" width="14" height="14" fill="#1877F2" aria-hidden="true">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="fb-post-meta">
+                    <span>ได้รับการสนับสนุน (Sponsored)</span>
+                    <span class="meta-dot">•</span>
+                    <span class="fb-public-icon" title="สาธารณะ">🌐</span>
+                  </div>
+                </div>
+                <div class="fb-post-menu-btn" aria-hidden="true">•••</div>
+              </div>
+
+              <!-- Post Body Content (Strictly matching prompt) -->
+              <div class="facebook-post-body">
+                <img src="asset/work_online/banner_work_online.jpg" alt="เปิดรับสมัครแอดมินออนไลน์ Work From Home" class="fb-post-image">
+                <p class="fb-headline-text">📢 <strong>เปิดรับสมัครแอดมินออนไลน์ (Work From Home)</strong></p>
+                <div class="fb-job-specs-brief">
+                  <div>• <strong>ตำแหน่ง:</strong> ตำแหน่งแอดมินออนไลน์ (Work From Home)</div>
+                  <div>• <strong>รายได้:</strong> <span class="spec-highlight">18,000–35,000 บาท/เดือน</span></div>
+                  <div>• <strong>คุณสมบัติ:</strong> ไม่จำกัดวุฒิ ไม่ต้องมีประสบการณ์</div>
+                  <div>• <strong>การฝึกอบรม:</strong> มีการสอนงานสำหรับผู้เริ่มต้น</div>
+                  <div>• <strong>การสมัคร:</strong> สนใจสมัครงาน ติดต่อผ่านข้อความของเพจ</div>
+                </div>
+              </div>
+
+              <!-- Jod's Tip Before Comments -->
+              <div class="fb-friend-tip-bar">
+                <span class="fb-tip-avatar">จ๊อด</span>
+                <span class="fb-tip-text">ลองคอมเมนต์ถามดูสิ เผื่อเป็นงานที่เหมาะกับแก</span>
+              </div>
+
+              <!-- Post Engagement Stats -->
+              <div class="facebook-post-stats">
+                <div class="fb-reactions">
+                  <span class="reaction-bubble like">👍</span>
+                  <span class="reaction-bubble heart">❤️</span>
+                  <span class="reaction-count">1,428</span>
+                </div>
+                <div class="fb-comments-shares">
+                  <span>384 ความคิดเห็น</span>
+                  <span class="meta-dot">•</span>
+                  <span>92 แชร์</span>
+                </div>
+              </div>
+
+              <!-- Post Actions (Like / Comment / Share) -->
+              <div class="facebook-action-buttons">
+                <button class="fb-action-btn" id="fbLikeBtn" type="button">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                  <span>ถูกใจ</span>
+                </button>
+                <button class="fb-action-btn active" id="fbCommentFocusBtn" type="button">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  <span>ความคิดเห็น</span>
+                </button>
+                <button class="fb-action-btn" id="fbShareBtn" type="button">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  <span>แชร์</span>
+                </button>
+              </div>
+
+              <!-- Comments Section -->
+              <div class="facebook-comments-section" id="facebookCommentsSection">
+                <div class="fb-comments-header">ความคิดเห็นที่เกี่ยวข้อง</div>
+                
+                <!-- Simulated Existing Comments -->
+                <div class="fb-comment-list" id="fbCommentList">
+                  <div class="fb-comment-item">
+                    <div class="fb-comment-avatar" style="background: #ec4899;">ส</div>
+                    <div class="fb-comment-bubble">
+                      <span class="fb-commenter-name">สมใจ ใจดี</span>
+                      <span class="fb-comment-text">สนใจงานค่ะ ต้องมีคอมพิวเตอร์ไหมคะ</span>
+                    </div>
+                  </div>
+
+                  <!-- Dynamic Player Comment & BrightWork Reply Injected Here -->
+                  <div id="fbDynamicCommentArea"></div>
+                </div>
+
+                <!-- Comment Input Area for Player -->
+                <div class="fb-comment-input-bar">
+                  <div class="fb-player-avatar">ม</div>
+                  <div class="fb-input-wrapper">
+                    <!-- Interactive Guide Pointer & Tooltip for Comment (Mission 03) -->
+                    <div class="fb-comment-guide-wrapper" id="fbCommentGuide" hidden>
+                      <div class="fb-guide-tooltip">
+                        <span class="fb-guide-sparkle">💡</span>
+                        <span class="fb-guide-text">พิมพ์คำว่า "สนใจ" ในคอมเม้นท์</span>
+                      </div>
+                      <div class="fb-guide-pointer" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" class="fb-pointer-cursor-svg" width="26" height="26" fill="#1877F2">
+                          <path d="M12 21.5l-7.5-7.5c-.6-.6-.2-1.6.7-1.6h3.8V4c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v8.4h3.8c.9 0 1.3 1 .7 1.6L12 21.5z" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <input type="text" class="fb-comment-input" id="fbCommentInput" placeholder="พิมพ์ความคิดเห็น เช่น 'สนใจ'..." aria-label="พิมพ์ความคิดเห็น">
+                    <button class="fb-quick-comment-btn" id="fbQuickInterestBtn" type="button">
+                      💬 สนใจ
+                    </button>
+                    <button class="fb-send-comment-btn" id="fbSendCommentBtn" type="button" aria-label="ส่งความคิดเห็น">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Bottom Home Swipe Bar -->
+          <footer class="facebook-bottom-bar">
+            <button class="facebook-home-bar-btn" id="facebookHomeBarBtn" type="button" aria-label="กลับหน้าจอหลัก"></button>
+          </footer>
+        </section>
+
+        <!-- ================================================================
+             LINE Chat Conversation Screen with น้องจ๊อด (Mission 03)
+             ================================================================ -->
+        <section class="line-convo-screen" id="jodConvoScreen" role="region" aria-label="ห้องแชท น้องจ๊อด (BrightWork Connect)" hidden>
+          <!-- Convo Header -->
+          <header class="convo-header">
+            <div class="convo-header-left">
+              <button class="convo-back-btn" id="jodConvoBackBtn" type="button" aria-label="กลับหน้ารายการแชท">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <div class="convo-avatar" style="background: linear-gradient(135deg, #4CAF50, #388E3C);">
+                <span>จ๊อด</span>
+              </div>
+              <div class="convo-user-meta">
+                <span class="convo-user-name">น้องจ๊อด (BrightWork)</span>
+                <span class="convo-status-tag" id="jodStatusTag"><span class="online-dot"></span> ออนไลน์</span>
+              </div>
+            </div>
+
+            <div class="convo-header-right">
+              <button class="convo-tool-btn" id="jodConvoHomeBtn" type="button" aria-label="กลับหน้าจอหลัก" title="กลับหน้าจอหลัก">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- Chat Stream Area -->
+          <div class="convo-stream" id="jodConvoStream" role="log" aria-live="polite">
+            <div class="convo-date-badge"><span>วันนี้</span></div>
+            <!-- Dynamic Messages injected here -->
+            <div class="chat-typing-indicator" id="jodTypingIndicator" hidden>
+              <div class="typing-avatar" style="background: linear-gradient(135deg, #4CAF50, #388E3C);">จ๊อด</div>
+              <div class="typing-bubble">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Reply & Decision Area -->
+          <div class="convo-bottom-bar" id="jodConvoBottomBar">
+            <!-- Blocked Notice Banner (Shown when quest is completed & Jod is blocked) -->
+            <div class="convo-blocked-banner" id="jodBlockedBanner" hidden>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+              <span>บัญชีนี้ถูกบล็อกแล้ว (ภารกิจสำเร็จ ไม่สามารถส่งข้อความได้)</span>
+            </div>
+
+            <!-- A / B / C Choices Box (Pops up when Jod finishes speaking) -->
+            <div class="decision-choices-box" id="jodDecisionChoicesBox" hidden>
+              <div class="choices-header">
+                <span class="choices-title">เลือกแนวทางตอบกลับ:</span>
+              </div>
+              <div class="choices-list">
+                <button class="choice-btn" id="jodChoiceBtnA" data-choice="A" type="button">
+                  <span class="choice-badge">A</span>
+                  <span class="choice-label" id="jodChoiceLabelA">ตัวเลือก A</span>
+                </button>
+                <button class="choice-btn" id="jodChoiceBtnB" data-choice="B" type="button">
+                  <span class="choice-badge">B</span>
+                  <span class="choice-label" id="jodChoiceLabelB">ตัวเลือก B</span>
+                </button>
+                <button class="choice-btn" id="jodChoiceBtnC" data-choice="C" type="button">
+                  <span class="choice-badge">C</span>
+                  <span class="choice-label" id="jodChoiceLabelC">ตัวเลือก C</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Text Input Area -->
+            <div class="convo-input-area" id="jodConvoInputArea">
+              <input type="text" class="convo-text-input" id="jodConvoTextInput" placeholder="พิมพ์ตัวเลือก (A / B / C)..." aria-label="พิมพ์ข้อความตอบกลับ">
+              <button class="convo-send-btn" id="jodConvoSendBtn" type="button" aria-label="ส่งข้อความ">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Settings App Screen (Simulated Screen) -->
+        <section class="settings-screen" id="settingsScreen" role="region" aria-label="การตั้งค่า Setting" hidden>
+          <!-- Top App Bar -->
+          <header class="settings-top-bar">
+            <button class="settings-back-btn" id="settingsBackBtn" type="button" aria-label="กลับหน้าหลัก">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>หน้าหลัก</span>
+            </button>
+            <h1 class="settings-title">การตั้งค่า</h1>
+            <div class="settings-top-spacer"></div>
+          </header>
+
+          <!-- Settings Content Area -->
+          <div class="settings-content-area">
+            
+            <!-- 1. การปรับระดับเสียง & Mute -->
+            <div class="settings-card-group">
+              <div class="settings-group-header">
+                <span class="group-title">ระบบเสียง (Audio & Sound)</span>
+              </div>
+
+              <!-- Mute Switch -->
+              <div class="settings-row">
+                <div class="row-icon-col icon-mute">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="muteIconSvg" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </div>
+                <div class="row-label-col">
+                  <label for="muteToggle" class="row-title">ปิดเสียงทั้งหมด (Mute)</label>
+                  <span class="row-desc">ปิดเสียงเพลงและเอฟเฟคทั้งหมดในเกม</span>
+                </div>
+                <div class="row-control-col">
+                  <label class="ios-switch">
+                    <input type="checkbox" id="muteToggle" aria-label="ปิดเสียงทั้งหมด">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Volume Slider 1: เพลง (Music) -->
+              <div class="settings-slider-row">
+                <div class="slider-header-wrap">
+                  <div class="slider-label-title">
+                    <span class="slider-emoji" aria-hidden="true">🎵</span>
+                    <span>ระดับเสียงเพลง (Music: Piano Motif)</span>
+                  </div>
+                  <span class="slider-val-badge" id="musicVolumeVal">70%</span>
+                </div>
+                <div class="slider-input-wrap">
+                  <input type="range" min="0" max="100" value="70" class="custom-range" id="musicVolumeSlider" aria-label="ระดับเสียงเพลง">
+                </div>
+              </div>
+
+              <!-- Volume Slider 2: เอฟเฟค (SFX) -->
+              <div class="settings-slider-row">
+                <div class="slider-header-wrap">
+                  <div class="slider-label-title">
+                    <span class="slider-emoji" aria-hidden="true">🔔</span>
+                    <span>ระดับเสียงเอฟเฟค (SFX)</span>
+                  </div>
+                  <span class="slider-val-badge" id="sfxVolumeVal">80%</span>
+                </div>
+                <div class="slider-input-wrap">
+                  <input type="range" min="0" max="100" value="80" class="custom-range" id="sfxVolumeSlider" aria-label="ระดับเสียงเอฟเฟค">
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. ปุ่มเริ่มใหม่ทั้งหมด (Restart Game) -->
+            <div class="settings-card-group">
+              <div class="settings-group-header">
+                <span class="group-title">รีสตาร์ทเกม (Game Reset)</span>
+              </div>
+
+              <div class="settings-action-row">
+                <div class="row-icon-col icon-danger">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                  </svg>
+                </div>
+                <div class="row-label-col">
+                  <span class="row-title">เริ่มใหม่ทั้งหมด</span>
+                  <span class="row-desc">รีเซ็ตสถานะเควส ประวัติแชท และยอดเงินใหม่ทั้งหมด</span>
+                </div>
+                <div class="row-control-col">
+                  <button type="button" class="btn-restart-action" id="settingsRestartGameBtn">เริ่มใหม่</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. รายงานปัญหา & แจ้ง bug และ ติดต่อเรา -->
+            <div class="settings-card-group">
+              <div class="settings-group-header">
+                <span class="group-title">การสนับสนุน & สื่อสาร (Support)</span>
+              </div>
+
+              <!-- รายงานปัญหา & แจ้ง bug -->
+              <button type="button" class="settings-menu-nav-btn" id="settingsBugReportBtn">
+                <div class="row-icon-col icon-bug">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="8" y="6" width="8" height="14" rx="4"></rect>
+                    <path d="m19 7-3 2"></path>
+                    <path d="m5 7 3 2"></path>
+                    <path d="m19 19-3-2"></path>
+                    <path d="m5 19 3-2"></path>
+                    <path d="M20 13h-4"></path>
+                    <path d="M4 13h4"></path>
+                    <path d="m10 4 1 2"></path>
+                    <path d="m14 4-1 2"></path>
+                  </svg>
+                </div>
+                <div class="row-label-col">
+                  <span class="row-title">รายงานปัญหา & แจ้ง Bug</span>
+                  <span class="row-desc">แจ้งข้อผิดพลาด ตัวเลือกติดขัด หรือปัญหาการใช้งาน</span>
+                </div>
+                <span class="chevron-arrow" aria-hidden="true">›</span>
+              </button>
+
+              <!-- ติดต่อเรา -->
+              <button type="button" class="settings-menu-nav-btn" id="settingsContactUsBtn">
+                <div class="row-icon-col icon-info">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                </div>
+                <div class="row-label-col">
+                  <span class="row-title">ติดต่อเรา (Contact Us)</span>
+                  <span class="row-desc">ข้อมูลผู้พัฒนา โครงการสื่อสร้างสรรค์</span>
+                </div>
+                <span class="chevron-arrow" aria-hidden="true">›</span>
+              </button>
+            </div>
+
+            <!-- Footer App Info -->
+            <div class="settings-app-footer">
+              <div class="footer-app-name">ZERO TRUST SIMULATOR</div>
+              <div class="footer-app-version">เวอร์ชัน 1.0.0 (Cyber Resilience Training)</div>
+              <div class="footer-app-copyright">© Dreampath Studio | โครงการสื่อสร้างสรรค์</div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Home Swipe Bar -->
+          <footer class="settings-bottom-bar">
+            <button class="settings-home-bar-btn" id="settingsHomeBarBtn" type="button" aria-label="กลับสู่หน้าจอหลัก"></button>
+          </footer>
+        </section>
+
+        <!-- Restart Game Confirmation Modal -->
+        <div class="settings-modal-overlay" id="restartGameConfirmModal" hidden>
+          <div class="settings-dialog-card">
+            <div class="dialog-icon-badge danger">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#DC2626" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h3 class="dialog-title">ยืนยันเริ่มเกมใหม่ทั้งหมด?</h3>
+            <p class="dialog-message">ความคืบหน้าภารกิจทั้งหมด สถิติ และยอดเงินใน Mobile Bank จะถูกรีเซ็ตกลับสู่เริ่มต้น และเกมจะเริ่มนับเวลาเปิดตัวเควสใหม่อีกครั้ง</p>
+            <div class="dialog-actions">
+              <button type="button" class="btn-dialog-cancel" id="cancelRestartGameBtn">ยกเลิก</button>
+              <button type="button" class="btn-dialog-confirm-danger" id="confirmRestartGameBtn">ยืนยันเริ่มใหม่</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bug Report Modal Sheet -->
+        <div class="settings-modal-overlay" id="bugReportModal" hidden>
+          <div class="settings-sheet-card">
+            <div class="sheet-header">
+              <div class="sheet-title-wrap">
+                <span class="sheet-icon" aria-hidden="true">🐞</span>
+                <h3 class="sheet-title">รายงานปัญหา & แจ้ง Bug</h3>
+              </div>
+              <button type="button" class="sheet-close-btn" id="closeBugReportBtn" aria-label="ปิด">✕</button>
+            </div>
+            <div class="sheet-body">
+              <div class="form-group">
+                <label for="bugCategorySelect" class="form-label">ประเภทปัญหาที่พบ</label>
+                <select id="bugCategorySelect" class="form-select">
+                  <option value="quest">บทสนทนา / เควสติดขัด (Quest & Chat)</option>
+                  <option value="display">การแสดงผล / ปัญหาหน้าจอ (Display & UI)</option>
+                  <option value="sound">ระบบเสียง / เอฟเฟคไม่เล่น (Audio & SFX)</option>
+                  <option value="link">ปุ่มกด / ลิงก์ไม่ทำงาน (Buttons & Links)</option>
+                  <option value="other">ข้อเสนอแนะอื่นๆ (Other Feedback)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="bugDetailsInput" class="form-label">รายละเอียดปัญหา</label>
+                <textarea id="bugDetailsInput" class="form-textarea" rows="3" placeholder="โปรดระบุปัญหาที่เกิดขึ้น หรือขั้นตอนก่อนเกิดปัญหา..."></textarea>
+              </div>
+
+              <div class="system-diagnostic-box">
+                <div class="diag-header">ข้อมูลระบบอัตโนมัติ (Diagnostics)</div>
+                <div class="diag-item"><span>แอปพลิเคชัน:</span> <strong>Zero-Trust Simulator v1.0</strong></div>
+                <div class="diag-item"><span>เควสปัจจุบัน:</span> <strong id="diagQuestStatus">เควส 1 (น้องไก่)</strong></div>
+                <div class="diag-item"><span>สถานะอุปกรณ์:</span> <strong>Simulated Mobile Viewport</strong></div>
+              </div>
+            </div>
+            <div class="sheet-footer">
+              <button type="button" class="btn-sheet-submit" id="submitBugReportBtn">ส่งรายงานปัญหา</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Us Modal Sheet -->
+        <div class="settings-modal-overlay" id="contactUsModal" hidden>
+          <div class="settings-sheet-card contact-card">
+            <div class="sheet-header">
+              <div class="sheet-title-wrap">
+                <span class="sheet-icon" aria-hidden="true">🏢</span>
+                <h3 class="sheet-title">ติดต่อเรา (Contact Us)</h3>
+              </div>
+              <button type="button" class="sheet-close-btn" id="closeContactUsBtn" aria-label="ปิด">✕</button>
+            </div>
+            <div class="sheet-body">
+              <div class="contact-hero">
+                <div class="contact-app-badge">
+                  <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M9 12l2 2 4-4"/>
+                  </svg>
+                </div>
+                <h4 class="contact-hero-title">ZERO TRUST SIMULATOR</h4>
+                <p class="contact-hero-desc">แบบจำลองสร้างเสริมทักษะรู้ทันภัยไซเบอร์และการหลอกลวงออนไลน์</p>
+              </div>
+
+              <div class="contact-info-list">
+                <div class="contact-info-item">
+                  <span class="ci-icon" aria-hidden="true">🎬</span>
+                  <div class="ci-text">
+                    <strong>โครงการสื่อสร้างสรรค์</strong>
+                    <span>Creative Media Initiative for Cyber Awareness</span>
+                  </div>
+                </div>
+
+                <div class="contact-info-item">
+                  <span class="ci-icon" aria-hidden="true">🚀</span>
+                  <div class="ci-text">
+                    <strong>ผู้พัฒนา: Dreampath Studio</strong>
+                    <span>ทีมวิจัยและพัฒนาสื่อจำลองสถานการณ์เสมือนจริง</span>
+                  </div>
+                </div>
+
+                <div class="contact-info-item">
+                  <span class="ci-icon" aria-hidden="true">📧</span>
+                  <div class="ci-text">
+                    <strong>อีเมลติดต่อ</strong>
+                    <a href="mailto:support@dreampathstudio.com" class="ci-link">support@dreampathstudio.com</a>
+                  </div>
+                </div>
+
+                <div class="contact-info-item">
+                  <span class="ci-icon" aria-hidden="true">🌐</span>
+                  <div class="ci-text">
+                    <strong>เว็บไซต์โครงการ</strong>
+                    <a href="https://dreampathstudio.com" target="_blank" rel="noopener noreferrer" class="ci-link">www.dreampathstudio.com</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-footer">
+              <button type="button" class="btn-sheet-close-action" id="doneContactUsBtn">ปิด</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player Statistics Screen (Simulated Screen) -->
+        <section class="player-stats-screen" id="playerStatsScreen" role="region" aria-label="สถิติผู้เล่นและการจัดอันดับ" hidden>
+          <!-- Top App Bar -->
+          <header class="stats-top-bar">
+            <button class="stats-back-btn" id="statsBackBtn" type="button" aria-label="กลับหน้าหลัก">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>หน้าหลัก</span>
+            </button>
+            <h1 class="stats-title">สถิติผู้เล่นทั่วประเทศ</h1>
+            <button type="button" class="stats-top-ranking-btn" id="statsTopRankingBtn" aria-label="ดูอันดับ Server">
+              <span>🏆 Ranking</span>
+            </button>
+          </header>
+
+          <!-- Content Scroll Area -->
+          <div class="stats-content-area">
+            
+            <!-- Hero Card: คะแนนของผู้เล่นปัจจุบัน -->
+            <div class="stats-hero-card">
+              <div class="stats-hero-badge">คะแนนรวมสะสมของคุณ</div>
+              <div class="stats-score-display">
+                <span class="stats-big-number" id="statsScreenBigScore">0</span>
+                <span class="stats-unit">คะแนน</span>
+              </div>
+              <div class="stats-rank-tag" id="statsScreenRankTag">🛡️ ระดับ: กำลังประเมินผล</div>
+              <div class="stats-quest-state-text" id="statsScreenQuestState">สถานะ: ภารกิจที่ 1 (น้องไก่) กำลังดำเนินอยู่</div>
+              <button type="button" class="stats-hero-ranking-btn" id="statsHeroRankingBtn">
+                <span>🏆 ดูลำดับคะแนนรวมทั้งเซิร์ฟเวอร์ (Ranking) ›</span>
+              </button>
+            </div>
+
+            <!-- Card 1.5: สรุปคะแนนแยกหมวดหมู่ (Mission + Minigame = Total) ตามที่ผู้ใช้กำหนด -->
+            <div class="stats-card stats-breakdown-card">
+              <div class="stats-card-header">
+                <span class="stats-card-icon">🎯</span>
+                <div class="stats-card-title-wrap">
+                  <div class="stats-card-title">สรุปคะแนนสะสมแยกหมวดหมู่</div>
+                  <div class="stats-card-sub">คำนวณผลคะแนนรวมสำหรับจัดอันดับ Server</div>
+                </div>
+                <button type="button" class="stats-card-ranking-link" id="openRankingBtn" aria-label="ดูอันดับทั่วเซิร์ฟเวอร์">
+                  <span>ranking &gt;</span>
+                </button>
+              </div>
+
+              <div class="score-breakdown-list">
+                <!-- 1. คะแนน mission (ใช้อันเดิม) -->
+                <div class="score-breakdown-row item-mission">
+                  <div class="sb-label-group">
+                    <span class="sb-badge badge-mission">ภารกิจ</span>
+                    <div class="sb-texts">
+                      <span class="sb-title">คะแนน mission (ใช้อันเดิม)</span>
+                      <span class="sb-sub">คะแนนการตัดสินใจในเควส 1, 2, 3</span>
+                    </div>
+                  </div>
+                  <div class="sb-score-col">
+                    <span class="sb-val" id="statsMissionScoreVal">0</span>
+                    <span class="sb-unit">คะแนน</span>
+                  </div>
+                </div>
+
+                <!-- 2. คะแนน minigame -->
+                <div class="score-breakdown-row item-minigame">
+                  <div class="sb-label-group">
+                    <span class="sb-badge badge-minigame">มินิเกม</span>
+                    <div class="sb-texts">
+                      <span class="sb-title">คะแนน minigame</span>
+                      <span class="sb-sub">จากการเล่นเกมตัวต่อ Tetris 100</span>
+                    </div>
+                  </div>
+                  <div class="sb-score-col">
+                    <span class="sb-val" id="statsMinigameScoreVal">0</span>
+                    <span class="sb-unit">คะแนน</span>
+                  </div>
+                </div>
+
+                <!-- 3. ผลคะแนนรวม = ? -->
+                <div class="score-breakdown-row item-total">
+                  <div class="sb-label-group">
+                    <span class="sb-badge badge-total">ผลคะแนนรวม</span>
+                    <div class="sb-texts">
+                      <span class="sb-title">ผลคะแนนรวม = (Mission + Minigame)</span>
+                      <span class="sb-sub">คะแนนรวมสุทธิสำหรับชิงอันดับ Ranking</span>
+                    </div>
+                  </div>
+                  <div class="sb-score-col">
+                    <span class="sb-val total-val" id="statsTotalScoreVal">0</span>
+                    <span class="sb-unit">คะแนน</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: สถิติคนทั่วประเทศ (National Benchmark) -->
+            <div class="stats-card">
+              <div class="stats-card-header">
+                <span class="stats-card-icon">🇹🇭</span>
+                <div class="stats-card-title-wrap">
+                  <div class="stats-card-title">สถิติเปรียบเทียบคนทั่วประเทศ</div>
+                  <div class="stats-card-sub">รวบรวมจากผู้ทดสอบ 128,450 คนในระบบ</div>
+                </div>
+              </div>
+
+              <!-- National Percentile Highlight -->
+              <div class="stats-percentile-banner" id="statsPercentileBanner">
+                🏆 คะแนนของคุณ <strong>ดีกว่า 50%</strong> ของคนทั่วประเทศ
+              </div>
+
+              <!-- Comparison Chart Bars -->
+              <div class="stats-compare-group">
+                <!-- Player Bar -->
+                <div class="compare-row">
+                  <div class="compare-label-row">
+                    <span class="compare-name">คะแนนของคุณ</span>
+                    <strong class="compare-val" id="comparePlayerScoreVal">0 คะแนน</strong>
+                  </div>
+                  <div class="compare-bar-track">
+                    <div class="compare-bar-fill player-bar" id="comparePlayerBarFill" style="width: 10%;"></div>
+                  </div>
+                </div>
+
+                <!-- National Average Bar -->
+                <div class="compare-row">
+                  <div class="compare-label-row">
+                    <span class="compare-name">คะแนนเฉลี่ยคนทั่วประเทศ</span>
+                    <strong class="compare-val">68.5 คะแนน</strong>
+                  </div>
+                  <div class="compare-bar-track">
+                    <div class="compare-bar-fill nat-bar" style="width: 68.5%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Distribution Insight -->
+              <div class="national-distribution-box">
+                <div class="dist-row">
+                  <span class="dist-tier tier-expert">ท็อป 12% (90-100 คะแนน)</span>
+                  <span class="dist-desc">ภูมิคุ้มกัน Zero-Trust สูงสุด ไม่หลงเชื่อกลโกง</span>
+                </div>
+                <div class="dist-row">
+                  <span class="dist-tier tier-aware">กลุ่ม 38% (70-89 คะแนน)</span>
+                  <span class="dist-desc">รู้ทันภัยไซเบอร์ ระแวดระวังดี</span>
+                </div>
+                <div class="dist-row">
+                  <span class="dist-tier tier-moderate">กลุ่ม 32% (40-69 คะแนน)</span>
+                  <span class="dist-desc">มีจุดอ่อน เสี่ยงถูกชักจูงหากไม่รอบคอบ</span>
+                </div>
+                <div class="dist-row">
+                  <span class="dist-tier tier-danger">กลุ่ม 18% (ต่ำกว่า 40 คะแนน)</span>
+                  <span class="dist-desc">กลุ่มเสี่ยงสูง ขาดการตรวจสอบบัญชีม้า</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: รายละเอียดการตอบคำถามของผู้เล่น -->
+            <div class="stats-card">
+              <div class="stats-card-header">
+                <span class="stats-card-icon">📊</span>
+                <div class="stats-card-title-wrap">
+                  <div class="stats-card-title">บันทึกการตัดสินใจในเควส</div>
+                  <div class="stats-card-sub">การจำแนกคะแนนตามเกณฑ์ความปลอดภัย</div>
+                </div>
+              </div>
+
+              <div class="stats-grid-counts">
+                <div class="count-pill pill-safest">
+                  <span class="pill-icon">🛡️</span>
+                  <div class="pill-info">
+                    <div class="pill-num" id="statSafestCount">0</div>
+                    <div class="pill-title">ปลอดภัยที่สุด (+10)</div>
+                  </div>
+                </div>
+
+                <div class="count-pill pill-low-safety">
+                  <span class="pill-icon">⚠️</span>
+                  <div class="pill-info">
+                    <div class="pill-num" id="statLowSafetyCount">0</div>
+                    <div class="pill-title">ปลอดภัยต่ำ (+7)</div>
+                  </div>
+                </div>
+
+                <div class="count-pill pill-risky">
+                  <span class="pill-icon">❌</span>
+                  <div class="pill-info">
+                    <div class="pill-num" id="statRiskyCount">0</div>
+                    <div class="pill-title">เสี่ยงถูกหลอก (-1)</div>
+                  </div>
+                </div>
+
+                <div class="count-pill pill-scammed">
+                  <span class="pill-icon">🚨</span>
+                  <div class="pill-info">
+                    <div class="pill-num" id="statScammedCount">0</div>
+                    <div class="pill-title">ถูกหลอกตอนท้าย (-10)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Home Swipe Bar -->
+          <footer class="stats-bottom-bar">
+            <button class="stats-home-bar-btn" id="statsHomeBarBtn" type="button" aria-label="กลับสู่หน้าจอหลัก"></button>
+          </footer>
+        </section>
+
+        <!-- ================================================================
+             SERVER RANKING MODAL (ลำดับคะแนนรวมทั้งเซิร์ฟเวอร์)
+             ================================================================ -->
+        <div class="settings-modal-overlay ranking-modal-overlay" id="serverRankingModal" hidden>
+          <div class="settings-sheet-card ranking-sheet-card">
+            <div class="sheet-header ranking-sheet-header">
+              <div class="sheet-title-wrap">
+                <span class="sheet-icon" aria-hidden="true">🏆</span>
+                <h3 class="sheet-title">อันดับคะแนนรวมทั้งเซิร์ฟเวอร์</h3>
+              </div>
+              <button type="button" class="sheet-close-btn" id="closeRankingBtn" aria-label="ปิด">✕</button>
+            </div>
+
+            <!-- Player Sticky Card -->
+            <div class="ranking-player-card" id="rankingPlayerCard">
+              <div class="rpc-rank-col">
+                <span class="rpc-rank-label">อันดับของคุณ</span>
+                <span class="rpc-rank-val" id="playerRankNumber">#--</span>
+              </div>
+              <div class="rpc-info-col">
+                <div class="rpc-name-row">
+                  <span class="rpc-avatar">👤</span>
+                  <span class="rpc-player-name">คุณมะลิ (คุณ)</span>
+                  <span class="rpc-you-badge">YOU</span>
+                </div>
+                <div class="rpc-breakdown-row">
+                  <span>Mission: <strong id="playerRankMissionVal">0</strong></span>
+                  <span class="rpc-dot">•</span>
+                  <span>Minigame: <strong id="playerRankMinigameVal">0</strong></span>
+                </div>
+              </div>
+              <div class="rpc-score-col">
+                <span class="rpc-total-val" id="playerRankTotalVal">0</span>
+                <span class="rpc-total-unit">คะแนน</span>
+              </div>
+            </div>
+
+            <!-- Leaderboard List -->
+            <div class="sheet-body ranking-sheet-body">
+              <div class="ranking-table-header">
+                <span>อันดับ</span>
+                <span>ผู้เล่น</span>
+                <span>คะแนนรวม</span>
+              </div>
+              <div class="ranking-list" id="serverRankingList">
+                <!-- Dynamically populated via ServerRankingManager -->
+              </div>
+            </div>
+
+            <div class="sheet-footer">
+              <button type="button" class="btn-sheet-close-action" id="doneRankingBtn">ปิด</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================
+             MINIGAME APP SCREEN (คลังมินิเกม & TETRIS 100 CORE GAMEPLAY)
+             ================================================================ -->
+        <section class="minigame-screen" id="minigameScreen" role="region" aria-label="แอปพลิเคชัน มินิเกม" hidden>
+          <!-- Top App Bar -->
+          <header class="minigame-top-bar">
+            <button class="minigame-back-btn" id="minigameBackBtn" type="button" aria-label="กลับหน้าหลัก">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>หน้าหลัก</span>
+            </button>
+            <h2 class="minigame-title">🎮 มินิเกม</h2>
+            <button type="button" class="minigame-ranking-btn" id="minigameOpenRankingBtn" aria-label="ดูอันดับ">
+              <span>🏆 Ranking</span>
+            </button>
+          </header>
+
+          <!-- Minigame Lobby Content -->
+          <div class="minigame-lobby-content" id="minigameLobbyContent">
+            <div class="minigame-banner">
+              <div class="minigame-banner-badge">ARCADE & TRAINING</div>
+              <h3 class="minigame-banner-title">เล่นมินิเกมสะสมคะแนน Ranking!</h3>
+              <p class="minigame-banner-sub">คะแนนมินิเกมจะถูกบวกเพิ่มเข้าสู่สถิติ เพื่อจัดอันดับคะแนนรวมทั้งเซิร์ฟเวอร์</p>
+            </div>
+
+            <div class="minigame-list-section">
+              <h4 class="minigame-section-title">เลือกเกมที่คุณต้องการเล่น</h4>
+
+              <!-- Game 1: Tetris 100 Core Gameplay -->
+              <div class="minigame-card card-tetris" id="tetrisGameCard">
+                <div class="game-card-badge">🔥 แนะนำ • 100 Core Gameplay</div>
+                <div class="game-card-body">
+                  <div class="game-icon-box tetris-icon-box">
+                    <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true">
+                      <rect x="4" y="4" width="18" height="18" rx="4" fill="#00e5ff"/>
+                      <rect x="26" y="4" width="18" height="18" rx="4" fill="#ffd600"/>
+                      <rect x="4" y="26" width="18" height="18" rx="4" fill="#ff1744"/>
+                      <rect x="26" y="26" width="18" height="18" rx="4" fill="#00e676"/>
+                    </svg>
+                  </div>
+                  <div class="game-card-info">
+                    <h5 class="game-title">1. Tetris 100 Core Gameplay</h5>
+                    <p class="game-desc">บล็อกสีสันหลากหลาย เคลียร์แถวสะสมคะแนน และค่อยๆ เพิ่มความเร็ว ยิ่งเคลียร์ได้มาก ยิ่งเพิ่มคะแนน Ranking!</p>
+                    <div class="game-stats-preview">
+                      <span>คะแนนมินิเกมสะสม: <strong id="lobbyMinigameScoreVal">0</strong> คะแนน</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="game-card-footer">
+                  <button type="button" class="btn-play-game" id="startTetrisBtn">
+                    <span>▶ เริ่มเล่น Tetris 100</span>
+                  </button>
+                  <button type="button" class="btn-lobby-guide" id="lobbyTetrisGuideBtn">
+                    <span>📖 แนะนำวิธีการเล่น & การควบคุม</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Game 2: Cyber Quiz Rush (เร็วๆ นี้) -->
+              <div class="minigame-card card-disabled">
+                <div class="game-card-badge coming-soon">⏳ เร็วๆ นี้ (Coming Soon)</div>
+                <div class="game-card-body">
+                  <div class="game-icon-box quiz-icon-box">
+                    <span style="font-size: 26px;">⚡</span>
+                  </div>
+                  <div class="game-card-info">
+                    <h5 class="game-title">2. Cyber Quiz Rush</h5>
+                    <p class="game-desc">สปีดรันตอบคำถามจับผิดมิจฉาชีพออนไลน์ แข่งขันความไวและความแม่นยำ</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tetris Game Play View -->
+          <div class="tetris-game-view" id="tetrisGameView" hidden tabindex="0">
+            <div class="tetris-view-header">
+              <button type="button" class="tetris-back-btn" id="tetrisBackToLobbyBtn">‹ คลังเกม</button>
+              <div class="tetris-game-title">TETRIS 100</div>
+              <div class="tetris-top-actions">
+                <button type="button" class="tetris-ctrl-btn" id="tetrisHelpBtn" aria-label="วิธีเล่น" title="วิธีเล่น & การควบคุม">❓</button>
+                <button type="button" class="tetris-ctrl-btn" id="tetrisPauseBtn" aria-label="หยุดชั่วคราว">⏸</button>
+                <button type="button" class="tetris-ctrl-btn" id="tetrisSettingsBtn" aria-label="ตั้งค่า" title="ตั้งค่าเสียง & เกม">⚙️</button>
+              </div>
+            </div>
+
+            <!-- How to Play & Controls Guide Overlay -->
+            <div class="tetris-overlay tetris-guide-overlay" id="tetrisGuideOverlay" hidden>
+              <div class="overlay-box tetris-guide-box">
+                <div class="guide-modal-header">
+                  <div class="guide-modal-badge">TETRIS 100 • GUIDE</div>
+                  <h3 class="guide-modal-title">🎮 แนะนำวิธีการเล่น & การควบคุม</h3>
+                  <p class="guide-modal-subtitle">เลือกดูวิธีการควบคุมตามอุปกรณ์ที่คุณใช้งาน</p>
+                </div>
+
+                <div class="guide-scroll-body">
+                  <!-- Section 1: PC Controls -->
+                  <div class="guide-group guide-pc-group">
+                    <div class="guide-group-header">
+                      <span class="guide-group-icon">💻</span>
+                      <h4 class="guide-group-title">สำหรับคอมพิวเตอร์ (PC)</h4>
+                    </div>
+
+                    <div class="guide-card-list">
+                      <div class="guide-item-card">
+                        <div class="guide-key-cluster">
+                          <kbd class="kbd-btn">W</kbd>
+                          <span class="key-sep">/</span>
+                          <kbd class="kbd-btn">▲</kbd>
+                        </div>
+                        <div class="guide-item-desc">
+                          <div class="guide-action-name">ทิศทางบน (Up)</div>
+                          <div class="guide-action-detail">ทิ้งบล็อกลงทันที (Hard Drop)</div>
+                        </div>
+                      </div>
+
+                      <div class="guide-item-card">
+                        <div class="guide-key-cluster">
+                          <kbd class="kbd-btn">A</kbd>
+                          <kbd class="kbd-btn">S</kbd>
+                          <kbd class="kbd-btn">D</kbd>
+                        </div>
+                        <div class="guide-item-desc">
+                          <div class="guide-action-name">ทิศทาง ซ้าย-ล่าง-ขวา</div>
+                          <div class="guide-action-detail">A (ซ้าย) • S (เลื่อนลงเร็ว) • D (ขวา)</div>
+                        </div>
+                      </div>
+
+                      <div class="guide-item-card guide-card-highlight">
+                        <div class="guide-key-cluster">
+                          <kbd class="kbd-btn kbd-space">Spacebar</kbd>
+                        </div>
+                        <div class="guide-item-desc">
+                          <div class="guide-action-name highlight-blue">ปุ่ม Spacebar</div>
+                          <div class="guide-action-detail"><strong>หมุนแท่งบล็อก</strong> 🔄 (Rotate)</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Section 2: Mobile & Tablet Controls -->
+                  <div class="guide-group guide-mobile-group">
+                    <div class="guide-group-header">
+                      <span class="guide-group-icon">📱</span>
+                      <h4 class="guide-group-title">สำหรับโทรศัพท์ & แท็บเล็ต (Mobile / Tablet)</h4>
+                    </div>
+
+                    <div class="guide-card-list">
+                      <div class="guide-item-card">
+                        <div class="guide-icon-badge dpad-icon-box">🕹️</div>
+                        <div class="guide-item-desc">
+                          <div class="guide-action-name">จอยสติ๊ก 4 ทิศทาง (ฝั่งซ้าย)</div>
+                          <div class="guide-action-detail">ควบคุมทิศทาง: <strong>บน - ล่าง - ซ้าย - ขวา</strong></div>
+                          <div class="guide-action-sub">▲ บน: ทิ้งลงทันที | ▼ ล่าง: ลงเร็ว | ◀ ซ้าย | ▶ ขวา</div>
+                        </div>
+                      </div>
+
+                      <div class="guide-item-card guide-card-highlight">
+                        <div class="guide-icon-badge rotate-icon-box">🔄</div>
+                        <div class="guide-item-desc">
+                          <div class="guide-action-name highlight-cyan">ปุ่มวงกลมสีฟ้า (ฝั่งขวา)</div>
+                          <div class="guide-action-detail">แตะเพื่อ <strong>หมุนแท่งบล็อก</strong> 🔄</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="guide-modal-footer">
+                  <button type="button" class="btn-guide-confirm" id="tetrisCloseGuideBtn">
+                    <span>เข้าใจแล้ว • เริ่มเล่นเลย ▶</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tetris Settings Popup Overlay -->
+            <div class="tetris-overlay tetris-settings-overlay" id="tetrisSettingsOverlay" hidden>
+              <div class="overlay-box tetris-settings-box">
+                <div class="settings-modal-header">
+                  <div class="settings-modal-badge">TETRIS 100 • SETTINGS</div>
+                  <h3 class="settings-modal-title">⚙️ ตั้งค่าเสียง & การเล่น</h3>
+                  <p class="settings-modal-subtitle">ปรับระดับเสียงเพลง เอฟเฟกต์ และระบบเกม</p>
+                </div>
+
+                <div class="settings-modal-body">
+                  <!-- 1. ปรับเสียงดนตรี (Music Volume) -->
+                  <div class="setting-item-row">
+                    <div class="setting-item-info">
+                      <div class="setting-item-label">
+                        <span class="setting-item-icon">🎵</span>
+                        <span>เสียงดนตรี (Music)</span>
+                      </div>
+                      <span class="setting-val-badge" id="tetrisMusicVal">20%</span>
+                    </div>
+                    <div class="setting-slider-wrap">
+                      <input type="range" class="tetris-range-slider" id="tetrisMusicSlider" min="0" max="100" value="20" aria-label="ระดับเสียงดนตรี">
+                    </div>
+                  </div>
+
+                  <!-- 2. ปรับเสียงเอฟเฟค (SFX Volume) -->
+                  <div class="setting-item-row">
+                    <div class="setting-item-info">
+                      <div class="setting-item-label">
+                        <span class="setting-item-icon">🔊</span>
+                        <span>เสียงเอฟเฟกต์ (SFX)</span>
+                      </div>
+                      <span class="setting-val-badge" id="tetrisSfxVal">60%</span>
+                    </div>
+                    <div class="setting-slider-wrap">
+                      <input type="range" class="tetris-range-slider" id="tetrisSfxSlider" min="0" max="100" value="60" aria-label="ระดับเสียงเอฟเฟกต์">
+                    </div>
+                  </div>
+
+                  <!-- 3. มิวท์ (Mute All) -->
+                  <div class="setting-item-row setting-mute-row">
+                    <div class="setting-item-info">
+                      <div class="setting-item-label">
+                        <span class="setting-item-icon" id="tetrisMuteStatusIcon">🔊</span>
+                        <span>มิวท์เสียงทั้งหมด (Mute)</span>
+                      </div>
+                      <span class="setting-status-badge" id="tetrisMuteStatusText">เปิดเสียงปกติ</span>
+                    </div>
+                    <button type="button" class="btn-tetris-mute-toggle" id="tetrisMuteToggleBtn" aria-label="สลับสถานะเปิด/ปิดเสียง">
+                      <span class="mute-btn-icon">🔇</span>
+                      <span class="mute-btn-text">มิวท์เสียง</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 4. ปุ่ม คืนค่าเริ่มต้น - กลับสู่เกม - กลับหน้า minigame -->
+                <div class="settings-modal-footer">
+                  <button type="button" class="btn-tetris-setting-default" id="tetrisSettingsDefaultBtn">
+                    <span>🔄 คืนค่าเริ่มต้น (Music 20% • SFX 60%)</span>
+                  </button>
+                  <div class="settings-footer-actions">
+                    <button type="button" class="btn-tetris-setting-action btn-setting-resume" id="tetrisSettingsResumeBtn">
+                      <span>▶️ กลับสู่เกม</span>
+                    </button>
+                    <button type="button" class="btn-tetris-setting-action btn-setting-lobby" id="tetrisSettingsLobbyBtn">
+                      <span>🎮 กลับหน้า minigame</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tetris Arena Container: Left Gameplay, Right Top Score, Right Bottom Next -->
+            <div class="tetris-arena">
+              <!-- จอฝั่งซ้าย gameplay -->
+              <div class="tetris-col-left">
+                <div class="tetris-board-frame">
+                  <canvas id="tetrisCanvas" width="200" height="400"></canvas>
+                  
+                  <!-- Pause Overlay -->
+                  <div class="tetris-overlay" id="tetrisPauseOverlay" hidden>
+                    <div class="overlay-box">
+                      <h3>⏸ พักเกมชั่วคราว</h3>
+                      <p>แตะเพื่อเล่นต่อ หรือกดคีย์บอร์ด</p>
+                      <div class="pause-actions">
+                        <button type="button" class="btn-tetris-resume" id="tetrisResumeBtn">เล่นต่อ ▶</button>
+                        <button type="button" class="btn-tetris-action btn-help" id="tetrisPauseHelpBtn">วิธีเล่น ❓</button>
+                        <button type="button" class="btn-tetris-action btn-lobby" id="tetrisPauseExitBtn">กลับคลังเกม</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Game Over Overlay -->
+                  <div class="tetris-overlay" id="tetrisGameOverOverlay" hidden>
+                    <div class="overlay-box game-over-box">
+                      <h3>💥 GAME OVER</h3>
+                      <div class="game-over-score-wrap">
+                        <span class="go-label">คะแนนที่ได้รอบนี้:</span>
+                        <span class="go-val" id="tetrisGameOverScoreVal">+0</span>
+                      </div>
+                      <div class="go-lines-wrap">
+                        <span>เคลียร์ได้: <strong id="tetrisGameOverLinesVal">0</strong> แถว</span>
+                      </div>
+                      <p class="go-sync-notice">✅ บันทึกคะแนนเข้าสู่สถิติและ Ranking เรียบร้อยแล้ว!</p>
+                      <div class="go-actions">
+                        <button type="button" class="btn-tetris-action btn-replay" id="tetrisReplayBtn">เล่นใหม่อีกครั้ง 🔄</button>
+                        <button type="button" class="btn-tetris-action btn-ranking" id="tetrisViewRankingBtn">ดูอันดับ Ranking 🏆</button>
+                        <button type="button" class="btn-tetris-action btn-lobby" id="tetrisExitToLobbyBtn">กลับคลังเกม</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- จอฝั่งขวา -->
+              <div class="tetris-col-right">
+                <!-- ขวาบน = คะแนน -->
+                <div class="tetris-panel tetris-score-panel">
+                  <div class="t-panel-header">คะแนน (SCORE)</div>
+                  <div class="t-score-number" id="tetrisScoreVal">0</div>
+                  
+                  <div class="t-stats-grid">
+                    <div class="t-stat-item">
+                      <span class="t-stat-label">LINES</span>
+                      <span class="t-stat-val" id="tetrisLinesVal">0</span>
+                    </div>
+                    <div class="t-stat-item">
+                      <span class="t-stat-label">LEVEL</span>
+                      <span class="t-stat-val" id="tetrisLevelVal">1</span>
+                    </div>
+                  </div>
+                  
+                  <div class="t-score-sync-badge">
+                    <span>+คะแนนสู่สถิติผู้เล่น</span>
+                  </div>
+                </div>
+
+                <!-- ฝั่งขวาล่าง ตัวบอกล่วงหน้า -->
+                <div class="tetris-panel tetris-next-panel">
+                  <div class="t-panel-header">ชิ้นถัดไป (NEXT)</div>
+                  <div class="t-next-canvas-wrapper">
+                    <canvas id="tetrisNextCanvas" width="80" height="80"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- On-screen Touch Controls for mobile/tablet & PC click (Lower ~30% Gamepad Deck) -->
+            <div class="tetris-gamepad-deck" id="tetrisGamepadDeck" role="toolbar" aria-label="แถบควบคุมจอยสติ๊กและปุ่มหมุน">
+              <!-- ด้านซ้าย: จอยสติ๊ก บน-ล่าง-ซ้าย-ขวา -->
+              <div class="gamepad-side-left">
+                <div class="tetris-dpad-cross" role="group" aria-label="จอยสติ๊ก 4 ทิศทาง">
+                  <!-- บน: ทิ้งลงทันที (Hard Drop) -->
+                  <button type="button" class="dpad-key dpad-up" id="tBtnHardDrop" aria-label="บน - ทิ้งลงทันที">
+                    <span class="dpad-dir-icon">▲</span>
+                    <span class="dpad-dir-text">บน</span>
+                  </button>
+
+                  <!-- ซ้าย: เลื่อนซ้าย (Move Left) -->
+                  <button type="button" class="dpad-key dpad-left" id="tBtnLeft" aria-label="ซ้าย - เลื่อนซ้าย">
+                    <span class="dpad-dir-icon">◀</span>
+                    <span class="dpad-dir-text">ซ้าย</span>
+                  </button>
+
+                  <!-- จุดศูนย์กลางจอยสติ๊ก (Gimbal Pivot) -->
+                  <div class="dpad-core" aria-hidden="true">
+                    <div class="dpad-core-pivot"></div>
+                  </div>
+
+                  <!-- ขวา: เลื่อนขวา (Move Right) -->
+                  <button type="button" class="dpad-key dpad-right" id="tBtnRight" aria-label="ขวา - เลื่อนขวา">
+                    <span class="dpad-dir-icon">▶</span>
+                    <span class="dpad-dir-text">ขวา</span>
+                  </button>
+
+                  <!-- ล่าง: เลื่อนลงเร็ว (Soft Drop) -->
+                  <button type="button" class="dpad-key dpad-down" id="tBtnDown" aria-label="ล่าง - เลื่อนลงเร็ว">
+                    <span class="dpad-dir-icon">▼</span>
+                    <span class="dpad-dir-text">ล่าง</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- ด้านขวา: ปุ่มวงกลม สีฟ้า เพื่อ หมุน แท่ง -->
+              <div class="gamepad-side-right">
+                <button type="button" class="btn-rotate-cyan-circle" id="tBtnRotate" aria-label="ปุ่มวงกลมสีฟ้า หมุนแท่งบล็อก">
+                  <div class="circle-rotate-glow" aria-hidden="true"></div>
+                  <div class="circle-rotate-content">
+                    <span class="rotate-svg-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                      </svg>
+                    </span>
+                    <span class="rotate-label">หมุน</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Home Swipe Bar -->
+          <footer class="minigame-bottom-bar">
+            <button class="minigame-home-bar-btn" id="minigameHomeBarBtn" type="button" aria-label="กลับสู่หน้าจอหลัก"></button>
+          </footer>
+        </section>
+
+        <!-- ================================================================
+             MISSION 2: INCOMING SCAM CALL SCREENS & MODALS
+             ================================================================ -->
+
+        <!-- 1. Incoming Call Screen (หน้าจอสายเรียกเข้า) -->
+        <section class="incoming-call-screen" id="incomingCallScreen" role="region" aria-label="สายเรียกเข้าจากมิจฉาชีพ" hidden>
+          <!-- Dark atmospheric vignette backdrop -->
+          <div class="incoming-call-backdrop" aria-hidden="true"></div>
+
+          <!-- Top Caller Info Header -->
+          <div class="incoming-caller-header">
+            <div class="incoming-call-badge">
+              <span class="call-pulse-dot" aria-hidden="true"></span>
+              <span class="call-badge-text">สายเรียกเข้า • INCOMING CALL</span>
+            </div>
+            <h1 class="incoming-caller-number" id="incomingCallerNumber">080-5656-9987-56</h1>
+            <div class="incoming-caller-sub">เบอร์ไม่ทราบชื่อ • เบอร์เกินมาตรฐาน</div>
+            <div class="incoming-caller-risk-tag">⚠️ หมายเลขต้องสงสัย (สุ่มเสี่ยงมิจฉาชีพ)</div>
+          </div>
+
+          <!-- Center Stage: Big Phone Icon with Animated Left/Right Sound Waves -->
+          <div class="incoming-center-stage">
+            <div class="sound-wave-container">
+              <!-- Left radiating sound waves -->
+              <div class="sound-waves sound-waves-left" aria-hidden="true">
+                <span class="wave-arc wave-arc-1"></span>
+                <span class="wave-arc wave-arc-2"></span>
+                <span class="wave-arc wave-arc-3"></span>
+                <span class="wave-arc wave-arc-4"></span>
+              </div>
+
+              <!-- Large Central Phone Icon -->
+              <div class="central-phone-avatar">
+                <div class="phone-avatar-glow" aria-hidden="true"></div>
+                <div class="phone-avatar-ring" aria-hidden="true"></div>
+                <div class="phone-avatar-icon">
+                  <svg viewBox="0 0 24 24" width="46" height="46" fill="currentColor" aria-hidden="true">
+                    <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Right radiating sound waves -->
+              <div class="sound-waves sound-waves-right" aria-hidden="true">
+                <span class="wave-arc wave-arc-1"></span>
+                <span class="wave-arc wave-arc-2"></span>
+                <span class="wave-arc wave-arc-3"></span>
+                <span class="wave-arc wave-arc-4"></span>
+              </div>
+            </div>
+
+            <div class="incoming-ringtone-hint">
+              <span class="ringtone-music-note">🔔</span>
+              <span>กำลังส่งสัญญาณเสียงเรียกเข้า...</span>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons: วางสาย & รับสาย (แตะเพื่อทำรายการ) -->
+          <div class="incoming-swipe-controls incoming-call-actions" role="group" aria-label="แถบควบคุมสายเรียกเข้า">
+            <!-- Left Button: วางสาย -->
+            <div class="call-action-card decline-card" id="swipeDeclineTrack">
+              <button class="call-action-btn call-decline-btn" id="swipeDeclineThumb" type="button" aria-label="วางสาย">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true">
+                  <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.99.99 0 010-1.41C2.38 9.61 5.92 8 10 8c1.37 0 2.68.18 3.91.5l-1.63 1.63c-.09-.7-.18-1.42-.28-2.13zM23.71 13.08l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.1-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9c-.1 0-.2 0-.3.01l1.45-1.45C14.73 7.2 16.32 7 18 7c4.08 0 7.62 1.61 9.71 3.67.39.39.39 1.02 0 1.41l-4 4z"/>
+                </svg>
+              </button>
+              <span class="call-card-sublabel decline-label">วางสาย</span>
+            </div>
+
+            <!-- Right Button: รับสาย -->
+            <div class="call-action-card answer-card" id="swipeAnswerTrack">
+              <!-- Answer Guide Pointer & Tooltip (Mission 02) -->
+              <div class="call-answer-guide-wrapper" id="swipeAnswerGuide" hidden>
+                <div class="call-guide-tooltip">
+                  <span class="call-guide-sparkle">💡</span>
+                  <span class="call-guide-text">กดเพื่อรับสาย</span>
+                </div>
+                <div class="call-guide-pointer" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="call-pointer-down-svg" width="24" height="24" fill="#22c55e">
+                    <path d="M12 21.5l-7.5-7.5c-.6-.6-.2-1.6.7-1.6h3.8V4c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v8.4h3.8c.9 0 1.3 1 .7 1.6L12 21.5z" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+
+              <button class="call-action-btn call-answer-btn" id="swipeAnswerThumb" type="button" aria-label="รับสาย">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true">
+                  <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                </svg>
+              </button>
+              <span class="call-card-sublabel answer-label">รับสาย</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Active Call Screen (หน้าจอสนทนาทางโทรศัพท์) -->
+        <section class="active-call-screen" id="activeCallScreen" role="region" aria-label="สนทนาทางโทรศัพท์กับมิจฉาชีพ" hidden>
+          <!-- Call Header Bar -->
+          <header class="active-call-header">
+            <div class="active-call-top-row">
+              <div class="active-call-status-indicator">
+                <span class="rec-red-dot" aria-hidden="true"></span>
+                <span class="active-status-text">กำลังสนทนา</span>
+              </div>
+              <div class="active-call-m2-score" hidden>
+                คะแนนเควสนี้: <strong id="m2LiveScore">0</strong>
+              </div>
+            </div>
+            <div class="active-call-number">080-5656-9987-56</div>
+            <div class="active-call-timer" id="callTimer">00:00</div>
+          </header>
+
+          <!-- Conversation Log & Speech Visualization Area -->
+          <div class="active-call-dialogue-area" id="callDialogueArea">
+            <!-- Speech cards injected dynamically -->
+          </div>
+
+          <!-- Bottom Choices Container (A, B, C) -->
+          <div class="active-call-footer">
+            <div class="call-choice-prompt" id="callChoicePrompt">กรุณาเลือกคำตอบของคุณ:</div>
+            <div class="call-choices-group" id="callChoicesGroup">
+              <!-- Choices buttons injected dynamically -->
+            </div>
+
+            <!-- Hangup action button -->
+            <button class="active-call-hangup-btn" id="activeCallHangupBtn" type="button" aria-label="วางสาย">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.99.99 0 010-1.41C2.38 9.61 5.92 8 10 8c1.37 0 2.68.18 3.91.5l-1.63 1.63c-.09-.7-.18-1.42-.28-2.13zM23.71 13.08l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.1-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9c-.1 0-.2 0-.3.01l1.45-1.45C14.73 7.2 16.32 7 18 7c4.08 0 7.62 1.61 9.71 3.67.39.39.39 1.02 0 1.41l-4 4z"/>
+              </svg>
+              <span>วางสาย (End Call)</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 3. Mission 2 Safe Win Modal (จบแบบปลอดภัย) -->
+        <div class="m2-modal-overlay" id="mission2SafeModal" hidden>
+          <div class="m2-modal-card safe-card">
+            <div class="m2-modal-badge-icon safe-shield">
+              <svg viewBox="0 0 24 24" width="54" height="54" fill="none" stroke="#16a34a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <h2 class="m2-modal-title safe-text">ปลอดภัย! รู้ทันกลโกงข่มขู่ทวงหนี้</h2>
+            <div class="m2-score-summary-box">
+              <div class="m2-score-row">
+                <span>คะแนนภารกิจที่ 2 นี้:</span>
+                <strong class="m2-green-text" id="m2SafeScoreVal">+20 คะแนน</strong>
+              </div>
+              <div class="m2-score-row total-row">
+                <span>คะแนนรวมสะสมทั้งหมด:</span>
+                <strong id="m2SafeTotalScoreVal">0 คะแนน</strong>
+              </div>
+            </div>
+            <div class="m2-advice-box">
+              <div class="m2-advice-header">🛡️ คำแนะนำ Zero-Trust เพื่อความปลอดภัย:</div>
+              <ul class="m2-advice-list">
+                <li><strong>ปฏิเสธการจ่ายเงินโดยไม่ตรวจสอบ:</strong> เมื่อถูกอ้างเรื่องหนี้สินที่ไม่ได้กู้ยืมและข่มขู่ประจาน ให้ตั้งสติและปฏิเสธทันที</li>
+                <li><strong>เก็บรวบรวมหลักฐาน:</strong> จดบันทึกหมายเลขโทรศัพท์ บันทึกเสียงการสนทนา หรือข้อความที่ถูกข่มขู่</li>
+                <li><strong>ขอคำแนะนำจากหน่วยงานที่เกี่ยวข้อง:</strong> ติดต่อแจ้งความดำเนินคดี หรือโทรปรึกษาสายด่วน <strong>AOC 1441</strong> ทันที</li>
+              </ul>
+            </div>
+            <button class="m2-modal-btn safe-btn" id="m2SafeHomeBtn" type="button">กลับสู่หน้าจอหลัก (Home)</button>
+          </div>
+        </div>
+
+        <!-- 4. Mission 2 Scam Alert Modal (แจ้งเตือน "ถูกหลอก") -->
+        <div class="m2-modal-overlay" id="mission2ScamAlertModal" hidden>
+          <div class="m2-modal-card scam-card">
+            <!-- Pulsing red beacon -->
+            <div class="m2-modal-badge-icon scam-beacon">
+              <div class="m2-beacon-ring"></div>
+              <svg viewBox="0 0 24 24" width="50" height="50" fill="none" stroke="#dc2626" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <h2 class="m2-modal-title scam-text">ถูกหลอก!</h2>
+            <div class="m2-modal-tagline">หยุด! อย่าโอนเงินเพียงเพราะถูกข่มขู่ ตรวจสอบข้อเท็จจริงก่อน</div>
+            
+            <div class="m2-scam-deduct-notice">
+              ⚠️ หักคะแนน: <strong>-10 คะแนน</strong> (หักเพียงครั้งเดียวต่อการจำลอง)
+            </div>
+
+            <div class="m2-score-summary-box scam-box">
+              <div class="m2-score-row">
+                <span>คะแนนภารกิจที่ 2 นี้:</span>
+                <strong class="m2-red-text" id="m2ScamScoreVal">-12 คะแนน</strong>
+              </div>
+              <div class="m2-score-row total-row">
+                <span>คะแนนรวมสะสมทั้งหมด:</span>
+                <strong id="m2ScamTotalScoreVal">0 คะแนน</strong>
+              </div>
+            </div>
+
+            <div class="m2-advice-box scam-warning-box">
+              <div class="m2-advice-header">🔍 ข้อคิดเตือนใจ (Zero-Trust Lesson):</div>
+              <ul class="m2-advice-list">
+                <li><strong>อย่าโอนเงินเพราะกลัวถูกประจาน:</strong> มิจฉาชีพสร้างเรื่องหนี้ 30,000 บาทเท็จ และขู่ประจานบน Facebook หรือแจ้งที่ทำงานเพื่อให้ตกใจและรีบโอนเงิน</li>
+                <li><strong>ไม่เคยยืมเงิน = ไม่ต้องโอนเงิน:</strong> ตรวจสอบข้อเท็จจริงของตนเองเสมอ หากไม่ได้กู้ยืมจริง อย่าหลงเชื่อหรือยอมจ่ายเงินเพื่อตัดความรำคาญ</li>
+                <li><strong>สงสัยให้วางสายและแจ้งความ:</strong> รวบรวมหลักฐานหมายเลขโทรศัพท์และแจ้งสายด่วน <strong>AOC 1441</strong> ทันที</li>
+              </ul>
+            </div>
+
+            <div class="m2-modal-action-row">
+              <button class="m2-modal-btn retry-btn" id="m2ScamRetryBtn" type="button">ลองใหม่อีกครั้ง</button>
+              <button class="m2-modal-btn home-btn" id="m2ScamHomeBtn" type="button">กลับหน้า Home</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================
+             MISSION 03: SAFE WIN & SCAM ALERT MODALS
+             ================================================================ -->
+        <!-- 1. Mission 3 Safe Win Modal (ภารกิจสำเร็จ - รู้ทันกลโกงค่ามัดจำงาน) -->
+        <div class="m2-modal-overlay" id="mission3SafeModal" hidden>
+          <div class="m2-modal-card safe-card">
+            <div class="m2-modal-badge-icon safe-shield">
+              <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <h2 class="m2-modal-title safe-text">ภารกิจสำเร็จ!</h2>
+            <div class="m2-modal-tagline">คุณหยุดตรวจสอบก่อนโอนเงิน ไม่ตัดสินใจเพียงเพราะข้อเสนอรายได้สูงหรือกลัวเสียโอกาส</div>
+            
+            <div class="m2-score-summary-box safe-box">
+              <div class="m2-score-row">
+                <span>คะแนนภารกิจที่ 3 นี้:</span>
+                <strong class="m2-green-text" id="m3SafeScoreVal">+20 คะแนน</strong>
+              </div>
+              <div class="m2-score-row total-row">
+                <span>คะแนนรวมสะสมทั้งหมด:</span>
+                <strong id="m3SafeTotalScoreVal">0 คะแนน</strong>
+              </div>
+            </div>
+
+            <div class="m2-advice-box">
+              <div class="m2-advice-header">🛡️ คำแนะนำ Zero-Trust:</div>
+              <ul class="m2-advice-list">
+                <li><strong>ตรวจสอบบริษัท:</strong> ตรวจสอบบริษัทจากแหล่งข้อมูลทางการที่เป็นอิสระ</li>
+                <li><strong>ตรวจสอบสัญญา:</strong> ตรวจสอบสัญญาจ้าง หน้าที่งาน และเงื่อนไขการชำระเงิน</li>
+                <li><strong>อย่าโอนเงินมัดจำ:</strong> อย่าโอนเงินมัดจำเพียงเพราะถูกเร่งรัดให้สมัครงาน</li>
+                <li><strong>เก็บหลักฐาน:</strong> เก็บหลักฐานการสนทนาและรายละเอียดบัญชีที่ถูกส่งมา</li>
+              </ul>
+            </div>
+
+            <button class="m2-modal-btn safe-btn" id="m3SafeHomeBtn" type="button">กลับสู่หน้าจอหลัก (Home)</button>
+          </div>
+        </div>
+
+        <!-- 2. Mission 3 Scam Alert Modal (ถูกหลอก - โอนเงินมัดจำ) -->
+        <div class="m2-modal-overlay" id="mission3ScamAlertModal" hidden>
+          <div class="m2-modal-card scam-card">
+            <!-- Pulsing red beacon -->
+            <div class="m2-modal-badge-icon scam-beacon">
+              <div class="m2-beacon-ring"></div>
+              <svg viewBox="0 0 24 24" width="50" height="50" fill="none" stroke="#dc2626" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <h2 class="m2-modal-title scam-text">ถูกหลอก!</h2>
+            <!-- Exact phrase required by user prompt -->
+            <div class="m2-modal-tagline">หยุด! อย่าโอนเงินมัดจำเพื่อแลกกับงาน ก่อนตรวจสอบบริษัทและเงื่อนไขให้แน่ชัด</div>
+            
+            <div class="m2-scam-deduct-notice">
+              ⚠️ หักคะแนน: <strong>-10 คะแนน</strong> (หักเพียงครั้งเดียวต่อการจำลอง)
+            </div>
+
+            <div class="m2-score-summary-box scam-box">
+              <div class="m2-score-row">
+                <span>คะแนนภารกิจที่ 3 นี้:</span>
+                <strong class="m2-red-text" id="m3ScamScoreVal">-14 คะแนน</strong>
+              </div>
+              <div class="m2-score-row total-row">
+                <span>คะแนนรวมสะสมทั้งหมด:</span>
+                <strong id="m3ScamTotalScoreVal">0 คะแนน</strong>
+              </div>
+            </div>
+
+            <div class="m2-advice-box scam-warning-box">
+              <div class="m2-advice-header">🔍 คำแนะนำ:</div>
+              <ul class="m2-advice-list">
+                <li><strong>อย่าโอนเงิน:</strong> อย่าโอนเงินเพียงเพราะกลัวเสียสิทธิ์</li>
+                <li><strong>ตรวจสอบบริษัท:</strong> ตรวจสอบบริษัทและผู้รับเงินจากแหล่งอิสระ</li>
+                <li><strong>เก็บหลักฐาน:</strong> เก็บหลักฐานการสนทนาและข้อมูลการเรียกเก็บเงิน</li>
+                <li><strong>หยุดทำรายการ:</strong> หากสงสัยว่าเป็นการหลอกลวง ให้หยุดทำรายการและขอคำแนะนำจากหน่วยงานที่เกี่ยวข้อง</li>
+              </ul>
+            </div>
+
+            <div class="m2-modal-action-row">
+              <button class="m2-modal-btn retry-btn" id="m3ScamRetryBtn" type="button">ลองใหม่อีกครั้ง</button>
+              <button class="m2-modal-btn home-btn" id="m3ScamHomeBtn" type="button">กลับหน้า Home</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Title (Outside Phone, Bottom-Left Corner) -->
+    <div class="game-branding" aria-label="ชื่อเกม: ZERO TRUST SIMULATOR">
+      <span class="game-brand-title">ZERO TRUST SIMULATOR</span>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cloud-data.js?v=d0cca2aae179"></script>
+  <script src="js/main.js?v=google-login-1"></script>
+  <script src="js/blocktown-app.js?v=717314cfe6c3"></script>
+<script src="../../BlockTown/js/completion-reward.js?v=dfd1683d7caf"></script><script src="js/cloud-sync.js?v=a6253924caea"></script></body>
+</html>
