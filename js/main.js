@@ -2929,6 +2929,11 @@
 
     initHomeTriggers() {
       const prog = this.loadProgression();
+      // Resume Mission 3 even when an older/cloud save lacks Quest 1 state.
+      if (prog.quest2_callcenter === 'cleared' && prog.quest3_jod !== 'cleared') {
+        this.checkAndScheduleMission3();
+        return;
+      }
       // 1. Initial 5-second Glitch and LINE incoming notification (Quest 1)
       if (prog.quest1_kai === 'not_started' && !prog.hasPlayedGlitch) {
         this.scheduleGlitchAndLineNotif(5000);
@@ -2945,6 +2950,11 @@
 
     onReturnHome() {
       const prog = this.loadProgression();
+      // Resume Mission 3 even when an older/cloud save lacks Quest 1 state.
+      if (prog.quest2_callcenter === 'cleared' && prog.quest3_jod !== 'cleared') {
+        this.checkAndScheduleMission3();
+        return;
+      }
       if (prog.quest1_kai === 'scammed' || prog.quest1_kai === 'cleared') {
         if (prog.quest2_callcenter !== 'cleared') {
           this.checkAndScheduleMission2Call();
@@ -2969,11 +2979,12 @@
       this._fbNotifTimer = setTimeout(() => {
         if (AppScreenManager._activeAppId !== null) return;
         const prog = this.loadProgression();
-        if (prog.quest3_jod === 'cleared') return;
+        if (prog.quest2_callcenter !== 'cleared' || prog.quest3_jod === 'cleared') return;
 
         console.log('[QuestProgressionManager] Triggering Mission 3 Facebook Banner...');
         const fbNotif = document.getElementById('facebookPushNotification');
         const fbBadge = document.getElementById('facebookAppBadge');
+        if (fbNotif && !fbNotif.hasAttribute('hidden') && fbNotif.classList.contains('active')) return;
         if (fbNotif) {
           fbNotif.removeAttribute('hidden');
           void fbNotif.offsetWidth;
@@ -2984,12 +2995,7 @@
           window.KaiChatEngine.playLineChimeSound();
         }
 
-        setTimeout(() => {
-          if (fbNotif) {
-            fbNotif.classList.remove('active');
-            setTimeout(() => fbNotif.setAttribute('hidden', ''), 420);
-          }
-        }, 8000);
+        // Keep the story notification until the player opens it.
       }, delayMs);
     },
 
