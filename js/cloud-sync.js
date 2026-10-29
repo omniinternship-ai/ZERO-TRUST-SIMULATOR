@@ -51,7 +51,7 @@
     try{
       const saved=await window.ZeroTrustCloudData.save(snapshot,revision);
       if(token!==generation)return;
-      revision=saved.revision;baseline=serialized;backup(userId);message('บันทึกออนไลน์แล้ว ✓');
+      revision=saved.revision;baseline=serialized;backup(userId);message('บันทึกออนไลน์แล้ว ✓');window.dispatchEvent(new CustomEvent('zerotrust:cloud:saved'));
     }catch(error){
       if(token!==generation)return;
       if(error.code==='40001'){ready=false;message('ข้อมูลออนไลน์เปลี่ยนจากอีกอุปกรณ์ กรุณาเชื่อมต่อใหม่เพื่อเลือกข้อมูล');}

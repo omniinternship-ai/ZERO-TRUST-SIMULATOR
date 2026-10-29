@@ -2785,32 +2785,7 @@
         }
       }
 
-      // 7. National Percentile Banner
-      const percentileEl = document.getElementById('statsPercentileBanner');
-      if (percentileEl) {
-        let pct = 50;
-        if (totalScore >= 100) pct = 99;
-        else if (totalScore >= 90) pct = 92;
-        else if (totalScore >= 80) pct = 78;
-        else if (totalScore >= 70) pct = 65;
-        else if (totalScore >= 50) pct = 45;
-        else if (totalScore >= 20) pct = 25;
-        else pct = 10;
-        percentileEl.innerHTML = `🏆 คะแนนของคุณ <strong>ดีกว่า ${pct}%</strong> ของคนทั่วประเทศ`;
-      }
-
-      // 8. Player Compare Bar
-      const compareScoreVal = document.getElementById('comparePlayerScoreVal');
-      if (compareScoreVal) {
-        compareScoreVal.textContent = `${totalScore} คะแนน`;
-      }
-      const compareBarFill = document.getElementById('comparePlayerBarFill');
-      if (compareBarFill) {
-        const barPct = Math.max(5, Math.min(100, totalScore <= 0 ? 5 : totalScore));
-        compareBarFill.style.width = `${barPct}%`;
-        compareBarFill.style.background = totalScore < 0 ? '#ef4444' : (totalScore >= 70 ? '#10b981' : '#6366f1');
-      }
-
+      // Online ranking owns the comparison labels; never derive national percentiles from local scores.
       // 9. Choice Breakdown Pills
       const counts = stats.counts || { safest: 0, low_safety: 0, risky: 0, scammed: 0 };
       const safestEl = document.getElementById('statSafestCount');
@@ -6402,21 +6377,6 @@
    * Server Ranking Leaderboard Manager
    */
   const ServerRankingManager = {
-    BENCHMARK_PLAYERS: [
-      { name: 'นายธนาคาร สติสตรอง', title: 'Zero-Trust Master', score: 320, mission: 220, minigame: 100 },
-      { name: 'กัปตันไซเบอร์', title: 'Cyber Defender', score: 280, mission: 200, minigame: 80 },
-      { name: 'นักสืบโซเชียล', title: 'Scam Hunter', score: 240, mission: 180, minigame: 60 },
-      { name: 'ป้ามะลิรู้ทัน', title: 'Safe Citizen', score: 210, mission: 160, minigame: 50 },
-      { name: 'น้องเกมเมอร์ Pro', title: 'Tetris Challenger', score: 185, mission: 110, minigame: 75 },
-      { name: 'ลุงสมชาย ปลอดภัยไว้ก่อน', title: 'Cautious Guard', score: 160, mission: 130, minigame: 30 },
-      { name: 'สารวัตรไฮเทค', title: 'Tech Investigator', score: 140, mission: 120, minigame: 20 },
-      { name: 'เทพเตตริส 99', title: 'Arcade Specialist', score: 120, mission: 50, minigame: 70 },
-      { name: 'พี่วิน รู้ทันแก๊งคอล', title: 'Street Smart', score: 95, mission: 80, minigame: 15 },
-      { name: 'ครูนิด ป้องกันภัย', title: 'Cyber Educator', score: 75, mission: 65, minigame: 10 },
-      { name: 'พี่หมอ ดูแลข้อมูล', title: 'Careful Guardian', score: 50, mission: 40, minigame: 10 },
-      { name: 'เด็กช่าง ไม่เชื่อใครง่าย', title: 'Critical Thinker', score: 25, mission: 20, minigame: 5 }
-    ],
-
     init() {
       this.bindEvents();
       this.updateRankingData();
@@ -6471,64 +6431,9 @@
     },
 
     updateRankingData() {
-      const stats = (window.PlayerStatsManager && window.PlayerStatsManager.loadStats()) || { totalScore: 0, missionScore: 0, minigameScore: 0 };
-      const userTotal = stats.totalScore || 0;
-      const userMission = stats.missionScore || 0;
-      const userMinigame = stats.minigameScore || 0;
-
-      const list = this.BENCHMARK_PLAYERS.map(p => ({ ...p, isYou: false }));
-      const userEntry = {
-        name: 'คุณมะลิ (คุณ)',
-        title: 'ผู้เล่น Zero-Trust',
-        score: userTotal,
-        mission: userMission,
-        minigame: userMinigame,
-        isYou: true
-      };
-      list.push(userEntry);
-      list.sort((a, b) => b.score - a.score);
-
-      const userRankIndex = list.findIndex(p => p.isYou) + 1;
-
-      // Update Player Rank Card
-      const rankNumEl = document.getElementById('playerRankNumber');
-      if (rankNumEl) rankNumEl.textContent = `#${userRankIndex}`;
-      const rankMissionEl = document.getElementById('playerRankMissionVal');
-      if (rankMissionEl) rankMissionEl.textContent = userMission;
-      const rankMinigameEl = document.getElementById('playerRankMinigameVal');
-      if (rankMinigameEl) rankMinigameEl.textContent = userMinigame;
-      const rankTotalEl = document.getElementById('playerRankTotalVal');
-      if (rankTotalEl) rankTotalEl.textContent = userTotal;
-
-      // Render list
-      const container = document.getElementById('serverRankingList');
-      if (!container) return;
-      container.innerHTML = '';
-
-      list.slice(0, 15).forEach((p, idx) => {
-        const rank = idx + 1;
-        const row = document.createElement('div');
-        row.className = `ranking-item ${p.isYou ? 'highlight-player' : ''}`;
-
-        let medal = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
-        let rankClass = rank <= 3 ? `rank-${rank}` : '';
-
-        row.innerHTML = `
-          <div class="ri-left">
-            <span class="ri-rank ${rankClass}">${medal}</span>
-            <div class="ri-name-group">
-              <span class="ri-name">${p.name} ${p.isYou ? '<span class="rpc-you-badge">YOU</span>' : ''}</span>
-              <span class="ri-title">${p.title} (M: ${p.mission} | G: ${p.minigame})</span>
-            </div>
-          </div>
-          <div class="ri-score-group">
-            <span class="ri-score ${p.isYou ? 'user-score' : ''}">${p.score}</span>
-            <span class="sb-unit">คะแนน</span>
-          </div>
-        `;
-        container.appendChild(row);
-      });
+      window.ZeroTrustRanking?.refresh();
     }
+
   };
 
   /**
