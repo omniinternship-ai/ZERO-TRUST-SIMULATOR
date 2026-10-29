@@ -36,7 +36,18 @@ async function save(event){
 }
 function mount(){
  const box=document.createElement('section');box.className='player-profile-card';box.innerHTML=`<h2>โปรไฟล์ผู้เล่น</h2><p>ใช้บัญชี Google เดียวกับคะแนน ชื่อในเกมตั้งเองได้</p><form id="playerProfileForm"><fieldset id="profileFields" disabled><label for="profileName">ชื่อที่แสดงในเกม</label><input id="profileName" maxlength="80" autocomplete="nickname" placeholder="ตั้งชื่อ 2–40 ตัวอักษร"><label for="profileProvince">จังหวัด (ไม่บังคับ)</label><select id="profileProvince"><option value="">ยังไม่ระบุจังหวัด</option></select><label for="profileRegion">ภูมิภาค · กำหนดจากจังหวัดอัตโนมัติ</label><input id="profileRegion" readonly><label class="profile-check"><input type="checkbox" id="profileShareName"><span>ยินยอมแสดงชื่อที่ตั้งและคะแนนของฉันบน Player Atlas</span></label><label class="profile-check"><input type="checkbox" id="profileShareArea"><span>ยินยอมแสดงจังหวัดและภูมิภาคกับโปรไฟล์สาธารณะ</span></label><p class="profile-hint">ไม่แสดงอีเมลหรือพิกัด GPS • ถอนความยินยอมได้โดยเอาเครื่องหมายออกแล้วบันทึก • ภูมิภาคใช้เกณฑ์แบ่ง 6 ภาคของระบบ</p><button type="submit">บันทึกโปรไฟล์</button></fieldset></form><button type="button" id="profileRetry">โหลดโปรไฟล์ใหม่</button><p id="profileStatus" role="status" aria-live="polite"></p>`;
- document.querySelector('#settingsScreen .settings-content-area').prepend(box);
+ const area=document.querySelector('#settingsScreen .settings-content-area');
+ const original=Array.from(area.children);
+ const tabs=document.createElement('div');tabs.className='profile-settings-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','หมวดการตั้งค่า');
+ const general=document.createElement('button'),personal=document.createElement('button');
+ general.type=personal.type='button';general.textContent='ตั้งค่าทั่วไป';personal.textContent='โปรไฟล์ผู้เล่น';general.id='settingsGeneralTab';personal.id='settingsProfileTab';
+ for(const b of [general,personal]){b.setAttribute('role','tab');b.setAttribute('aria-selected','false');}
+ box.id='settingsProfilePanel';box.setAttribute('role','tabpanel');box.setAttribute('aria-labelledby',personal.id);personal.setAttribute('aria-controls',box.id);
+ function showProfile(on){box.hidden=!on;original.forEach(node=>node.hidden=on);general.setAttribute('aria-selected',String(!on));personal.setAttribute('aria-selected',String(on));area.scrollTop=0;}
+ general.onclick=()=>showProfile(false);personal.onclick=()=>showProfile(true);
+ tabs.append(general,personal);area.before(tabs);area.prepend(box);showProfile(false);
+ tabs.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();const on=document.activeElement===general;showProfile(on);(on?personal:general).focus();}});
+
  const get=id=>box.querySelector('#'+id);ui={name:get('profileName'),province:get('profileProvince'),region:get('profileRegion'),shareName:get('profileShareName'),shareArea:get('profileShareArea'),status:get('profileStatus'),fields:get('profileFields'),retry:get('profileRetry')};
  for(const p of [...catalog].sort((a,b)=>a.name.localeCompare(b.name,'th'))){const option=document.createElement('option');option.value=p.code;option.textContent=p.name;ui.province.append(option);}
  ui.province.onchange=region;get('playerProfileForm').onsubmit=save;ui.retry.onclick=()=>load(user());
