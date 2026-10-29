@@ -14,5 +14,8 @@ async function open(button){previousFocus=button;app.hidden=false;error.hidden=t
 close.onclick=hide;
 document.addEventListener('click',event=>{const icon=event.target.closest('[data-app-id="blocktown"]');if(icon){event.preventDefault();event.stopImmediatePropagation();open(icon);}},{capture:true});
 window.addEventListener('message',event=>{if(event.source!==frame.contentWindow||event.origin!==location.origin)return;if(event.data?.type==='blocktown:close')hide();});
+function sendProfile(){const p=window.ZeroTrustProfile?.get();frame.contentWindow?.postMessage({type:'blocktown:profile',profile:p?{display_name:p.display_name,province:p.province,region:p.region}:null},location.origin);}
+window.addEventListener('message',event=>{if(event.source===frame.contentWindow&&event.origin===location.origin&&event.data?.type==='blocktown:profile-request')sendProfile();});
+window.addEventListener('zerotrust:profile:changed',sendProfile);
 window.BlockTownV03=Object.freeze({close:hide});
 })();
