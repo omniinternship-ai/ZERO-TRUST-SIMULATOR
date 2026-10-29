@@ -6,7 +6,7 @@
   <title>Zero-Trust Simulator — Home Screen Prototype</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/blocktown-app.css?v=094a2666aefc">
-</head>
+<link rel="stylesheet" href="css/player-profile.css?v=1179e2edf9eb"><link rel="stylesheet" href="css/real-ranking.css?v=8ed2dde8c56c"><style id="atlasShortcutStyle">.player-atlas-shortcut{display:flex;align-items:center;gap:12px;flex-shrink:0;padding:14px;border:2px solid #268b77;border-radius:16px;background:linear-gradient(120deg,#e9fff7,#eff7ff);color:#174d45;text-decoration:none;box-shadow:0 3px 10px #164a3b12}.player-atlas-shortcut:hover{background:#d8f8ed}.player-atlas-shortcut:focus-visible{outline:3px solid #7770ff;outline-offset:3px}.atlas-shortcut-icon{width:48px;height:48px;display:grid;place-items:center;background:#d0f1e5;border-radius:12px;flex-shrink:0}.player-atlas-shortcut strong{display:block;font-size:15px;line-height:1.5}.player-atlas-shortcut small{display:block;font-size:11px;line-height:1.6;color:#467168}.atlas-shortcut-arrow{margin-left:auto;font:700 23px system-ui;flex-shrink:0}</style><link rel="stylesheet" href="css/atlas-mobile.css?v=7df1adc296d5"></head>
 <body>
   <!-- 16:9 Presentation Stage with Atmospheric CSS Glow (No Raster Images) -->
   <div class="simulator-stage">
@@ -1736,7 +1736,7 @@
               </svg>
               <span>หน้าหลัก</span>
             </button>
-            <h1 class="stats-title">สถิติผู้เล่นทั่วประเทศ</h1>
+            <h1 class="stats-title">สถิติผู้เล่นในระบบ</h1>
             <button type="button" class="stats-top-ranking-btn" id="statsTopRankingBtn" aria-label="ดูอันดับ Server">
               <span>🏆 Ranking</span>
             </button>
@@ -1744,6 +1744,11 @@
 
           <!-- Content Scroll Area -->
           <div class="stats-content-area">
+            <a id="openPlayerAtlas" class="player-atlas-shortcut" href="https://omniinternship-ai.github.io/Player-Atlas/" aria-label="เปิดแผนที่ผู้เล่นประเทศไทยภายในมือถือ">
+              <span class="atlas-shortcut-icon" aria-hidden="true"><svg viewBox="0 0 32 32" width="32" height="32" fill="none"><path d="M3 8l8-3 10 3 8-3v20l-8 3-10-3-8 3V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M11 5v20M21 8v20" stroke="currentColor" stroke-width="1.5"/><path d="M23 12c0 4-5 8-5 8s-5-4-5-8a5 5 0 0110 0z" fill="#d3fff0" stroke="#267e6c" stroke-width="1.5"/><circle cx="18" cy="12" r="1.6" fill="#267e6c"/></svg></span>
+              <span><strong>แผนที่ผู้เล่นประเทศไทย</strong><small>ดูจุดผู้เล่นและคะแนนรวม · Player Atlas</small></span><span class="atlas-shortcut-arrow" aria-hidden="true">›</span>
+            </a>
+
             
             <!-- Hero Card: คะแนนของผู้เล่นปัจจุบัน -->
             <div class="stats-hero-card">
@@ -1825,14 +1830,14 @@
               <div class="stats-card-header">
                 <span class="stats-card-icon">🇹🇭</span>
                 <div class="stats-card-title-wrap">
-                  <div class="stats-card-title">สถิติเปรียบเทียบคนทั่วประเทศ</div>
-                  <div class="stats-card-sub">รวบรวมจากผู้ทดสอบ 128,450 คนในระบบ</div>
+                  <div class="stats-card-title">สถิติผู้เล่นที่บันทึกในระบบ</div>
+                  <div class="stats-card-sub"><span id="rankingPlayerCount">กำลังโหลดจำนวนผู้เล่นจริง…</span></div>
                 </div>
               </div>
 
               <!-- National Percentile Highlight -->
               <div class="stats-percentile-banner" id="statsPercentileBanner">
-                🏆 คะแนนของคุณ <strong>ดีกว่า 50%</strong> ของคนทั่วประเทศ
+                กำลังโหลดอันดับจาก Supabase…
               </div>
 
               <!-- Comparison Chart Bars -->
@@ -1851,34 +1856,17 @@
                 <!-- National Average Bar -->
                 <div class="compare-row">
                   <div class="compare-label-row">
-                    <span class="compare-name">คะแนนเฉลี่ยคนทั่วประเทศ</span>
-                    <strong class="compare-val">68.5 คะแนน</strong>
+                    <span class="compare-name">คะแนนเฉลี่ยผู้เล่นในระบบ</span>
+                    <strong class="compare-val" id="rankingAverage">—</strong>
                   </div>
                   <div class="compare-bar-track">
-                    <div class="compare-bar-fill nat-bar" style="width: 68.5%;"></div>
+                    <div class="compare-bar-fill nat-bar" id="rankingAverageBar" style="width:0%;"></div>
                   </div>
                 </div>
               </div>
 
               <!-- Distribution Insight -->
-              <div class="national-distribution-box">
-                <div class="dist-row">
-                  <span class="dist-tier tier-expert">ท็อป 12% (90-100 คะแนน)</span>
-                  <span class="dist-desc">ภูมิคุ้มกัน Zero-Trust สูงสุด ไม่หลงเชื่อกลโกง</span>
-                </div>
-                <div class="dist-row">
-                  <span class="dist-tier tier-aware">กลุ่ม 38% (70-89 คะแนน)</span>
-                  <span class="dist-desc">รู้ทันภัยไซเบอร์ ระแวดระวังดี</span>
-                </div>
-                <div class="dist-row">
-                  <span class="dist-tier tier-moderate">กลุ่ม 32% (40-69 คะแนน)</span>
-                  <span class="dist-desc">มีจุดอ่อน เสี่ยงถูกชักจูงหากไม่รอบคอบ</span>
-                </div>
-                <div class="dist-row">
-                  <span class="dist-tier tier-danger">กลุ่ม 18% (ต่ำกว่า 40 คะแนน)</span>
-                  <span class="dist-desc">กลุ่มเสี่ยงสูง ขาดการตรวจสอบบัญชีม้า</span>
-                </div>
-              </div>
+              <div class="national-distribution-box"><p id="rankingComparisonNote">อันดับใช้คะแนนที่บันทึกใน Supabase เท่านั้น คะแนนเท่ากันได้อันดับร่วม</p><button type="button" id="refreshRealRanking">↻ โหลดอันดับจริงใหม่</button><p id="realRankingStatus" role="status"></p></div>
             </div>
 
             <!-- Card 3: รายละเอียดการตอบคำถามของผู้เล่น -->
@@ -1956,7 +1944,7 @@
               <div class="rpc-info-col">
                 <div class="rpc-name-row">
                   <span class="rpc-avatar">👤</span>
-                  <span class="rpc-player-name">คุณมะลิ (คุณ)</span>
+                  <span class="rpc-player-name">โปรไฟล์ของคุณ</span>
                   <span class="rpc-you-badge">YOU</span>
                 </div>
                 <div class="rpc-breakdown-row">
@@ -2682,7 +2670,8 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/cloud-data.js?v=d0cca2aae179"></script>
-  <script src="js/main.js?v=google-login-1"></script>
-  <script src="js/blocktown-app.js?v=717314cfe6c3"></script>
-<script src="../../BlockTown/js/completion-reward.js?v=dfd1683d7caf"></script><script src="js/cloud-sync.js?v=a6253924caea"></script></body>
+  <script src="js/real-ranking.js?v=f0eac55f76ad"></script>
+  <script src="js/main.js?v=6213bf00aa9b"></script>
+  <script src="js/blocktown-app.js?v=dc2f481bc36f"></script>
+<script src="BlockTown/js/completion-reward.js?v=dfd1683d7caf"></script><script src="js/cloud-sync.js?v=93ca3d74dd23"></script><script src="js/thai-provinces.js?v=92ebfe1aa72b"></script><script src="js/player-profile.js?v=d6b2f31202e5"></script><script src="js/atlas-mobile.js?v=dc843e196f13"></script></body>
 </html>
