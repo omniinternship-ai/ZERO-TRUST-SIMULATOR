@@ -1,0 +1,28 @@
+{
+  "id": "thai-checkers",
+  "title": "หมากฮอสไทย",
+  "version": "1.0.1",
+  "protocol": "zt-minigame/1",
+  "entry": "index.html",
+  "orientation": "any",
+  "score": {
+    "kind": "final",
+    "rawMin": 0,
+    "rawMax": 50
+  },
+  "metrics": {
+    "won": "boolean",
+    "moves": "nonnegative integer",
+    "playerCaptures": "integer 0..8",
+    "aiCaptures": "integer 0..8",
+    "playerKings": "integer 0..8",
+    "aiKings": "integer 0..8",
+    "reason": "string up to 300 characters"
+  },
+  "rewardProposal": {
+    "rule": "Win +50; loss -20 in practice/mock only. Requires owner approval for real ranking.",
+    "approval": "proposal-only"
+  },
+  "dependencies": [],
+  "author": "Dreampath Studio"
+}

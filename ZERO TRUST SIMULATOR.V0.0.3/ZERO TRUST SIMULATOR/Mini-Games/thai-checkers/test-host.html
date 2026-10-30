@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thai Checkers Mock Host - ZERO TRUST SIMULATOR</title>
+  <style>
+    body { background: #0f172a; color: #f1f5f9; font: 16px/1.5 'Segoe UI', Tahoma, sans-serif; margin: 18px; }
+    main { max-width: 1040px; margin: auto; }
+    h1 { color: #38bdf8; margin-bottom: 4px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; align-items: center; }
+    button { font: inherit; font-size: 14px; font-weight: 600; padding: 8px 14px; border: 1px solid #38bdf8; background: #1e293b; color: #f8fafc; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    button:hover { background: #38bdf8; color: #0f172a; }
+    iframe { display: block; border: 2px solid #334155; width: min(100%, 880px); height: 720px; border-radius: 16px; background: #020617; margin: 15px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    iframe.landscape { width: min(100%, 960px); height: 560px; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #020617; border: 1px solid #1e293b; color: #10b981; padding: 14px; max-height: 200px; overflow: auto; border-radius: 8px; font-family: Consolas, monospace; font-size: 13px; }
+    .badge { background: #1e293b; padding: 4px 10px; border-radius: 999px; border: 1px solid #475569; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>โฮสต์จำลองสำหรับ หมากฮอสไทย (Thai Checkers)</h1>
+    <p>ทดสอบการเชื่อมต่อ Protocol <code>zt-minigame/1</code> ในเบราว์เซอร์ (โหมดจำลอง ไม่มีการเขียนลงฐานข้อมูลจริง) | คะแนนจำลองรวม: <span class="badge"><strong id="total">0</strong> แต้ม</span></p>
+    
+    <div class="toolbar">
+      <button id="rotate">🔄 สลับมิติแนวตั้ง/แนวนอน</button>
+      <button id="pause">⏸️ พักเกม (Pause)</button>
+      <button id="resume">▶️ เล่นต่อ (Resume)</button>
+      <button id="duplicate">🔁 ส่งผลซ้ำ (Idempotency test)</button>
+      <button id="exit">⏹️ ออกและหยุดเกม</button>
+      <button id="open">🆕 โหลดเกมใหม่</button>
+      <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:14px;">
+        <input id="dropAck" type="checkbox"> ไม่ตอบรับผล (ทดสอบ Retry)
+      </label>
+    </div>
+
+    <iframe id="game" title="หมากฮอสไทย"></iframe>
+    <pre id="log" role="status">ระบบโฮสต์จำลองพร้อมทำงาน...</pre>
+  </main>
+
+  <script src="host-rules.js"></script>
+  <script src="test-host.js"></script>
+</body>
+</html>

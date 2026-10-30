@@ -1,0 +1,1093 @@
+/* ==========================================================================
+   Thai Checkers (หมากฮอสไทย) - Zero Trust Simulator Minigame Styles
+   ========================================================================== */
+
+:root {
+  --bg-primary: #12151b;
+  --bg-surface: #1a1e27;
+  --bg-card: #222834;
+  --board-border: #4a2e18;
+  --board-light: #d6b28d;
+  --board-dark: #8c5a36;
+  --board-dark-grain: #7d4d2b;
+  --piece-white: #f5f2eb;
+  --piece-white-shadow: #b3aba0;
+  --piece-black: #262423;
+  --piece-black-shadow: #141211;
+  --accent-green: #22c55e;
+  --accent-blue: #38bdf8;
+  --accent-gold: #f59e0b;
+  --accent-red: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+#app {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: radial-gradient(circle at 50% 20%, #1e2430 0%, #12151b 80%);
+}
+
+/* ==========================================================================
+   Top Header
+   ========================================================================== */
+.top-header {
+  height: 54px;
+  background: rgba(18, 21, 27, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-title-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score-ratio {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-action-btn {
+  background: #222a38;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #f1f5f9;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.header-action-btn:hover {
+  background: #313c4f;
+  border-color: var(--accent-blue);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.header-action-btn.danger {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+  background: #2b1f24;
+}
+
+.header-action-btn.danger:hover {
+  background: #4e1d1d;
+  border-color: var(--accent-red);
+  color: #fff;
+}
+
+.icon-btn {
+  background: #272e3d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: #343d50;
+  border-color: var(--accent-blue);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Home Screen
+   ========================================================================== */
+.screen-home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.home-card {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 36px 28px;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.home-logo {
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at 35% 35%, #fff 0%, #d6b28d 60%, #8c5a36 100%);
+  border-radius: 50%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 46px;
+  border: 4px solid #4a2e18;
+}
+
+.home-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.home-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.difficulty-badge {
+  background: linear-gradient(135deg, #1e3a5f, #0f2744);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-score-box {
+  background: #12151b;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 10px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score-box-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.score-box-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent-gold);
+}
+
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(34, 197, 94, 0.45);
+}
+
+.btn-secondary {
+  background: #272e3d;
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #333c4e;
+  border-color: var(--accent-blue);
+}
+
+/* ==========================================================================
+   Game Main Layout (Board + Right Sidebar)
+   ========================================================================== */
+.screen-game {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 16px 12px 16px;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.turn-banner {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #38bdf8;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ai-thinking-badge {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  animation: pulse-glow 1.5s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.game-content-wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  flex: 1;
+}
+
+/* ==========================================================================
+   Wood Checkerboard (หมากฮอสไทย) - ขยายใหญ่เต็มหน้าจอ
+   ========================================================================== */
+.board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-outer-frame {
+  background: linear-gradient(135deg, #5c381e, #3a2211, #4d2e18);
+  padding: 14px;
+  border-radius: 18px;
+  box-shadow: 
+    0 20px 45px rgba(0, 0, 0, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.8);
+  border: 3px solid #6b4324;
+}
+
+.board {
+  display: grid;
+  /* ขยายขนาดช่องให้เต็มความสูงหน้าจอที่เหลือโดยไม่เกิด Scrollbar */
+  grid-template-columns: repeat(8, min(calc((100vh - 145px) / 8), min(11vw, 102px)));
+  grid-template-rows: repeat(8, min(calc((100vh - 145px) / 8), min(11vw, 102px)));
+  border: 3px solid #2b170a;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 0 14px rgba(0,0,0,0.6);
+  background: #3a2211;
+}
+
+.square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.square.light {
+  background: radial-gradient(circle at 40% 40%, #e8cbab 0%, #d4af88 80%, #c49d76 100%);
+}
+
+.square.dark {
+  background: radial-gradient(circle at 45% 45%, #925f38 0%, #7e4f2c 70%, #683e1f 100%);
+}
+
+/* Valid Move Highlight (แสดงกริท ขอบเขตการเดิน) */
+.square.valid-target {
+  cursor: pointer;
+}
+
+.square.valid-target::after {
+  content: '';
+  position: absolute;
+  width: 44%;
+  height: 44%;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.45);
+  border: 2px solid #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+  animation: target-pulse 1.2s infinite ease-in-out;
+  z-index: 10;
+}
+
+.square.valid-target.is-capture::after {
+  background: rgba(239, 68, 68, 0.45);
+  border-color: #ef4444;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.9);
+}
+
+@keyframes target-pulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* ==========================================================================
+   Pieces (3D Concentric Ring Wooden Checkers)
+   ========================================================================== */
+.piece {
+  width: 82%;
+  height: 82%;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  z-index: 5;
+}
+
+/* White Pieces (หมากขาว - AI) */
+.piece.white {
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #eae5dc 50%, #c8c0b2 100%);
+  border: 2px solid #d4ccbf;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Black Pieces (หมากดำ - Player) */
+.piece.black {
+  background: radial-gradient(circle at 35% 30%, #3d3937 0%, #262322 55%, #151312 100%);
+  border: 2px solid #484340;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.65),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.85);
+}
+
+/* Concentric rings on pieces (รอยแกะสลักวงแหวนนูน) */
+.piece::before {
+  content: '';
+  position: absolute;
+  width: 62%;
+  height: 62%;
+  border-radius: 50%;
+}
+
+.piece.white::before {
+  border: 2px solid rgba(160, 150, 140, 0.6);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.piece.black::before {
+  border: 2px solid rgba(60, 56, 54, 0.8);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.08);
+}
+
+.piece::after {
+  content: '';
+  position: absolute;
+  width: 32%;
+  height: 32%;
+  border-radius: 50%;
+}
+
+.piece.white::after {
+  border: 2px solid rgba(160, 150, 140, 0.5);
+}
+
+.piece.black::after {
+  border: 2px solid rgba(60, 56, 54, 0.7);
+}
+
+/* Selected piece highlight */
+.piece.selected {
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.6), 0 0 15px rgba(245, 158, 11, 0.9);
+  border-color: #f59e0b;
+}
+
+/* ==========================================================================
+   Piece Travel & Shatter Animations (ลอยเดินทาง & แตกสลายค่อยๆ เฟดหาย)
+   ========================================================================== */
+
+/* เบี้ยที่ถูกกิน ค่อยๆ แตกสลายไป แล้วเฟดหาย ช้าๆ */
+.piece.piece-shatter {
+  animation: piece-crumble 0.65s forwards cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: none !important;
+  z-index: 15 !important;
+}
+
+.piece.piece-shatter .rainbow-aura,
+.piece.piece-shatter .crown-icon {
+  animation: none !important;
+  opacity: 0.3 !important;
+  transition: opacity 0.4s ease-out !important;
+}
+
+@keyframes piece-crumble {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: contrast(1) brightness(1);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(1.12) rotate(4deg);
+    filter: contrast(1.4) brightness(1.25);
+  }
+  45% {
+    transform: scale(0.88) rotate(-6deg);
+    filter: blur(1px);
+    opacity: 0.85;
+  }
+  75% {
+    transform: scale(0.6) rotate(14deg);
+    filter: blur(3px);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(0.25) rotate(24deg);
+    filter: blur(6px);
+    opacity: 0;
+  }
+}
+
+/* เศษชิ้นส่วนไม้ที่แตกกระจาย (Splinter Particles) */
+.shatter-particle {
+  position: absolute;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 95;
+  animation: splinter-fade 0.75s forwards cubic-bezier(0.2, 0.8, 0.4, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+@keyframes splinter-fade {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.2) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   King Piece (เข้าฮอส หมากจะมีแสงสีรุ้ง วิบวับ เอนิเมชั่น)
+   AI = รุ้งโทนฟ้า | Player = รุ้งโทนแดง
+   ========================================================================== */
+.piece.king {
+  box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+  z-index: 8;
+}
+
+.crown-icon {
+  font-size: clamp(20px, 3.5vw, 34px);
+  position: relative;
+  z-index: 12;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  animation: crown-float 2s infinite ease-in-out;
+}
+
+@keyframes crown-float {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15) rotate(5deg); }
+}
+
+/* แสงสีรุ้ง วิบวับ เอนิเมชั่น หมุนรอบตัวฮอส */
+.rainbow-aura {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border-radius: 50%;
+  opacity: 0.9;
+  z-index: 1;
+  animation: rainbow-spin 2.2s linear infinite;
+}
+
+/* AI (White King): แสงสีรุ้งโทนฟ้า (Cool Ice-Blue / Azure Aurora) */
+.piece.white.king {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 18px rgba(56, 189, 248, 0.85);
+}
+
+.piece.white.king .rainbow-aura {
+  background: conic-gradient(
+    #38bdf8, #0ea5e9, #2563eb, #6366f1, #818cf8, #06b6d4, #a5f3fc, #ffffff, #38bdf8
+  );
+  filter: blur(4px) drop-shadow(0 0 10px rgba(56, 189, 248, 0.95));
+}
+
+/* Player (Black King): แสงสีรุ้งโทนแดง (Warm Fire-Red / Ruby Aurora) */
+.piece.black.king {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 18px rgba(239, 68, 68, 0.85);
+}
+
+.piece.black.king .rainbow-aura {
+  background: conic-gradient(
+    #ef4444, #f97316, #fbbf24, #f43f5e, #e11d48, #be123c, #fda4af, #fef08a, #ef4444
+  );
+  filter: blur(4px) drop-shadow(0 0 10px rgba(239, 68, 68, 0.95));
+}
+
+.piece.king::before {
+  z-index: 10;
+}
+
+@keyframes rainbow-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Floating crowned alert */
+.crowned-float-banner {
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, rgba(20,20,30,0.95), rgba(40,25,60,0.95));
+  border: 2px solid #f59e0b;
+  border-radius: 999px;
+  padding: 12px 28px;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 800;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(245, 158, 11, 0.7);
+  z-index: 1000;
+  animation: banner-pop 1.8s forwards;
+  pointer-events: none;
+}
+
+.crowned-float-banner.player-crowned {
+  border-color: #ef4444;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(239, 68, 68, 0.85);
+}
+
+.crowned-float-banner.ai-crowned {
+  border-color: #38bdf8;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(56, 189, 248, 0.85);
+}
+
+@keyframes banner-pop {
+  0% { opacity: 0; transform: translate(-50%, -30%) scale(0.6); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  35% { transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -70%) scale(0.8); }
+}
+
+/* ==========================================================================
+   Right Sidebar / HUD (ตรงตามรูปเรฟเร้นท์)
+   ========================================================================== */
+.sidebar-hud {
+  width: min(230px, 24vw);
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.player-card {
+  background: var(--bg-card);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.player-card.active-turn {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.35);
+  background: #1f2d3d;
+}
+
+.card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.player-side-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.player-country {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.player-rating {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.card-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+/* Status badge: "You Turn" (กระพริบช้าๆ) & "Wait" (นิ่ง) */
+.turn-status-badge {
+  min-width: 98px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+/* ฝั่งที่ต้องเดิน: You Turn กระพริบช้าๆ */
+.turn-status-badge.you-turn {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.22), rgba(16, 185, 129, 0.38));
+  border: 2px solid #22c55e;
+  color: #4ade80;
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.45);
+  animation: turn-pulse-slow 2.2s infinite ease-in-out;
+}
+
+@keyframes turn-pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 16px rgba(34, 197, 94, 0.55), inset 0 0 8px rgba(34, 197, 94, 0.25);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.96);
+    box-shadow: 0 0 4px rgba(34, 197, 94, 0.1);
+  }
+}
+
+/* ฝั่งที่ไม่ได้เดิน: Wait นิ่ง */
+.turn-status-badge.wait {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #64748b;
+  opacity: 0.7;
+  animation: none !important;
+  box-shadow: none !important;
+  transform: scale(0.95);
+}
+
+.card-bottom-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.piece-count-box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.digital-clock {
+  background: #0f1218;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: Consolas, monospace;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.player-card.active-turn .digital-clock {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
+}
+
+/* ==========================================================================
+   Bottom Action Bar
+   ========================================================================== */
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+  background: rgba(18, 21, 27, 0.6);
+  border-radius: 12px;
+  max-width: 530px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.action-btn span.icon {
+  font-size: 18px;
+}
+
+.action-btn:hover {
+  background: #272e3d;
+  color: #fff;
+}
+
+.action-btn.danger:hover {
+  color: var(--accent-red);
+}
+
+/* ==========================================================================
+   Modals & Popups (Settings & Game Over)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* Settings Menu Details */
+.setting-score-banner {
+  background: #12151b;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.setting-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.slider-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.slider-header span.val {
+  color: var(--accent-blue);
+  font-family: Consolas, monospace;
+}
+
+input[type="range"] {
+  accent-color: var(--accent-blue);
+  width: 100%;
+  height: 6px;
+  background: #2b3345;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.setting-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-resume {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-resign {
+  background: #392427;
+  color: #fca5a5;
+  border: 1px solid #7f1d1d;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-resign:hover {
+  background: #7f1d1d;
+  color: #fff;
+}
+
+/* Game Over Modal Details */
+.gameover-header {
+  text-align: center;
+}
+
+.win-text {
+  color: #22c55e;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.lose-text {
+  color: #ef4444;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.gameover-reason {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.score-award-badge {
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  margin: 6px auto;
+  display: inline-block;
+}
+
+.win-badge {
+  background: rgba(34, 197, 94, 0.15);
+  border: 2px solid #22c55e;
+  color: #22c55e;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+}
+
+.lose-badge {
+  background: rgba(239, 68, 68, 0.15);
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.gameover-stats {
+  background: #12151b;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.gameover-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.gameover-buttons button {
+  flex: 1;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 768px) {
+  .game-content-wrap {
+    flex-direction: column;
+    align-items: center;
+  }
+  .sidebar-hud {
+    width: 100%;
+    max-width: 510px;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 8px 12px;
+  }
+  .player-card {
+    flex: 1;
+    padding: 8px;
+  }
+  .turn-status-badge {
+    min-width: 82px;
+    height: 32px;
+    font-size: 11px;
+    padding: 0 8px;
+  }
+}

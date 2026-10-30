@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>หมากฮอสไทย (Thai Checkers) - ZERO TRUST SIMULATOR</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <span class="game-title-sub">ตัวเลือกเกม: หมากฮอสไทย</span>
+      </div>
+      <div class="header-center">
+        <span class="score-ratio">0 : 0</span>
+      </div>
+      <div class="header-right">
+        <!-- ย้ายปุ่ม แนะแนว และ ยอมแพ้ ไว้แถวเดียวกับ setting -->
+        <button id="btnHintTop" class="header-action-btn" title="แนะแนวทางเดิน">
+          <span>💡 แนะแนว</span>
+        </button>
+        <button id="btnResignTop" class="header-action-btn danger" title="ยอมแพ้">
+          <span>🏳️ ยอมแพ้</span>
+        </button>
+        <button id="btnOpenSettings" class="icon-btn" title="ตั้งค่าเกม" aria-label="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Home / Welcome Screen -->
+    <main id="homeScreen" class="screen-home">
+      <div class="home-card">
+        <div class="home-logo">👑</div>
+        <h1 class="home-title">หมากฮอสไทย</h1>
+        <p class="home-subtitle">Zero Trust Checkers Edition<br>ประลองปัญญากับ AI กติกาหมากฮอสไทยแท้</p>
+        
+        <div class="difficulty-badge">
+          <span>🤖 ระดับความยาก AI: มีเดียมโปร (Medium-Pro)</span>
+        </div>
+
+        <div class="home-score-box">
+          <span class="score-box-label">คะแนนสะสมของคุณ</span>
+          <span id="scoreHome" class="score-box-val">+0</span>
+        </div>
+
+        <div class="home-actions">
+          <button id="btnStartGame" class="btn-primary">▶️ เริ่มเล่นเกม</button>
+          <button id="btnHowToPlay" class="btn-secondary">📖 กติกาและวิธีเล่น</button>
+          <button id="btnHomeSettings" class="btn-secondary">⚙️ การตั้งค่า</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Game Screen -->
+    <main id="gameScreen" class="screen-game" hidden>
+      <!-- Turn & Status Banner -->
+      <div class="turn-banner">
+        <span id="turnBanner">ตาของคุณ (สีดำ) เดินหมาก</span>
+        <span id="aiThinkingBadge" class="ai-thinking-badge" hidden>🤖 AI กำลังคิด...</span>
+      </div>
+
+      <!-- Main Play Area -->
+      <div class="game-content-wrap">
+        <!-- Board Container -->
+        <div class="board-container">
+          <div class="board-outer-frame">
+            <div id="board" class="board"></div>
+          </div>
+        </div>
+
+        <!-- Right Sidebar / HUD (ตรงตามรูปเรฟเร้นท์) -->
+        <aside class="sidebar-hud">
+          <!-- White (AI) Card - ด้านบน -->
+          <div id="whiteCard" class="player-card">
+            <div class="card-top">
+              <span class="player-side-label">สีขาว</span>
+              <span class="player-country">🇬🇷 AI กรีซ</span>
+              <span class="player-rating">1500  0 เกม</span>
+            </div>
+            <div class="card-avatar-wrap">
+              <div id="whiteTurnStatus" class="turn-status-badge wait">Wait</div>
+            </div>
+            <div class="card-bottom-info">
+              <div class="piece-count-box">
+                <span>⚪</span>
+                <span id="whitePieces">8</span>
+              </div>
+              <div id="whiteTimer" class="digital-clock">05:00</div>
+            </div>
+          </div>
+
+          <!-- Black (Player) Card - ด้านล่าง -->
+          <div id="blackCard" class="player-card active-turn">
+            <div class="card-top">
+              <span class="player-side-label">สีดำ</span>
+              <span class="player-country">🇹🇭 ประเทศไทย</span>
+              <span class="player-rating">1500  0 เกม</span>
+            </div>
+            <div class="card-avatar-wrap">
+              <div id="blackTurnStatus" class="turn-status-badge you-turn">You Turn</div>
+            </div>
+            <div class="card-bottom-info">
+              <div class="piece-count-box">
+                <span>⚫</span>
+                <span id="blackPieces">8</span>
+              </div>
+              <div id="blackTimer" class="digital-clock">05:00</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Settings Modal (เปิดจากปุ่มมุมบนขวา) -->
+    <div id="settingsModal" class="modal-overlay" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">⚙️ ตั้งค่าระบบเกม</h2>
+        </div>
+
+        <!-- คะแนนสะสม -->
+        <div class="setting-score-banner">
+          <span>คะแนนสะสมของคุณ</span>
+          <strong id="scoreSettings" style="color: var(--accent-gold); font-size: 20px;">+0</strong>
+        </div>
+
+        <!-- ตัวเลื่อนเสียง Music & SFX -->
+        <div class="setting-slider-group">
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>🎵 ดนตรีประกอบ (Music)</span>
+              <span id="valMusic" class="val">40%</span>
+            </div>
+            <input type="range" id="sliderMusic" min="0" max="100" value="40">
+          </div>
+
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>🔊 เสียงเอฟเฟกต์ (SFX)</span>
+              <span id="valSfx" class="val">70%</span>
+            </div>
+            <input type="range" id="sliderSfx" min="0" max="100" value="70">
+          </div>
+        </div>
+
+        <!-- ปุ่มคำสั่งตามเงื่อนไข: 1. กลับเข้าเกม 2. ยอมแพ้ จะกลับไปหน้า home -->
+        <div class="setting-buttons">
+          <button id="btnResumeGame" class="btn-resume">▶️ 1. กลับเข้าเกม</button>
+          <button id="btnResignGame" class="btn-resign">🏳️ 2. ยอมแพ้ (กลับหน้า Home, -20 คะแนน)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal (ปุ่มล่าง เริ่มใหม่ - home. แพ้ -20 คะแนน แสดงด้านล่าง, ชนะ +50 คะแนน) -->
+    <div id="gameOverModal" class="modal-overlay" hidden>
+      <div class="modal-content">
+        <div class="gameover-header">
+          <h2 id="gameOverTitle" class="win-text">ยินดีด้วย คุณชนะ! 🎉</h2>
+          <p id="gameOverReason" class="gameover-reason">คุณกินหมากคู่ต่อสู้หมดกระดาน</p>
+        </div>
+
+        <!-- คะแนนรางวัลที่ได้รับ -->
+        <p id="submissionStatus" role="status">คะแนนฝึกแยกจากคะแนน Simulation</p><button id="retryResult" type="button" hidden>ส่งผลเดิมอีกครั้ง</button>
+        <div id="gameOverScoreBadge" class="score-award-badge win-badge">
+          +50 คะแนน
+        </div>
+
+        <!-- สถิติการเล่น -->
+        <div class="gameover-stats">
+          <div class="stat-item">
+            <span>จำนวนตาเดิน</span>
+            <span id="statMoves" class="stat-val">0</span>
+          </div>
+          <div class="stat-item">
+            <span>หมากที่กินได้</span>
+            <span id="statCaps" class="stat-val">0</span>
+          </div>
+          <div class="stat-item">
+            <span>เวลาที่ใช้</span>
+            <span id="statDuration" class="stat-val">0 วินาที</span>
+          </div>
+        </div>
+
+        <!-- ปุ่มล่าง: เริ่มใหม่ - Home -->
+        <div class="gameover-buttons">
+          <button id="btnRestartGameOver" class="btn-primary">🔄 เริ่มใหม่</button>
+          <button id="btnHomeGameOver" class="btn-secondary">🏠 Home</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- How to play modal -->
+    <div id="howToPlayModal" class="modal-overlay" hidden>
+      <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+        <div class="modal-header">
+          <h2 class="modal-title">📖 กติกาหมากฮอสไทย</h2>
+        </div>
+        <div style="font-size: 14px; line-height: 1.6; color: var(--text-muted); display: flex; flex-direction: column; gap: 10px;">
+          <p><strong style="color:#fff;">1. ตัวหมากและกระดาน:</strong> เล่นบนกระดาน 8x8 โดยใช้ช่องมืด แต่ละฝั่งมีเบี้ย 8 ตัว (ผู้เล่นสีดำอยู่ล่าง, AI สีขาวอยู่บน)</p>
+          <p><strong style="color:#fff;">2. การเดินเบี้ย:</strong> เบี้ยธรรมดาเดินทแยงไปข้างหน้าได้ 1 ช่อง</p>
+          <p><strong style="color:#fff;">3. การกิน:</strong> กระโดดข้ามตัวฝั่งตรงข้ามไปข้างหน้า หากกินต่อได้ต้องกินต่อเนื่อง (กฎบังคับกิน: หากมีตากิน ต้องเลือกกินเท่านั้น)</p>
+          <p><strong style="color:#fff;">4. การเข้าฮอส:</strong> เมื่อเบี้ยไปถึงแถวสุดท้ายของคู่ต่อสู้ จะเข้าฮอสและมี <span style="color:#f59e0b; font-weight:700;">แสงสีรุ้งวิบวับ</span> เมื่อเข้าฮอสตาเดินจะจบลงทันที</p>
+          <p><strong style="color:#fff;">5. อิทธิพลฮอส:</strong> ฮอสสามารถเดินและกินได้รอบทิศทางในแนวทแยงแบบบินได้กี่ช่องก็ได้</p>
+          <p><strong style="color:#fff;">6. คะแนน:</strong> ชนะได้ <span style="color:#22c55e; font-weight:700;">+50 คะแนน</span>, แพ้เสีย <span style="color:#ef4444; font-weight:700;">-20 คะแนน</span></p>
+        </div>
+        <button id="btnCloseHowToPlay" class="btn-primary" style="margin-top: 10px;">เข้าใจแล้ว</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="sdk.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
