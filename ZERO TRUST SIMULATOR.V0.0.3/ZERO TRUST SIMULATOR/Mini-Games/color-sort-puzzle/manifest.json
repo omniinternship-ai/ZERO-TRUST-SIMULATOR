@@ -1,0 +1,26 @@
+{
+  "id": "color-sort-puzzle",
+  "title": "Color Sort: Liquid Protocol (เกมเรียงสีในหลอดแก้ว)",
+  "version": "1.0.0",
+  "protocol": "zt-minigame/1",
+  "entry": "index.html",
+  "orientation": "any",
+  "score": {
+    "kind": "final",
+    "rawMin": 0,
+    "rawMax": 100
+  },
+  "metrics": {
+    "levelsCompleted": "integer (0-13)",
+    "totalMoves": "integer (>=0)",
+    "undoCount": "integer (>=0)",
+    "resetCount": "integer (>=0)",
+    "timeRemainingSec": "integer (0-600)"
+  },
+  "rewardProposal": {
+    "rule": "100 rawScore = 20 points, >= 60 rawScore = 10 points, >= 30 rawScore = 5 points",
+    "approval": "proposal-only"
+  },
+  "dependencies": [],
+  "notes": "Standalone HTML5 Color Sort Puzzle with Settings Modal, Audio Sliders and 13 handcrafted levels. Compliant with zt-minigame/1."
+}

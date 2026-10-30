@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mock Host - Color Sort Minigame</title>
+  <style>
+    :root {
+      --bg: #0b111e;
+      --card-bg: #131c2e;
+      --border: #223554;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --cyan: #00d4ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 18px;
+    }
+    main {
+      max-width: 960px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 1.4rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .host-notice {
+      background: rgba(0, 212, 255, 0.08);
+      border-left: 4px solid var(--cyan);
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      color: #b0c4de;
+      margin: 12px 0 16px;
+    }
+    .score-summary {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+    }
+    .score-summary strong {
+      color: var(--cyan);
+      font-size: 1.4rem;
+    }
+    .controls-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    button {
+      font: inherit;
+      font-size: 0.85rem;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    button:hover {
+      background: #1c2a44;
+      border-color: var(--cyan);
+    }
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    iframe {
+      display: block;
+      border: 2px solid var(--border);
+      width: min(100%, 420px);
+      height: 680px;
+      border-radius: 18px;
+      background: #000;
+      margin: 16px auto;
+      transition: all 0.3s ease;
+    }
+    iframe.landscape {
+      width: min(100%, 780px);
+      height: 420px;
+    }
+    pre#log {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #060911;
+      border: 1px solid var(--border);
+      color: #7ee787;
+      font-family: Consolas, monospace;
+      font-size: 0.8rem;
+      padding: 14px;
+      border-radius: 8px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🧪 ZERO TRUST SIMULATOR - Mock Host Harness</h1>
+    <div class="host-notice">
+      ระบบโฮสต์ทดสอบสำหรับตรวจสอบโปรโตคอล <code>zt-minigame/1</code> (ทดสอบในเครื่องเท่านั้น ไม่มีการเชื่อมต่อ Supabase หรือบันทึกคะแนนจริง)
+    </div>
+
+    <div class="score-summary">
+      คะแนนจำลองสะสมในโฮสต์: <strong id="total">0</strong> แต้ม
+    </div>
+
+    <div class="controls-grid">
+      <button id="rotate">📱 สลับแนวตั้ง/แนวนอน</button>
+      <button id="pause">⏸️ พักเกม</button>
+      <button id="resume">▶️ เล่นต่อ</button>
+      <button id="duplicate">🔁 ส่งผลซ้ำ (Idempotency)</button>
+      <button id="exit">🛑 ออก/หยุดเกม</button>
+      <button id="open">🚀 เปิดเกมใหม่</button>
+      <label>
+        <input id="dropAck" type="checkbox"> ไม่ตอบรับผล (Drop Ack) เพื่อทดสอบ Retry
+      </label>
+    </div>
+
+    <iframe id="game" title="หน้าจอมินิเกม"></iframe>
+
+    <h3>บันทึกเหตุการณ์ (Host Event Log)</h3>
+    <pre id="log" role="status"></pre>
+  </main>
+
+  <script src="host-rules.js"></script>
+  <script src="test-host.js"></script>
+</body>
+</html>

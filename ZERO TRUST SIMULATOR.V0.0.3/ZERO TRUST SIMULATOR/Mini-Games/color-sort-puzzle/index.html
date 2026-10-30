@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Color Sort: Liquid Protocol (เกมเรียงสีในหลอดแก้ว)</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <!-- Header & Info -->
+    <header class="game-header" role="banner">
+      <div class="header-top">
+        <div class="header-left">
+          <button id="btnSettings" class="btn-icon" title="ตั้งค่าเสียงและเกม (Settings)" aria-label="ตั้งค่า">
+            <span aria-hidden="true">⚙️</span>
+          </button>
+          <h1 class="game-title">
+            <span class="icon" aria-hidden="true">🧪</span>
+            <span>Color Sort</span>
+          </h1>
+        </div>
+        <div id="modeBadge" class="mode-badge" role="status">กำลังเชื่อมต่อ...</div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span>ด่าน:</span>
+          <strong id="levelDisplay">1/13</strong>
+        </div>
+        <div class="stat-item">
+          <span>เวลา:</span>
+          <strong id="timerDisplay">10:00</strong>
+        </div>
+        <div class="stat-item">
+          <span>เดิน:</span>
+          <strong id="movesDisplay">0</strong>
+        </div>
+        <div class="stat-item">
+          <span>คะแนนดิบ:</span>
+          <strong id="scoreDisplay">0</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Playfield / Tube Rack -->
+    <main id="playfield" class="playfield" role="main" aria-label="พื้นที่เล่นเกมเรียงสี">
+      <div id="tubesGrid" class="tubes-grid" role="group" aria-label="หลอดทดลองทั้งหมด">
+        <!-- Dynamically injected tubes -->
+      </div>
+    </main>
+
+    <!-- Controls Bar -->
+    <footer class="game-controls" role="toolbar" aria-label="ปุ่มควบคุม">
+      <button id="btnUndo" class="btn" title="ย้อนกลับหนึ่งก้าว (กด U)">
+        <span aria-hidden="true">↩️</span>
+        <span>ย้อนกลับ</span>
+      </button>
+      <button id="btnReset" class="btn" title="เริ่มด่านนี้ใหม่ (กด R)">
+        <span aria-hidden="true">🔄</span>
+        <span>เริ่มใหม่</span>
+      </button>
+      <button id="btnMute" class="btn" title="เปิด/ปิดเสียง (กด M)" aria-pressed="false">
+        <span id="muteIcon" aria-hidden="true">🔊</span>
+        <span>เสียง</span>
+      </button>
+      <button id="btnSurrender" class="btn btn-danger" title="ยอมแพ้และสรุปคะแนนรอบนี้">
+        <span aria-hidden="true">🏳️</span>
+        <span>จบรอบ</span>
+      </button>
+    </footer>
+  </div>
+
+  <!-- Settings Modal Overlay -->
+  <div id="settingsOverlay" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-card settings-card">
+      <h2 id="settingsTitle" class="modal-title">
+        <span aria-hidden="true">⚙️</span>
+        <span>ตั้งค่าเกม (Settings)</span>
+      </h2>
+
+      <div class="settings-body">
+        <!-- Music Volume Slider -->
+        <div class="setting-group">
+          <div class="setting-label">
+            <span>🎵 ระดับเสียงดนตรี (Music)</span>
+            <span id="musicVolLabel" class="setting-value">70%</span>
+          </div>
+          <input type="range" id="sliderMusicVol" class="setting-slider" min="0" max="100" value="70" aria-label="ระดับเสียงดนตรี">
+        </div>
+
+        <!-- SFX Volume Slider -->
+        <div class="setting-group">
+          <div class="setting-label">
+            <span>🔊 ระดับเสียงเอฟเฟกต์ (SFX)</span>
+            <span id="sfxVolLabel" class="setting-value">80%</span>
+          </div>
+          <input type="range" id="sliderSfxVol" class="setting-slider" min="0" max="100" value="80" aria-label="ระดับเสียงเอฟเฟกต์">
+        </div>
+      </div>
+
+      <!-- Two bottom buttons: Left = Back to game, Right = Restart -->
+      <div class="modal-actions-two">
+        <button id="btnSettingsResume" class="btn btn-primary">
+          <span aria-hidden="true">◀</span>
+          <span>กลับสู่เกม</span>
+        </button>
+        <button id="btnSettingsRestart" class="btn btn-danger">
+          <span aria-hidden="true">🔄</span>
+          <span>เริ่มใหม่</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result / Finish Modal -->
+  <div id="modalOverlay" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <h2 id="modalTitle" class="modal-title">สรุปผลการเล่น</h2>
+      <div class="modal-score-box">
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">คะแนนดิบที่ทำได้</div>
+        <div id="modalScore" class="score-num">0 / 100</div>
+      </div>
+      <div id="modalMessage" class="modal-msg" role="status">
+        กำลังส่งผลการเล่น...
+      </div>
+      <div class="modal-metrics">
+        <div>ด่านที่ผ่าน: <strong id="metricLevels">0</strong></div>
+        <div>การย้ายทั้งหมด: <strong id="metricMoves">0</strong></div>
+        <div>ย้อนกลับ: <strong id="metricUndo">0</strong></div>
+        <div>เวลาที่ใช้: <strong id="metricDuration">0s</strong></div>
+      </div>
+      <div class="modal-actions">
+        <button id="btnRetrySubmit" class="btn btn-primary" hidden>
+          <span>⚠️ ลองส่งผลซ้ำ (Retry)</span>
+        </button>
+        <button id="btnReplay" class="btn btn-primary">
+          <span>🎮 เล่นอีกรอบ (Replay)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="sdk.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
