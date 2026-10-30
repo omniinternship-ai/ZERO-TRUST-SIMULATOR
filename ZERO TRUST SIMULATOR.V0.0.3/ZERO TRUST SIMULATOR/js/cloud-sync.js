@@ -51,13 +51,14 @@
     try{
       const saved=await window.ZeroTrustCloudData.save(snapshot,revision);
       if(token!==generation)return;
-      revision=saved.revision;baseline=serialized;backup(userId);message('บันทึกออนไลน์แล้ว ✓');
+      revision=saved.revision;baseline=serialized;backup(userId);message('บันทึกออนไลน์แล้ว ✓');window.dispatchEvent(new CustomEvent('zerotrust:cloud:saved',{detail:{externalRuns:(snapshot.stats.history||[]).filter(row=>row.externalProtocol===1).map(row=>row.runId),revision}}));
     }catch(error){
       if(token!==generation)return;
       if(error.code==='40001'){ready=false;message('ข้อมูลออนไลน์เปลี่ยนจากอีกอุปกรณ์ กรุณาเชื่อมต่อใหม่เพื่อเลือกข้อมูล');}
       else message('ยังบันทึกไม่ได้ • เก็บข้อมูลในเครื่องไว้แล้ว • '+error.message);
     }finally{busy=false;}
   }
+  window.ZeroTrustCloudSync=Object.freeze({getState:()=>({ready,userId,guestMode,generation})});
   function mount(){
     const box=document.createElement('div');box.style.cssText='padding:8px;font-size:14px;line-height:1.5';
     status=document.createElement('p');status.setAttribute('role','status');
@@ -73,6 +74,7 @@
     window.addEventListener('online',()=>{if(guestMode)return;if(ready)flush();else{userId=null;connect(window.ZeroTrustAuth?.getUser());}});
     window.addEventListener('storage',e=>{if(KEYS.includes(e.key))flush();});
     window.addEventListener('zerotrust:blocktown:reward',flush);
+    window.addEventListener('zerotrust:minigame:result',flush);
     setInterval(()=>{flush().catch(e=>message('ข้อมูลยังอยู่ในเครื่อง • '+e.message));},2500);
     message('Guest • เก็บข้อมูลในเครื่อง');connect(window.ZeroTrustAuth?.getUser());
   }
