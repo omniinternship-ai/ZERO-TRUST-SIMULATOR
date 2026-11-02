@@ -1091,3 +1091,25 @@ input[type="range"] {
     padding: 0 8px;
   }
 }
+
+/* Header grows with wrapped text instead of painting over the board. */
+html,body{min-height:100%;overflow-x:hidden}body{align-items:flex-start}
+#app{min-width:0;min-height:100dvh}
+.top-header{height:auto;min-height:54px;position:relative;flex-shrink:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:8px 12px}
+.top-header .header-left{min-width:0}.game-title-sub{overflow-wrap:anywhere;line-height:1.5}
+.header-center{grid-column:2;grid-row:1}.header-right{grid-column:1/-1;justify-content:flex-end;flex-wrap:wrap;min-width:0}
+.header-action-btn{height:auto;min-height:42px;white-space:normal;padding:8px 12px}.icon-btn{flex-shrink:0;width:42px;height:42px}
+.screen-game{justify-content:flex-start;flex:none;padding:8px;min-width:0}
+.turn-banner{height:auto;min-height:28px;flex-wrap:wrap;line-height:1.5}
+.game-content-wrap{min-width:0;flex:none;gap:14px;align-items:center}
+.board-container{min-width:0;max-width:100%;width:min(100%,640px)}
+.board-outer-frame{width:100%;padding:clamp(6px,2vw,14px);border-width:2px}
+.board{width:100%;aspect-ratio:1;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}
+.sidebar-hud{min-width:0;max-width:100%;flex-shrink:0}.player-card{min-width:0}.card-bottom-info{gap:4px;flex-wrap:wrap}
+.digital-clock{font-size:clamp(12px,3.5vw,15px);letter-spacing:0}.turn-status-badge{min-width:0;max-width:100%}
+.modal-content{max-height:calc(100dvh - 24px);overflow:auto}.modal-overlay{padding:12px}
+@media(max-width:768px){.game-content-wrap{flex-direction:column}.sidebar-hud{width:100%;gap:8px;padding:8px}.player-card{padding:8px}.card-avatar-wrap{margin:0}.player-country,.player-rating{font-size:11px}}
+@media(min-width:769px){.top-header{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}.header-right{grid-row:1;grid-column:3}.game-content-wrap{align-items:flex-start}.board-container{width:min(64vw,calc(100dvh - 160px),700px)}}
+@media(max-width:360px){.header-right{justify-content:space-between;gap:6px}.header-action-btn{font-size:12px;padding:8px}.player-card{gap:5px}.turn-status-badge{font-size:10px;padding:0 4px}}
+
+@media(orientation:landscape) and (max-height:500px) and (min-width:520px){.top-header{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}.header-right{grid-row:1;grid-column:3}.game-content-wrap{flex-direction:row;align-items:flex-start;gap:12px}.board-container{width:min(52vw,calc(100dvh - 130px))}.sidebar-hud{width:min(40vw,300px);flex-direction:row;padding:6px;gap:6px}.player-card{padding:6px}.player-rating,.player-country{font-size:10px}.turn-status-badge{height:26px}}
