@@ -660,3 +660,25 @@ body {
     gap: 8px;
   }
 }
+
+/* Responsive layout: reserve header/controls; scroll only the playfield when needed. */
+html,body{height:100%;overflow:auto}
+.game-container{display:grid;grid-template-rows:auto minmax(180px,1fr) auto;gap:8px;height:100%;min-height:380px;padding:8px;min-width:0}
+.game-header,.game-controls{min-width:0;flex-shrink:0}
+.header-top{flex-wrap:wrap;gap:8px}
+.header-left{min-width:0;flex:1 1 130px}
+.game-title{white-space:nowrap;font-size:clamp(14px,4vw,18px)}
+.mode-badge{white-space:normal;overflow-wrap:anywhere;max-width:100%;font-size:12px}
+.stats-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
+.stat-item{min-width:0;flex-wrap:wrap;font-size:13px}
+.playfield{min-height:0;overflow:auto;container-type:size;justify-content:safe center;padding:0 4px;isolation:isolate}
+.tubes-grid,.tubes-grid.dense{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 8px;align-items:end;padding:38px 6px 12px;max-width:520px;--tube-width:clamp(36px,12vw,68px);--tube-height:clamp(80px,calc(50cqh - 56px),200px)}
+.tubes-grid:not(:has(.tube-wrapper:nth-child(5))){--tube-height:clamp(90px,calc(100cqh - 92px),220px)}
+.tube-wrapper{min-width:0}.tube-btn{max-width:100%}
+.game-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:6px}
+.game-controls .btn{min-width:0;min-height:46px;height:auto;padding:8px 3px;font-size:12px;flex-wrap:wrap;overflow-wrap:anywhere}
+.modal-card{max-height:calc(100dvh - 24px);overflow:auto}
+@media(min-width:480px){.stats-bar{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-height:440px){.game-container{min-height:340px}.game-header{padding:6px}.mode-badge{font-size:11px}.tubes-grid,.tubes-grid.dense{--tube-height:90px}}
+
+@media(max-height:440px){.game-container{min-height:280px;grid-template-rows:auto minmax(120px,1fr) auto}.game-controls .btn{min-height:42px}}
