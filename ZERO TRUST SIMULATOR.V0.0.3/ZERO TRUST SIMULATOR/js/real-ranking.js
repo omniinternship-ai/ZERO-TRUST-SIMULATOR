@@ -39,6 +39,11 @@ async function refresh(force=false){
 }
 window.ZeroTrustRanking=Object.freeze({refresh});
 function invalidate(){sequence++;controller?.abort();busy=false;cache=null;last=0;setTimeout(()=>refresh(true),0);}
-function mount(){if($('refreshRealRanking'))$('refreshRealRanking').onclick=()=>refresh(true);window.addEventListener('zerotrust:auth:changed',invalidate);window.addEventListener('zerotrust:profile:changed',()=>{if(cache)render(cache);});window.addEventListener('zerotrust:cloud:saved',()=>{last=0;refresh(true);});render(null);refresh();}
+function mount(){
+ // Reapply verified online figures after the legacy screen updates local score UI.
+ const manager=window.PlayerStatsManager;if(manager?.updateUI){const original=manager.updateUI;manager.updateUI=function(...args){const value=original.apply(this,args);refresh();return value;};}
+ if(window.ServerRankingManager)window.ServerRankingManager.updateRankingData=()=>refresh();
+ document.addEventListener('click',event=>{if(event.target.closest('[data-app-id="player-stats"],#openRankingBtn,#statsTopRankingBtn,#statsHeroRankingBtn,#minigameOpenRankingBtn,#tetrisViewRankingBtn'))setTimeout(()=>refresh(),0);},{capture:true});
+ if($('refreshRealRanking'))$('refreshRealRanking').onclick=()=>refresh(true);window.addEventListener('zerotrust:auth:changed',invalidate);window.addEventListener('zerotrust:profile:changed',()=>{if(cache)render(cache);});window.addEventListener('zerotrust:cloud:saved',()=>{last=0;refresh(true);});render(null);refresh();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
