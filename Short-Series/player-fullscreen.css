@@ -1,0 +1,16 @@
+/* Size the player from the media dimensions, not a fixed 9:16 frame. */
+#viewer{--video-ratio:.5625;width:min(94vw,calc(90dvh * var(--video-ratio)));height:min(90dvh,calc(94vw / var(--video-ratio)));max-width:96vw;max-height:94dvh;margin:auto;padding:0;background:#000}
+#viewer .portrait-view{width:100%;height:100%;aspect-ratio:auto;max-height:none;overflow:hidden}
+#viewer #episodeVideo{object-fit:contain;width:100%;height:100%}
+#viewer .viewer-back{top:max(12px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));max-width:calc(100% - 130px)}
+.viewer-fullscreen{position:absolute;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:8;min-height:42px;padding:8px 12px;border:1px solid #ffffff80;border-radius:10px;background:#101116b3;color:#fff;font:600 13px system-ui;cursor:pointer}
+.viewer-fullscreen:focus-visible{outline:3px solid #d7ff60;outline-offset:3px}
+.viewer-screen-status{position:absolute;z-index:9;bottom:90px;left:12px;right:12px;margin:0;text-align:center;color:#fff;font:13px/1.6 system-ui;pointer-events:none}
+.viewer-screen-status:not(:empty){padding:10px;background:#111d;border-radius:10px}
+#viewer:is(:fullscreen,:-webkit-full-screen,.expanded-view){width:100%;height:100%;max-width:none;max-height:none;border:0;border-radius:0;margin:0;inset:0;background:#000}
+#viewer:is(:fullscreen,:-webkit-full-screen,.expanded-view) .portrait-view{width:100%;height:100%;aspect-ratio:auto;max-height:none}
+#viewer:is(:fullscreen,:-webkit-full-screen,.expanded-view) .viewer-info{max-width:600px;margin-left:auto;margin-right:auto}
+#viewer.video-landscape .viewer-info.playing{bottom:70px}
+#viewer .viewer-info.playing #nextEpisode{margin-right:62px}
+@media(orientation:landscape){#viewer{width:min(96vw,calc(92dvh * var(--video-ratio)));height:min(92dvh,calc(96vw / var(--video-ratio)));max-height:96dvh}}
+@media(max-width:600px){#viewer{width:min(100vw,calc(94dvh * var(--video-ratio)));height:min(94dvh,calc(100vw / var(--video-ratio)));max-width:100vw;border-radius:0}.viewer-fullscreen{font-size:12px;padding:8px}.viewer-back{font-size:12px}}
