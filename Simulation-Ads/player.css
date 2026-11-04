@@ -1,0 +1,40 @@
+.sim-ad {
+  position: absolute;
+  z-index: 30;
+  inset: auto 12px 58px;
+  padding: 12px;
+  border: 2px solid #254d9b;
+  border-radius: 14px;
+  background: #fff;
+  color: #183b79;
+  font: 14px/1.45 system-ui, sans-serif;
+  box-shadow: 0 8px 28px #0007;
+}
+.sim-ad[hidden] { display: none; }
+.phone-screen > .sim-ad { z-index: 1400; }
+.sim-ad--full {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 0;
+  background: #fff;
+  overflow: auto;
+}
+.sim-ad__content { width: 100%; max-width: 420px; }
+.sim-ad__art { float: inline-end; width: clamp(52px, 18%, 84px); margin-inline-start: 8px; }
+.sim-ad--full .sim-ad__content { text-align: center; }
+.sim-ad--full .sim-ad__art { float: none; display: block; width: min(120px, 28%); margin: 0 auto 8px; }
+.sim-ad small { color: #b51d32; font-weight: 700; }
+.sim-ad strong { display: block; margin-top: 4px; font-size: 1.15em; }
+.sim-ad p { margin: 4px 0 8px; }
+.sim-ad button {
+  min-height: 36px;
+  padding: 5px 12px;
+  border: 1px solid #b1b9e8;
+  border-radius: 8px;
+  color: white;
+  background: #214da1;
+  cursor: pointer;
+}
+.sim-ad button + button { margin-inline-start: 8px; background: #fff; color: #a4192c; border-color: #b51d32; }
+.sim-ad button:focus-visible { outline: 2px solid #d9ff70; }
